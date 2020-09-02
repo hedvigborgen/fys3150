@@ -16,9 +16,9 @@ double f(double x)
 
 }
 
-int main ()
+int main (int argc, char** argv)
 {
-  int n = 100;
+  int n = atof(argv[1]);
   double *x = new double[n];
   double *y = new double[n];
   double h = 1/(n-1.0);
@@ -39,9 +39,9 @@ int main ()
   }
 
 //Forward substitution:
-for (int i = 0; i < n-1; i++)
+for (int i = 1; i < n; i++)
 {
-  y[i+1] += y[i]*(i + 1)/(i + 2); // Oppdaterer til f_tilde
+  y[i] += y[i-1]*i/(i + 1); // Oppdaterer til f_tilde
 }
 
 
@@ -49,11 +49,12 @@ y[n-1] /= (n + 1)/n;
 
 
 // Backward substitution:
-for (int j = n-1; j > 0; j--)
+for (int j = n-2; j > -1; j--)
 {
-  y[j-1] += y[j]*(j+1)/(j+2); // Oppdaterer til u
+  y[j] += y[j+1]*(j)/(j+1); // Oppdaterer til u
 }
 
+cout << n << endl;
 for (int i = 0; i < n; i++)
 {
   cout << x[i] << " " << y[i] << endl;
