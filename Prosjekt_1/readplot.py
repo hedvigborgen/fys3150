@@ -12,14 +12,17 @@ def f(filename):
     line = infile.readline()
     n = int(line)
 
-    with open(filename, 'r') as infile:
+    with open(filename, "r") as infile:
         x = np.zeros(n)
         y = np.zeros(n)
         infile.readline()
-        for i, line in enumerate(infile):
-            results = line.split()
-            x[i] = (float(results[0]))
-            y[i] = (float(results[1]))
+        lines = infile.readlines()
+        for i in range(n):
+            line = lines[i]
+            vals = line.split()
+            x[i] = float(vals[0])
+            y[i] = float(vals[1])
+
     infile.close()
     return x, y, n
 
@@ -29,14 +32,7 @@ def exact(x):
 
 x, y, n = f(fname)
 
-"""
-plt.plot(x, exact(x), label='Exact U(x)')
-plt.plot(x, y, label='Numerical approximation')
-#plt.legend()
-plt.xlabel('x')
-plt.ylabel('U(x)')
-plt.show()
-"""
+
 fig, ax = plt.subplots()
 ax.plot(x, exact(x), '--', label='Exact U(x)')
 ax.plot(x, y, label='Numerical approximation')
