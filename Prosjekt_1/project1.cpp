@@ -51,7 +51,7 @@ y[n-1] /= (n + 1)/n;
 // Backward substitution:
 for (int j = n-2; j > -1; j--)
 {
-  y[j] += y[j+1]*(j)/(j+1); // Oppdaterer til u
+  y[j] = (y[j] + y[j+1])*(j)/(j+1); // Oppdaterer til u
 }
 
 cout << n << endl;

@@ -29,7 +29,10 @@ f[-1] /= (n+1)/n
 
 # Backward substitution:
 for j in range(n-2, -1, -1):
-    f[j] += f[j+1]*(j)/(j+1) # Oppdaterer til u
+    f[j] = (f[j] + f[j+1])*(j)/(j+1) # Oppdaterer til u
+
+
+#f[-1] /=
 
 plt.plot(x, exact(x), label='Exact U(x)')
 plt.plot(x, f, label='Numerical approximation')

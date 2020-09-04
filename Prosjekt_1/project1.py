@@ -15,7 +15,7 @@ b)
 np.random.seed(1001)
 n = 100
 x = np.linspace(0,1,n)
-h = (x[-1]-x[0])/n
+h = (x[-1]-x[0])/(n-1)
 
 # f_i som i oppgaven heter b_tilde
 #f = np.random.uniform(1,10, size=n)
@@ -52,7 +52,7 @@ u[-1] = f_tilde[-1]/b_tilde[-1]
 
 # Backward substitution:
 for j in range(n-1, 0, -1):
-    u[j-1] = f_tilde[j-1] - c[j-1]*u[j]/b_tilde[j]
+    u[j-1] = (f_tilde[j-1] - c[j-1]*u[j])/b_tilde[j-1]
 
 fig, ax = plt.subplots()
 ax.plot(x, u, label='Computed')
@@ -62,12 +62,12 @@ plt.show()
 
 
 """
-c) Specializing our algorithm
+c) Specializing our algorithm// FEIL
 """
 
 n = 100
 x = np.linspace(0,1,n)
-h = (x[-1]-x[0])/n
+h = (x[-1]-x[0])/(n-1)
 
 a = -1
 b = 2
