@@ -24,63 +24,54 @@ double f(double x)
 
 
 // Defining function for LU decomposition, finding inverse of matrix
-void inverse(int n, double **matr)
+void LU(int n, double **matr, double *g)
 {
 int *index;
-double d, *col, **y;
+double d, **y;
 
 index = new int[n];
-col  = new double[n];
-
- //for (int i = 0; i < n; i++) {
-   //for (int j = 0; j< n; j++) {
-     //cout << matr[i][j] << " ";
-   //}
-  // cout << endl;
- //}
 
 y = (double **) matrix(n, n, sizeof(double));
 
+// Timing the LU decomposition for the general case
+clock_t start, finish;
+start = clock();
+
 ludcmp(matr, n, index, &d);   // LU decompose  a[][]
+lubksb(matr, n, index, g);
 
-// find inverse of a[][] by columns
-for(int j = 0; j < n; j++) {
+// Ending timer
+finish = clock();
+double time = (double (finish - start)/CLOCKS_PER_SEC);
 
-// initialize right-side of linear equations
-for(int i = 0; i < n; i++) col[i] = 0.0;
-col[j] = 1.0;
-
-lubksb(matr, n, index, col);
-
-// save result in y[][]
-for(int i = 0; i < n; i++) y[i][j] = col[i];
-}   //j-loop over columns
-
-// return the inverse matrix in a[][]
-for(int i = 0; i < n; i++) {
-  for(int j = 0; j < n; j++) matr[i][j] = y[i][j];
-}
-
-//for (int i = 0; i < n; i++) {
-  //for (int j = 0; j< n; j++) {
-    //cout << matr[i][j] << " ";
-  //}
-  //cout << endl;
-//}
-
+cout << "Substitution took " << time << " seconds to execute with LU with n = " <<n<< "." << endl;
 free_matrix((void **) y);     // release local memory
-delete [] col;
+
 delete []index;
-}  // End: function inverse()
+}  // End: function LU()
 
 
 
 
-
-
-int main (int argc, char** argv)
+int main (int argc, char* argv[])
 {
-  int n = pow(10, atof(argv[1]));
+  int n, arg, power;
+  if (argc == 3)
+  {
+  n = pow(10, atoi(argv[1]));
+  arg = atoi(argv[2]);
+  }
+  else
+  {
+    cout << "Enter x, where n = 10^x." << endl;
+    cin >> power;
+    n = pow(10, power);
+    cout << "Enter 1 for Gauss elimination for the general case," << endl
+         << "enter 2 for Gauss elimination for the special case," << endl
+         << "or enter 3 for LU decomposition." << endl;
+    cin >> arg;
+
+  }
   double *x = new double[n];
   double *y = new double[n];
   double h = 1/(n-1.0);
@@ -90,11 +81,9 @@ int main (int argc, char** argv)
     x[i] = i*h;
   }
 
-int arg = atoi(argv[2]);
-
 
 // THE GENERAL CASE
-if (arg == 0)
+if (arg == 1)
 {
 // Defining matrix elements for the general case
   double *a = new double[n-1];
@@ -154,15 +143,16 @@ for (int i = 0; i < n; i++)
   double time = (double (finish - start)/CLOCKS_PER_SEC);
 
 
+// Printing time for substitution
+    cout << "Substitution took " << time << " seconds to execute in the general case with n = " <<n<< "." << endl;
+// Printing n
+    cout << n << endl;
+
 // Output of x and y values
-  cout << n << endl;
   for (int i = 0; i < n; i++)
   {
     cout << x[i] << " " << v[i] << endl;
   }
-
-// Printing time for substitution
-  cout << "Substitution took " << time << " seconds to execute in the general case." << endl;
 
   delete [] a;
   delete [] b;
@@ -176,7 +166,7 @@ for (int i = 0; i < n; i++)
 
 
 // THE SPECIAL CASE
-else if (arg == 1)
+else if (arg == 2)
 {
 // Defining matrix elements for the special case
   int a = -1;
@@ -211,42 +201,22 @@ finish = clock();
 double time = (double (finish - start)/CLOCKS_PER_SEC);
 
 
-// Output of x and y values
+// Printing time for substitution
+cout << "Substitution took " << time << " seconds to execute in the special case with n = " <<n<< "." << endl;
+
+// Printing n
 cout << n << endl;
+
+// Output of x and y values
 for (int i = 0; i < n; i++)
 {
-  //cout << x[i] << " " << y[i] << endl;
+  cout << x[i] << " " << y[i] << endl;
+}
 }
 
-// Printing time for substitution
-//cout << "Substitution took " << time << " seconds to execute in the special case." << endl;
-
-
-
-// Computing the relative error
-double *u = new double[n];
-
-for (int i=0; i<n; i++)
+// LU DECOMPISITION
+else if (arg == 3)
 {
-  u[i] = U(x[i]);
-}
-
-double eps_max, eps;
-eps_max = 0;
-
-for(int i=0; i<n; i++)
-  {
-    eps = log(abs((y[i]-u[i])/u[i]));
-  }
-  if (eps > eps_max)
-    {
-      eps_max = eps;
-    }
-
-//cout << eps_max << endl;
-
-
-
 // Declaring matrix for LU decomposition
 double **matr;
 
@@ -268,35 +238,26 @@ for (int i = 1; i < n; i++)
   matr[i][i-1] = -1;
  }
 
-// Finding inverse of matrix A
-inverse(n, matr);
-
 double *g = new double[n];
 for (int i=0; i<n; i++)
 {
   g[i] = pow(h,2)*f(x[i]);
 }
 
+// Finding inverse of matrix A
+LU(n, matr, g);
 
-// Matrix-vector multiplication A^{-1}*g = v
-double *v = new double[n];
-for (int i = 0; i < n; i++)
-{
-  for (int j = 0; j < n; j++)
-  {
-    v[i] += matr[i][j]*g[j];
-  }
-}
+// Printing n
+    cout << n << endl;
 
 // Output of x and v values for LU decomposition
 for (int i = 0; i < n; i++)
 {
-  cout << x[i] << " " << v[i] << endl;
+  cout << x[i] << " " << g[i] << endl;
 }
+
 delete [] x;
 delete [] y;
-delete [] u;
-delete [] v;
 delete [] g;
 
 return 0;
