@@ -96,8 +96,6 @@ int main ()
 
 
   }
-cout << "hallo" << endl;
-
 
 //delete [] x;
 //delete [] y;

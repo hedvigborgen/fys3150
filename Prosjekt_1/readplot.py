@@ -4,10 +4,16 @@ import sys
 
 
 if len(sys.argv) == 2:
-    fname = sys.argv[1]
+    arg = int(sys.argv[1])
 else:
-    fname = input('Enter filename: ')
+    arg = int(input('Enter 1 to compare numerical solution with closed-form solution,' '\n'
+                'or enter 2 to compute the relative error for Gauss elimination for special case: '))
 
+# Defining exact solution:
+def exact(x):
+    return 1 - (1 - np.exp(-10))*x - np.exp(-10*x)
+
+#
 def f(filename):
     infile = open(filename, 'r')
     lines = infile.readlines()
@@ -29,24 +35,6 @@ def f(filename):
     return x, y, n
 
 
-
-# Defining exact solution:
-def exact(x):
-    return 1 - (1 - np.exp(-10))*x - np.exp(-10*x)
-
-x, y, n = f(fname)
-
-
-fig, ax = plt.subplots()
-ax.plot(x, exact(x), '--', label='Exact U(x)')
-ax.plot(x, y, label='Numerical approximation')
-#ax.legend()
-ax.set_xlabel('x')
-ax.set_ylabel('U(x)')
-ax.set_title(f'Plot of results versus exact solution')
-fig.savefig(f'plot_results_n{n}.pdf')
-
-
 #Reading the error text file
 def g(filename2):
     infile = open(filename2, 'r')
@@ -56,6 +44,7 @@ def g(filename2):
     error = np.zeros(j)
     with open(filename2, "r") as infile:
         lines = infile.readlines()
+        infile.readline()
         for i in range(j):
             error[i] = float(lines[i])
     infile.close()
@@ -63,13 +52,27 @@ def g(filename2):
 
 
 
-error, n = g("error.txt")
-h = 1/(n+1)
+if arg == 1:
+    fname = input('Enter filename: ')
+    x, y, n = f(fname)
 
-fig, ax = plt.subplots()
-ax.scatter(np.log10(h), np.log10(error))
-ax.grid()
-ax.set_title("Max error $\epsilon$ as a function of the stepsize $h$")
-ax.set_xlabel("The logarithm of the stepsize $h$")
-ax.set_ylabel("The logarithm of the max error $\epsilon(h)$")
-fig.savefig("errorplot.png")
+    fig, ax = plt.subplots()
+    ax.plot(x, exact(x), '--', label='Exact U(x)')
+    ax.plot(x, y, label='Numerical approximation')
+    ax.set_xlabel('x')
+    ax.set_ylabel('U(x)')
+    ax.set_title(r'Plot of results versus exact solution' + '\n n = {}'.format(n))
+    fig.savefig(f'{fname}.pdf')
+
+
+elif arg == 2:
+    error, n = g("error.txt")
+    h = 1/(n+1)
+
+    fig, ax = plt.subplots()
+    ax.scatter(np.log10(h), np.log10(error))
+    ax.grid()
+    ax.set_title("Max error $\epsilon$ as a function of the stepsize $h$")
+    ax.set_xlabel("The logarithm of the stepsize $h$")
+    ax.set_ylabel("The logarithm of the max error $\epsilon(h)$")
+    fig.savefig("errorplot.png")
