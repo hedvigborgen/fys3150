@@ -6,7 +6,7 @@ Kamilla Ida Julie Sulebakk, Andrea Jensen Marthinussen and Hedvig Borgen Reiersr
 In this project we are solving a one dimensional Poisson equation. Here we will explore the numerical errors as we compare our numerical solutions of the differential equation with an analytical solution. Using Dirichlet boundary conditions we will rewrite the differential equation as a set of linear equations, and we will thereafter use different linear algebra methods to solve it. The report is found above. 
 
 ## Project is created with:
-* CPP
+* C++
 * Pyhton version: 3
 	* Numpy 
 	* Matplotlib
