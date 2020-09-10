@@ -11,7 +11,7 @@ Project is created with:
 	* Numpy 
 	* Matplotlib
 
-## Table of contents
+## How to run the code
 * [General info](#general-info)
 * [Technologies](#technologies)
 * [Setup](#setup)
