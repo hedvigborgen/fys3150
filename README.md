@@ -31,22 +31,18 @@ Here;
 	* which we assign as number of steps n 
 * arg is the choise of algorithm; 
 	* enter 1 for Gauss elimination for the general case
-	* eneter 2 for Gauss elimination for the special case
+	* enter 2 for Gauss elimination for the special case
 	* enter 3 for LU decomposition
+	
+To make plots of the results:
 ```
-python3 readplot.py 
+python3 readplot.py arg
 ```
+Here;
+* arg tells the program whether you want to make plots of the solution of the linear equation or its relative error; 
+	* enter 1 to compare numerical solution with closed-form solution
+	* enter 2 to compute the relative error for Gauss elimination for special case
 
-
-$ cd ../lorem
-$ npm install
-$ npm start
-
-
-
-* [General info](#general-info)
-* [Technologies](#technologies)
-* [Setup](#setup)
 
 ## General info
 This project is simple Lorem ipsum dolor generator.
