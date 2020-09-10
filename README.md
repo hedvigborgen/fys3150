@@ -12,8 +12,21 @@ In this project we are solving a one dimensional Poisson equation. Here we will 
 	* Matplotlib
 
 ## How to run the code
-```
 Open terminal window and compile the code: 
+```
+#To compile numerical solutions 
+make compile
+
+# To execute numerical solutions 
+make execute
+
+#To compile relative error 
+make compile_error
+
+#To execute relative error
+execute_error
+	
+
 $ cd ../lorem
 $ npm install
 $ npm start
