@@ -28,11 +28,11 @@ c++ -o error.exe error.cpp
 ```
 Here; 
 * pow is the power of ten;
-** which we assign as number of steps n 
+	* which we assign as number of steps n 
 * arg is the choise of algorithm; 
-** enter 1 for Gauss elimination for the general case
-** eneter 2 for Gauss elimination for the special case
-** enter 3 for LU decomposition
+	* enter 1 for Gauss elimination for the general case
+	* eneter 2 for Gauss elimination for the special case
+	* enter 3 for LU decomposition
 ```
 python3 readplot.py 
 ```
