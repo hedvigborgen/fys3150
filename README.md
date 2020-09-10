@@ -17,7 +17,7 @@ Open terminal window and compile the code:
 #To compile numerical solutions 
 c++ -o main.exe project1.cpp lib.cpp
 
-# To execute numerical solutions, and write the reults into texfile
+# To execute numerical solutions, and write the results to file
 ./main.exe pow arg > 'textfile.txt'
 
 #To compile relative error 
@@ -33,6 +33,7 @@ Here;
 	* enter 1 for Gauss elimination for the general case
 	* enter 2 for Gauss elimination for the special case
 	* enter 3 for LU decomposition
+
 	
 To make plots of the results:
 ```
@@ -42,12 +43,9 @@ Here;
 * arg tells the program whether you want to make plots of the solution of the linear equation or its relative error; 
 	* enter 1 to compare numerical solution with closed-form solution
 	* enter 2 to compute the relative error for Gauss elimination for special case
-
-
-## General info
-This project is simple Lorem ipsum dolor generator.
 	
-	
+In the terminal window "Enter filename: " will be printed, in which case you would enter the name of the file containing the results you want to utilize. 
+
 ## Setup
 To run this project, install it locally using npm:
 
