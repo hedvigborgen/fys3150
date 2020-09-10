@@ -2,6 +2,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 import sys
 
+plt.style.use('seaborn')
+plt.rc('text', usetex=True)
 
 if len(sys.argv) == 2:
     arg = int(sys.argv[1])
@@ -57,11 +59,12 @@ if arg == 1:
     x, y, n = f(fname)
 
     fig, ax = plt.subplots()
-    ax.plot(x, exact(x), '--', label='Exact U(x)')
-    ax.plot(x, y, label='Numerical approximation')
+    ax.plot(x, exact(x), '--', color='#CC3366', label='Exact solution')
+    ax.plot(x, y, color='#666699', label='Numerical approximation')
+    plt.legend()
     ax.set_xlabel('x')
     ax.set_ylabel('U(x)')
-    ax.set_title(r'Plot of results versus exact solution' + '\n n = {}'.format(n))
+    ax.set_title(r'Results versus exact solution U(x)' + '\n n = {}'.format(n))
     fig.savefig(f'{fname}.pdf')
 
 
@@ -70,9 +73,9 @@ elif arg == 2:
     h = 1/(n+1)
 
     fig, ax = plt.subplots()
-    ax.scatter(np.log10(h), np.log10(error))
-    ax.grid()
-    ax.set_title("Max error $\epsilon$ as a function of the stepsize $h$")
-    ax.set_xlabel("The logarithm of the stepsize $h$")
-    ax.set_ylabel("The logarithm of the max error $\epsilon(h)$")
+    ax.plot(np.log10(h), np.log10(error), "-o", color='#CC3366')
+
+    ax.set_title(r"Max error $\epsilon$ as a function of the stepsize $h$")
+    ax.set_xlabel(r"The logarithm of the stepsize $h$")
+    ax.set_ylabel(r"The logarithm of the max error $\epsilon(h)$")
     fig.savefig("errorplot.png")
