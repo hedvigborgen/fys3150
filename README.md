@@ -29,9 +29,9 @@ c++ -o error.exe error.cpp
 Here; 
 * pow is the power of ten;
 	* which we assign as number of steps n 
-* arg is the choise of algorithm; 
-	* enter 1 for Gauss elimination for the general case
-	* enter 2 for Gauss elimination for the special case
+* arg is the choice of algorithm; 
+	* enter 1 for Gaussian elimination for the general case
+	* enter 2 for Gaussian elimination for the special case
 	* enter 3 for LU decomposition
 
 	
@@ -42,7 +42,7 @@ python3 readplot.py arg
 Here;
 * arg tells the program whether you want to make plots of the solution of the linear equation or its relative error; 
 	* enter 1 to compare numerical solution with closed-form solution
-	* enter 2 to compute the relative error for Gauss elimination for special case
+	* enter 2 to compute the relative error for Gaussian elimination for special case
 	
 In the terminal window "Enter filename: " will be printed, in which case you would enter the name of the file containing the results you want to utilize. 
 
@@ -50,7 +50,7 @@ In the terminal window "Enter filename: " will be printed, in which case you wou
 ```
 c++ -o main.exe project1.cpp lib.cpp
 
-./main.exe 3 2 > results_3_fast.txt   # runs the Gauss elimination for the special case, with n = 10^(3)
+./main.exe 3 2 > results_3_fast.txt   # runs the Gaussian elimination for the special case, with n = 10^(3)
 
 python3 readplot.py 1                 # comparing the numerical solution with closed-form solution
 
@@ -64,5 +64,5 @@ c++ -o error.exe error.cpp
 
 ./error.exe			      
 
-python3 readplot.py 2                 # plots the relative error for Gauss elimination for special case
+python3 readplot.py 2                 # plots the relative error for Gaussian elimination for special case
 ```
