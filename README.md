@@ -18,7 +18,7 @@ Open terminal window and compile the code:
 c++ -o main.exe project1.cpp lib.cpp
 
 # To execute numerical solutions, and write the reults into texfile
-./main.exe n arg > 'textfile.txt' # where n is the size of the number of , arg is 
+./main.exe pow arg > 'textfile.txt'
 
 #To compile relative error 
 c++ -o error.exe error.cpp
@@ -26,7 +26,13 @@ c++ -o error.exe error.cpp
 #To execute relative error
 ./error.exe
 ```
-To produce plots of numerical soultions, for a specific n, run: 
+Here; 
+* pow is the power of ten;
+** which we assign as number of steps n 
+* arg is the choise of algorithm; 
+** enter 1 for Gauss elimination for the general case
+** eneter 2 for Gauss elimination for the special case
+** enter 3 for LU decomposition
 ```
 python3 readplot.py 
 ```
