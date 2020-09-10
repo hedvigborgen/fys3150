@@ -1,4 +1,4 @@
-Substitution took 1.9e-05 seconds to execute in the special case with n = 1000.
+Substitution took 3.4e-05 seconds to execute in the special case with n = 1000.
 1000
 0 0.0090512
 0.001001 0.0180022

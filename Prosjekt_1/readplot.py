@@ -69,7 +69,8 @@ if arg == 1:
 
 
 elif arg == 2:
-    error, n = g("error.txt")
+    fname = input('Enter filename: ')
+    error, n = g(fname)
     h = 1/(n+1)
 
     fig, ax = plt.subplots()
@@ -78,4 +79,4 @@ elif arg == 2:
     ax.set_title(r"Max error $\epsilon$ as a function of the stepsize $h$")
     ax.set_xlabel(r"The logarithm of the stepsize $h$")
     ax.set_ylabel(r"The logarithm of the max error $\epsilon(h)$")
-    fig.savefig("errorplot.png")
+    fig.savefig("errorplot.pdf")

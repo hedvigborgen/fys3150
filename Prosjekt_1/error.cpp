@@ -70,8 +70,6 @@ int main ()
 
 
 
-  //cout << n[k] << endl;
-
   // Computing the relative error
   double *u = new double[n[k]];
 
@@ -97,9 +95,6 @@ int main ()
 
   }
 
-//delete [] x;
-//delete [] y;
-//delete [] u;
 
 return 0;
 
