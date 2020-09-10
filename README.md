@@ -24,7 +24,7 @@ c++ -o main.exe project1.cpp lib.cpp
 c++ -o error.exe error.cpp
 
 #To execute same script
-./error.exe
+./error.exe > 'textfile.txt'
 ```
 Here; 
 * pow is the power of ten;
@@ -41,8 +41,8 @@ python3 readplot.py arg
 ```
 Here;
 * arg tells the program whether you want to make plots of the solution of the linear equation or its relative error; 
-	* enter 1 to compare numerical solution with closed-form solution
-	* enter 2 to compute the relative error for Gaussian elimination for the specialized Gaussian elimination algorithm
+	* enter 1 to plot numerical solution with closed-form solution
+	* enter 2 to plot the relative error for Gaussian elimination for the specialized Gaussian elimination algorithm
 	
 In the terminal window "Enter filename: " will be printed, in which case you would enter the name of the file containing the results you want to utilize. 
 
@@ -62,7 +62,10 @@ python3 readplot.py 1                 # compares the numerical solution with clo
 ```
 c++ -o error.exe error.cpp
 
-./error.exe			      
+./error.exe > error.txt			      
 
 python3 readplot.py 2                 # plots the relative error for Gaussian elimination for special case
+
+>> Enter filename: 
+<< error.txt                 	      # produces a plot of the results in which you want to investigate
 ```
