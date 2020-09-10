@@ -15,22 +15,27 @@ In this project we are solving a one dimensional Poisson equation. Here we will 
 Open terminal window and compile the code: 
 ```
 #To compile numerical solutions 
-make compile
+c++ -o main.exe project1.cpp lib.cpp
 
-# To execute numerical solutions 
-make execute
+# To execute numerical solutions, and write the reults into texfile
+./main.exe n arg > 'textfile.txt' # where n is the size of the number of , arg is 
 
 #To compile relative error 
-make compile_error
+c++ -o error.exe error.cpp
 
 #To execute relative error
-execute_error
-	
+./error.exe
+```
+To produce plots of numerical soultions, for a specific n, run: 
+```
+python3 readplot.py 
+```
+
 
 $ cd ../lorem
 $ npm install
 $ npm start
-```
+
 
 
 * [General info](#general-info)
