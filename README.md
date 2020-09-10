@@ -8,8 +8,8 @@ In this project we are solving a one dimensional Poisson equation. Here we will 
 Project is created with:
 * CPP
 * Pyhton version: 3
-	*Numpy 
-	*Matplotlib
+	* Numpy 
+	* Matplotlib
 
 ## Table of contents
 * [General info](#general-info)
