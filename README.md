@@ -46,11 +46,23 @@ Here;
 	
 In the terminal window "Enter filename: " will be printed, in which case you would enter the name of the file containing the results you want to utilize. 
 
-## Setup
-To run this project, install it locally using npm:
-
+## Example run 1
 ```
-$ cd ../lorem
-$ npm install
-$ npm start
+c++ -o main.exe project1.cpp lib.cpp
+
+./main.exe 3 2 > results_3_fast.txt   # runs the Gauss elimination for the special case, with n = 10^(3)
+
+python3 readplot.py 1                 # comparing the numerical solution with closed-form solution
+
+>> Enter filename: 
+<< results_3_fast.txt                 # produces a plot of the results in which you want to investigate
+```
+
+## Example run 2
+```
+c++ -o error.exe error.cpp
+
+./error.exe			      
+
+python3 readplot.py 2                 # plots the relative error for Gauss elimination for special case
 ```
