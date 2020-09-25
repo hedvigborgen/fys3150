@@ -1,6 +1,8 @@
 #include "project2.hpp"
 
-void methods::diagonalize(){
+
+
+void Eigensolver::diagonalize(){
    eig_gen(vec eigval, mat eigvec, mat A);
 }
 

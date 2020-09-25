@@ -4,29 +4,21 @@
 using namespace std;
 using namespace arma;
 
-class methods{
+class Eigensolver{
   private:
-  protected:
+    vec m_init_eigval;
+    mat m_init_eigvec;
+    vec m_eigval;
+    mat m_eigvec;
+    mat m_A;
+    double m_V;
+    double m_off_d;
+
   public:
-    int n;
-    double a;
-    double d;
-    vec eigval;
-    mat eigvec;
-    mat A;
-
-    /*
-    mat B;
-    int k;
-    int l;
-    double offA;
-    vec lambda;
-
-
+    void V(double rho, double omega);
+    void initialize(int n);
     void jacobi();
-    void offA();
-    void print();
-    */
+    void off_d();
     void diagonalize();
 
 };

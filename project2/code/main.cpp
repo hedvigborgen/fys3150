@@ -1,34 +1,33 @@
 #include "project2.hpp"
+#include <iostream>
+#include <armadillo>
 
-int main(int argc, char const *argv[]) {
-  methods object;
-  object.n = 3; //atoi(argv[1]);
-  object.d = 1; //atoi(argv[2]);
-  object.a = 2; //atoi(argv[3]);
-
-  object.A = mat(object.n,object.n);
-
-  for (int i = 1; i < object.n; i++){
-    object.A(i,i) = object.d;
-    object.A(i-1,i) = object.a;
-    object.A(i,i-1) = object.a;
-   }
-
-   object.diagonalize(object.eigval, object.eigvec, object.A);
+using namespace std;
+using namespace arma;
 
 
+int main(int argc, char *argv[]) {
+  Eigensolver solver;
 
-  /*
-  object.B = mat(n,n).eye;
+  int n = atoi(argv[1]);
+  double rho;
+  double omega;
 
-
-  double eps = pow(10,-8);
-  object.offA = 100;
-
-  while (offA > eps){
-    object.jacobi(A)
-    object.offA(A)
+  if (argc == 2){
+    rho = 0;
+    omega = 0;
   }
-*/
+
+  else {
+    double rho = atoi(argv[2]);
+    double omega = atoi(argv[3]);
+      }
+
+
+
+  solver.V(rho, omega);
+  solver.initialize(n);
+  solver.diagonalize();
+
   return 0;
 }
