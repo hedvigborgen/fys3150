@@ -12,13 +12,15 @@ class Eigensolver{
     mat m_eigvec;
     mat m_A;
     double m_V;
-    double m_off_d;
+    double m_max_off_d;
+    int m_k;
+    int m_l;
 
   public:
     void V(double rho, double omega);
     void initialize(int n);
-    void jacobi();
-    void off_d();
-    void diagonalize();
+    void rotation(int n);
+    void max_len(int n);
+    void diagonalize(int n);
 
 };

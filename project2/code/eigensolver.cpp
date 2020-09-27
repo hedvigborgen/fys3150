@@ -28,27 +28,53 @@ void Eigensolver::initialize(int n){
    eig_sym(m_init_eigval, m_init_eigvec, m_A);
 }
 
+void Eigensolver::max_len(int n){
+  m_k = 0;
+  m_l = 0;
+  m_max_off_d = 0;
 
-void Eigensolver::jacobi(){
-
-}
-
-// Finding the sum of the non-diagonal elements of A
-void Eigensolver::off_d(){
-  double sum_d = 0;
   for (int i = 0; i < n; i++){
-    sum_d += A(i,i)
+    for (int j = 0; j < n; i++){
+      if (abs(m_A(i,j)) > m_max_off_d && i != j){
+        m_max_off_d = abs(m_A(i, j));
+        m_k = i;
+        m_l = j;
+      }
+    }
   }
-
-  m_off_d = accu(A) - sum_d
-
 }
 
-void Eigensolver::diagonalize(){
-  double eps = 1.0e-8;
 
-  while (m_off_d > eps){
-    jacobi()
-    off_d()
+
+void Eigensolver::rotation(int n){
+
+  double tau = (m_A(m_l,m_l) - m_A(m_k,m_k))/(2*m_A(m_k,m_l));
+  if (tau > 0){
+    double t = -tau - sqrt(1 + tau);
+  }
+  else {
+    double t = -tau + sqrt(1 + tau);
+  }
+  double c = 1/sqrt(1 + pow(t,2));
+  double s = c*t;
+
+  //m_A(i,i) = m_A(i,i);
+  for (int i = 0; i < n; i++){
+    m_A(i,m_k) = m_A(i,m_k)*c - m_A(i,m_l)*s;
+    m_A(i,m_l) = m_A(i,m_l)*c + m_A(i,m_k)*s;
+    m_A(m_k,m_k) = m_A(m_k,m_k)*pow(c,2) - 2*m_A(m_k,m_l)*c*s + m_A(m_l,m_l)*pow(s,2);
+    m_A(m_l,m_l) = m_A(m_l,m_l)*pow(c,2) + 2*m_A(m_k,m_l)*c*s + m_A(m_k,m_k)*pow(s,2);
+    m_A(m_k,m_l) = (m_A(m_k,m_k) - m_A(m_l,m_l))*c*s + m_A(m_k,m_l)*(pow(c,2) - pow(s,2))
+  }
+}
+
+
+void Eigensolver::diagonalize(int n){
+  double eps = 1.0e-8;
+  m_max_off_d = 100;
+
+  while (m_max_off_d > eps){
+    max_len(n)
+    rotation(n)
   }
 }

@@ -10,12 +10,10 @@ int main(int argc, char *argv[]) {
   Eigensolver solver;
 
   int n = atoi(argv[1]);
-  double rho;
-  double omega;
 
   if (argc == 2){
-    rho = 0;
-    omega = 0;
+    double rho = 0;
+    double omega = 0;
   }
 
   else {
@@ -27,7 +25,7 @@ int main(int argc, char *argv[]) {
 
   solver.V(rho, omega);
   solver.initialize(n);
-  solver.diagonalize();
+  solver.diagonalize(n);
 
   return 0;
 }
