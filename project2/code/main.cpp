@@ -7,25 +7,25 @@ using namespace arma;
 
 
 int main(int argc, char *argv[]) {
-  Eigensolver solver;
 
   int n = atoi(argv[1]);
-
+  double rho;
+  double omega;
   if (argc == 2){
-    double rho = 0;
-    double omega = 0;
+    rho = 0;
+    omega = 0;
   }
 
   else {
-    double rho = atoi(argv[2]);
-    double omega = atoi(argv[3]);
+    rho = atoi(argv[2]);
+    omega = atoi(argv[3]);
       }
 
-
-
+Eigensolver solver;
   solver.V(rho, omega);
   solver.initialize(n);
-  solver.diagonalize(n);
+  solver.diagonalize(n, solver.m_A);
+
 
   return 0;
 }
