@@ -1,30 +1,37 @@
 #include "project2.hpp"
-#include <iostream>
-#include <armadillo>
-
-using namespace std;
-using namespace arma;
 
 
 int main(int argc, char *argv[]) {
 
-  int n = atoi(argv[1]);
-  double rho;
-  double omega;
+double rho_max;
+Eigensolver solver;
+
   if (argc == 2){
-    rho = 0;
-    omega = 0;
+    cout << "Running program for potential V = 0." << endl;
+    solver.m_n = atoi(argv[1]);
+    rho_max = 0;
+    solver.initialize(rho_max);
+    solver.diagonalize(solver.m_A);
+  }
+
+  else if (argc == 3){
+    solver.m_n = atoi(argv[1]);
+    rho_max = atoi(argv[2]);
+    solver.initialize(rho_max);
+    solver.diagonalize(solver.m_A);
   }
 
   else {
-    rho = atoi(argv[2]);
-    omega = atoi(argv[3]);
-      }
+    cout << "Number of arguments not valid." << endl;
+    cout << "Enter n:" << endl;
+    cin >> solver.m_n;
+    cout << "Enter rho_max:" << endl;
+    cin >> rho_max;
 
-Eigensolver solver;
-  solver.V(rho, omega);
-  solver.initialize(n);
-  solver.diagonalize(n, solver.m_A);
+    solver.initialize(rho_max);
+    solver.diagonalize(solver.m_A);
+    solver.print();
+  }
 
 
   return 0;

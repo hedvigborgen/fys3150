@@ -1,14 +1,13 @@
 #include "project2.hpp"
-#include <iostream>
-#include <armadillo>
 
-using namespace std;
-using namespace arma;
 
 int main (){
 
-// Initializing
- int n = 3;
+Eigensolver solver;
+
+// Initializing test matrix
+ solver.m_n = 3;
+ int n = solver.m_n;
  double rho = 0;
  double omega = 0;
 
@@ -22,8 +21,7 @@ int main (){
  int max_val = A(1,0);
 
 // Finding indexes for maximum value using class function max_val
-Eigensolver solver;
-solver.max_val(n, A);
+solver.max_val(A);
 
 // TEST 1: Testing if correct maximum value is found by class function max_val
  if (A(solver.m_k, solver.m_l) ==  max_val){
@@ -45,7 +43,7 @@ mat eigvec;
 eig_sym(eigval, eigvec, A);
 
 // Finding new eigenvalues & -vectors
-solver.diagonalize(n, A);
+solver.diagonalize(A);
 
 // Defining the initial eigenvalues
 double i_val1, i_val2, i_val3;
@@ -60,7 +58,7 @@ val2 = solver.m_eigval(1);
 val3 = solver.m_eigval(2);
 
 // TEST 2: Testing if eigenvalues are preserved
-double eps = 1;
+double eps = 1e-8;
 if (abs(val1 - i_val1) < eps && abs(val2 - i_val2) < eps && abs(val3 - i_val3) < eps){
   cout << "Eigenvalues are preserved." << endl;
  }
@@ -68,6 +66,7 @@ if (abs(val1 - i_val1) < eps && abs(val2 - i_val2) < eps && abs(val3 - i_val3) <
   cout << "Eigenvalues are NOT preserved." << endl;
  }
 
+//solver.print_test();
 
   return 0;
 }
