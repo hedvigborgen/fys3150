@@ -1,4 +1,4 @@
-#include "project2.hpp"
+#include "eigensolver.hpp"
 
 
 // Defining the potential V(x)

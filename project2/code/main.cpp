@@ -1,4 +1,4 @@
-#include "project2.hpp"
+#include "eigensolver.hpp"
 
 
 int main(int argc, char *argv[]) {
