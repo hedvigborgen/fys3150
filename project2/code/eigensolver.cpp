@@ -10,16 +10,15 @@
 // }
 
 // Defining the initial matrix and finding eigenvalues & -vectors
-void Eigensolver::initialize(double rho_max){
+void Eigensolver::initialize(double rho_max, double omega_r){
   double h, d, a;
   m_lambda = vec(m_n); // Array for analytical eigenvalues
+  m_A = mat(m_n,m_n).fill(0.0);
 
-  if (rho_max == 0){
+  if (rho_max == 0 && omega_r == 0){
     h = 1.0/(m_n+1);
     d = 2.0/(h*h);
     a = -1.0/(h*h);
-
-    m_A = mat(m_n,m_n).fill(0.0);
     m_A(0,0) = d;
 
     for (int i = 1; i < m_n; i++){
@@ -30,16 +29,14 @@ void Eigensolver::initialize(double rho_max){
     }
   }
 
-  else {
+  else if(rho_max != 0 && omega_r == 0){
     h = rho_max/(m_n+1);
-
     d = 2.0/(h*h);
     a = -1.0/(h*h);
-    m_A = mat(m_n,m_n).fill(0.0);
     m_A(0,0) = d + h*h;
 
     for (int i = 1; i < m_n; i++){
-      m_V = pow((i+1)*h, 2);
+      m_V = pow((i+1)*h,2);
       m_A(i,i) = d + m_V;
       m_A(i-1,i) = a;
       m_A(i,i-1) = a;
@@ -49,6 +46,24 @@ void Eigensolver::initialize(double rho_max){
     m_lambda(0) = 3;
     for (int j = 1; j < m_n; j++){
       m_lambda(j) = 4 + m_lambda(j-1);
+    }
+  }
+
+  else if(rho_max != 0 && omega_r != 0){
+    h = rho_max/(m_n+1);
+    d = 2.0/(h*h);
+    a = -1.0/(h*h);
+    m_A(0,0) = d + h*h;
+
+    for (int i = 1; i < m_n; i++){
+      m_V = omega_r*omega_r*pow((i+1)*h,2) + 1/(i*h);
+      m_A(i,i) = d + m_V;
+      m_A(i-1,i) = a;
+      m_A(i,i-1) = a;
+    }
+    m_lambda(0) = 0;
+    for (int j = 1; j < m_n; j++){
+      m_lambda(j) = 0;
     }
   }
 
