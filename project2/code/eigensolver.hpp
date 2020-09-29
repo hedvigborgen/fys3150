@@ -26,8 +26,9 @@ class Eigensolver{
     void rotation(mat A);
     void max_val(mat A);
     void diagonalize(mat A);
-    void print();
+    void print_count();
+    void print_eigvals();
     void print_test();
-    void diff();
+    void difference();
 
 };
