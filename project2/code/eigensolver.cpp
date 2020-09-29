@@ -11,12 +11,14 @@
 
 // Defining the initial matrix and finding eigenvalues & -vectors
 void Eigensolver::initialize(double rho_max){
-  double h;
+  double h, d, a;
+  m_lambda = vec(m_n); // Array for analytical eigenvalues
+
   if (rho_max == 0){
     h = 1.0/(m_n+1);
+    d = 2.0/(h*h);
+    a = -1.0/(h*h);
 
-    double d = 2.0/(h*h);
-    double a = -1.0/(h*h);
     m_A = mat(m_n,m_n).fill(0.0);
     m_A(0,0) = d;
 
@@ -24,14 +26,15 @@ void Eigensolver::initialize(double rho_max){
       m_A(i,i) = d;
       m_A(i-1,i) = a;
       m_A(i,i-1) = a;
+      m_lambda(i-1) = d + 2*a*cos(i*M_PI/(m_n+1));
     }
   }
 
   else {
     h = rho_max/(m_n+1);
 
-    double d = 2.0/(h*h);
-    double a = -1.0/(h*h);
+    d = 2.0/(h*h);
+    a = -1.0/(h*h);
     m_A = mat(m_n,m_n).fill(0.0);
     m_A(0,0) = d + h*h;
 
@@ -41,7 +44,15 @@ void Eigensolver::initialize(double rho_max){
       m_A(i-1,i) = a;
       m_A(i,i-1) = a;
     }
+
+    // Computing the analytical eigenvalues
+    m_lambda(0) = 3;
+    for (int j = 1; j < m_n; j++){
+      m_lambda(j) = 4 + m_lambda(j-1);
+    }
   }
+
+// Finding initial numerical eigenvalues
   eig_sym(m_init_eigval, m_init_eigvec, m_A);
 }
 
@@ -121,21 +132,46 @@ void Eigensolver::diagonalize(mat A){
     m_count += 1;
   }
 
-// Finding eigenvalues & -vectors
+// Finding new numerical eigenvalues & -vectors
   eig_sym(m_eigval, m_eigvec, m_A);
 }
 
 void Eigensolver::print(){
   cout << "Number of iterations needed for diagonalization: " << m_count << endl;
+
   if (m_n <= 10){
-    cout << "Initial eigenvalues: " << endl << m_init_eigval << endl;
-    cout << "New eigenvalues: " << endl << m_eigval << endl;
+    //cout << "Initial eigenvalues: " << endl << m_init_eigval << endl;
+    cout << "Numerical eigenvalues: " << endl << m_eigval << endl;
+    cout << "Analytical eigenvalues:" << endl << m_lambda << endl;
+  }
+
+  else {
+    cout << "First 10 numerical eigenvalues: " << endl;
+    for (int i = 0; i < 10; i++){
+      cout << m_eigval(i) << endl;
+    }
+
+    cout << "First 10 analytical eigenvalues:"<< endl;
+    for (int i = 0; i < 10; i++){
+      cout << m_lambda(i) << endl;
+    }
   }
 }
 
 void Eigensolver::print_test(){
   cout << "Number of iterations needed for diagonalization: " << m_count << endl;
-  if (m_n <= 10){
-    cout << "Eigenvalues: " << endl << m_eigval << endl;
+  cout << "Eigenvalues: " << endl << m_eigval << endl;
+}
+
+void Eigensolver::diff(){
+  vec diff = vec(m_n);
+  double sum = 0;
+  //sorter m_lambda
+
+  for (int i = 0; i < m_n; i++){
+      diff(i) = abs(m_lambda(i) - m_eigval(i));
+      sum += diff(i);
   }
+  double mean_diff = sum/m_n;
+  cout << mean_diff << endl;
 }

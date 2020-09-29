@@ -9,5 +9,6 @@ int main(int argc, char *argv[]) {
   solver.initialize(rho_max);
   solver.diagonalize(solver.m_A);
   solver.print();
+  //solver.diff();
   return 0;
 }

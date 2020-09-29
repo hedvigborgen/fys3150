@@ -1,4 +1,5 @@
 #include <iostream>
+#include <math.h>
 #include <armadillo>
 
 using namespace std;
@@ -12,6 +13,7 @@ class Eigensolver{
     mat m_eigvec;
     double m_V;
     int m_count;
+    vec m_lambda;
 
   public:
     int m_n;
@@ -26,5 +28,6 @@ class Eigensolver{
     void diagonalize(mat A);
     void print();
     void print_test();
+    void diff();
 
 };
