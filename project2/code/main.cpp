@@ -8,7 +8,7 @@ int main(int argc, char *argv[]) {
   double rho_max = atof(argv[2]);
   double omega_r = atof(argv[3]);
   solver.initialize(rho_max, omega_r);
-  solver.diagonalize();//solver.m_A);
+  solver.diagonalize(solver.m_A);
   solver.print();
   //solver.diff();
   return 0;

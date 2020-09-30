@@ -158,9 +158,14 @@ void Eigensolver::diagonalize() {//mat A){
   eig_sym(m_eigval, m_eigvec, m_A);
 }
 
-void Eigensolver::print(){
+// Function for printing number of iterations
+void Eigensolver::print_count(){
   cout << "Number of iterations needed for diagonalization: " << m_count << endl;
+}
 
+
+// Function for printing
+void Eigensolver::print_eigvals(){
   if (m_n <= 10){
     //cout << "Initial eigenvalues: " << endl << m_init_eigval << endl;
     cout << "Numerical eigenvalues: " << endl << m_eigval << endl;
@@ -188,18 +193,14 @@ void Eigensolver::print(){
 }
 
 void Eigensolver::print_test(){
-  cout << "Number of iterations needed for diagonalization: " << m_count << endl;
   cout << "Eigenvalues: " << endl << m_eigval << endl;
 }
 
-void Eigensolver::diff(){
-  vec diff = vec(m_n);
-  double sum = 0;
+// Finding difference between smallest analytic and numerical eigenvalue
+void Eigensolver::difference(){
+  double least = 100;
+  int index = m_lambda.index_min();
 
-  for (int i = 0; i < m_n; i++){
-      diff(i) = abs(m_lambda(i) - m_eigval(i));
-      sum += diff(i);
-  }
-  double mean_diff = sum/m_n;
-  cout << mean_diff << endl;
+  double diff = abs(m_lambda(index) - m_eigval(index));
+  cout << diff << endl;
 }
