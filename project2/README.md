@@ -78,7 +78,7 @@ Eigenvalues are preserved.                	            # Output is the result of
 ```
 
 
-## Example run 3: Ploting 
+## Example run 3: Plotting probability
 ```
 >> python3 eigenvector_QM_plot.py                           # Compiles the main script
 
