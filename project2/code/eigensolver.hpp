@@ -14,6 +14,8 @@ class Eigensolver{
     double m_V;
     int m_count;
     vec m_lambda;
+    vec m_u;
+    int m_idx;
 
   public:
     int m_n;
@@ -23,9 +25,9 @@ class Eigensolver{
     int m_l;
     //void V(double rho, double omega);
     void initialize(double rho_max, double omega_r);
-    void rotation(mat A);
-    void max_val(mat A);
-    void diagonalize(mat A);
+    void rotation();//mat A);
+    void max_val();//mat A);
+    void diagonalize();//mat A);
     void print();
     void print_test();
     void diff();

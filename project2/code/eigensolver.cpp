@@ -1,19 +1,11 @@
 #include "eigensolver.hpp"
 
-
-// Defining the potential V(x)
-// void Eigensolver::V(double rho, double omega){
-//   double m = 1;
-//   double k = m*pow(omega, 2);
-//   double alpha = 1;
-//   m_V = 0.5*k*alpha*pow(rho, 2);
-// }
-
 // Defining the initial matrix and finding eigenvalues & -vectors
 void Eigensolver::initialize(double rho_max, double omega_r){
   double h, d, a;
-  m_lambda = vec(m_n); // Array for analytical eigenvalues
   m_A = mat(m_n,m_n).fill(0.0);
+  m_lambda = vec(m_n); // Array for analytical eigenvalues
+  m_u = vec(m_n);
 
   if (rho_max == 0 && omega_r == 0){
     h = 1.0/(m_n+1);
@@ -25,9 +17,25 @@ void Eigensolver::initialize(double rho_max, double omega_r){
       m_A(i,i) = d;
       m_A(i-1,i) = a;
       m_A(i,i-1) = a;
-      m_lambda(i-1) = d + 2*a*cos(i*M_PI/(m_n+1));
+    }
+    for (int i = 0; i < m_n; i++) {
+      m_lambda(i) = d + 2*a*cos((i+1)*M_PI/(m_n+1));
+    }
+    // Finding initial numerical eigenvalues
+    eig_sym(m_init_eigval, m_init_eigvec, m_A);
+
+    m_idx = m_lambda.index_min();
+    double norm = 0.0;
+    for (int i = 0; i < m_n; i++){
+      m_u(i) = sin((i+1.0)*(m_idx+1.0)*M_PI/(m_n+1));
+      norm += m_u(i)*m_u(i);
+    }
+    norm /= sqrt(norm);
+    for (int i = 0; i < m_n; i++){
+      m_u(i) /= norm;
     }
   }
+
 
   else if(rho_max != 0 && omega_r == 0){
     h = rho_max/(m_n+1);
@@ -47,6 +55,8 @@ void Eigensolver::initialize(double rho_max, double omega_r){
     for (int j = 1; j < m_n; j++){
       m_lambda(j) = 4 + m_lambda(j-1);
     }
+  // Finding initial numerical eigenvalues
+  eig_sym(m_init_eigval, m_init_eigvec, m_A);
   }
 
   else if(rho_max != 0 && omega_r != 0){
@@ -61,24 +71,21 @@ void Eigensolver::initialize(double rho_max, double omega_r){
       m_A(i-1,i) = a;
       m_A(i,i-1) = a;
     }
-    m_lambda(0) = 0;
-    for (int j = 1; j < m_n; j++){
-      m_lambda(j) = 0;
-    }
-  }
+    m_lambda.fill(0.0);
 
-// Finding initial numerical eigenvalues
+  // Finding initial numerical eigenvalues
   eig_sym(m_init_eigval, m_init_eigvec, m_A);
+  }
 }
 
 // Finding matrix element with maximum value and its indexes
-void Eigensolver::max_val(mat A){
+void Eigensolver::max_val() {//mat A){
   m_max_off_d = 0;
 
   for (int i = 0; i < m_n; i++){
     for (int j = 0; j < m_n; j++){
-      if (abs(A(i,j)) > m_max_off_d && i != j){
-        m_max_off_d = abs(A(i, j));
+      if (abs(m_A(i,j)) > m_max_off_d && i != j){
+        m_max_off_d = abs(m_A(i, j));
         m_k = i;
         m_l = j;
       }
@@ -88,8 +95,8 @@ void Eigensolver::max_val(mat A){
 
 
 // Performing the rotation
-void Eigensolver::rotation(mat A){
-  m_A = A;
+void Eigensolver::rotation() {//mat A){
+  //m_A = A;
   double tau = (m_A(m_l,m_l) - m_A(m_k,m_k))/(2*m_A(m_k,m_l));
   double s, c;
   if (m_A(m_k, m_l) != 0){
@@ -135,15 +142,15 @@ void Eigensolver::rotation(mat A){
   }
 
 // Performing the diagonalization
-void Eigensolver::diagonalize(mat A){
-  m_A = A;
+void Eigensolver::diagonalize() {//mat A){
+  //m_A = A;
   double eps = 1.0e-8;
   m_max_off_d = 100;
   m_count = 0;
 
   while (m_max_off_d > eps){
-    max_val(m_A);
-    rotation(m_A);
+    max_val();//m_A);
+    rotation();//m_A);
     m_count += 1;
   }
 
@@ -158,6 +165,13 @@ void Eigensolver::print(){
     //cout << "Initial eigenvalues: " << endl << m_init_eigval << endl;
     cout << "Numerical eigenvalues: " << endl << m_eigval << endl;
     cout << "Analytical eigenvalues:" << endl << m_lambda << endl;
+    cout << "Numerical eigenvector for the lowest eigenvalue:" << endl;
+    for (int i = 0; i < m_n; i++){
+      cout << "  " << m_init_eigvec(i,0) << endl;
+    }
+    cout << " " << endl;
+    cout << "Analytical eigenvector for the lowest eigenvalue" << endl << m_u << endl;
+
   }
 
   else {
@@ -181,7 +195,6 @@ void Eigensolver::print_test(){
 void Eigensolver::diff(){
   vec diff = vec(m_n);
   double sum = 0;
-  //sorter m_lambda
 
   for (int i = 0; i < m_n; i++){
       diff(i) = abs(m_lambda(i) - m_eigval(i));
