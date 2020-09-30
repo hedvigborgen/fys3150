@@ -28,7 +28,6 @@ class Eigensolver{
     void diagonalize(mat A);
     void print_count();
     void print_eigvals();
-    void print_testeigvals();
     void difference();
     void eigenvecs();
 

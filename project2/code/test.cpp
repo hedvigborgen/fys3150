@@ -18,20 +18,18 @@ Eigensolver solver;
  A(1,2) = 2;
 
 // Maximum value of matrix elements
- int max_val = A(1,0);
+int max = A(1,0);
 
 // Finding indexes for maximum value using class function max_val
 solver.max_val(A);
 
 // TEST 1: Testing if correct maximum value is found by class function max_val
- if (A(solver.m_k, solver.m_l) ==  max_val){
+ if (A(solver.m_k, solver.m_l) ==  max){
    cout << "Correct maximum value found." << endl;
  }
  else {
    cout << "Correct maximum value NOT found." << endl;
  }
-
-
 
 // Initializing class variables
 solver.m_k = 0;
@@ -57,6 +55,7 @@ val1 = solver.m_eigval(0);
 val2 = solver.m_eigval(1);
 val3 = solver.m_eigval(2);
 
+
 // TEST 2: Testing if eigenvalues are preserved
 double eps = 1e-8;
 if (abs(val1 - i_val1) < eps && abs(val2 - i_val2) < eps && abs(val3 - i_val3) < eps){
@@ -66,7 +65,5 @@ if (abs(val1 - i_val1) < eps && abs(val2 - i_val2) < eps && abs(val3 - i_val3) <
   cout << "Eigenvalues are NOT preserved." << endl;
  }
 
-//solver.print_testeigvals();
-
-  return 0;
+return 0;
 }

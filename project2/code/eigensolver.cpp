@@ -1,5 +1,6 @@
 #include "eigensolver.hpp"
 
+
 // Defining the initial matrix and finding eigenvalues & -vectors
 void Eigensolver::initialize(double rho_max, double omega_r){
   double h, d, a;
@@ -83,6 +84,7 @@ void Eigensolver::initialize(double rho_max, double omega_r){
 
 // Finding matrix element with maximum value and its indexes
 void Eigensolver::max_val(mat A){
+  m_A = A;
   m_max_off_d = 0;
 
   for (int i = 0; i < m_n; i++){
@@ -185,11 +187,6 @@ void Eigensolver::print_eigvals(){
       cout << m_lambda(i) << endl;
     }
   }
-}
-
-
-void Eigensolver::print_testeigvals(){
-  cout << "Eigenvalues: " << endl << m_eigval << endl;
 }
 
 

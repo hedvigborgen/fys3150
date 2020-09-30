@@ -12,7 +12,7 @@ int main(int argc, char *argv[]) {
   solver.diagonalize(solver.m_A);
 
 
-  // Printing numerical and analytical eigenvalues
+  // Printing eigenvalues
   if (strcmp(argv[4], "eigvals") == 0){
   solver.print_eigvals();
   }
