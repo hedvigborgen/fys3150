@@ -1,5 +1,5 @@
 # Computational Physics, Project 2 
-## Title
+## Jacobi's method for solving differential equations
 
 Kamilla Ida Julie Sulebakk, Hedvig Borgen Reiersrud and Andrea Jensen Marthinussen
 
@@ -74,7 +74,7 @@ python3 eigenvector_QM_plot.py
 >> make all_test                                            # Compiles and executes the script containing unit tests
 
 <<  Correct maximum value found.
-Eigenvalues are preserved.                	                # Output is the result of the unit tests
+Eigenvalues are preserved.                	            # Output is the result of the unit tests
 ```
 
 
