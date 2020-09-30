@@ -17,31 +17,31 @@ omega_r = np.array([0.01, 0.5, 1.0, 5.0])
 def f(filename):
     infile = open(filename, 'r')
     lines = infile.readlines()
-    u_i = np.zeros(n)
+    psi_i = np.zeros(n)
     for i in range(n):
-        u_i[i] = float(lines[i])
+        psi_i[i] = float(lines[i])
     infile.close()
-    return u_i
+    return psi_i
 
 
-u = np.zeros((len(omega_r), n))
+psi = np.zeros((len(omega_r), n))
 i = 0
 for omega in omega_r:
     outfile = open(f'../output/eigvec_omega{omega}.txt', 'wb')
     subprocess.call(['./main.exe', str(n), str(rho_max), str(omega), 'ploteig'], stdout=outfile)
     outfile.close()
 
-    u[i] = f(f'../output/eigvec_omega{omega}.txt')
+    psi[i] = f(f'../output/eigvec_omega{omega}.txt')
     i += 1
 
 rho = np.linspace(0, 1, n)
 fig, ax = plt.subplots()
-ax.plot(rho, abs(u[0]), color='#666699', label='$\omega_r = 0.01$')
-ax.plot(rho, abs(u[1]), color='#DB7093', label='$\omega_r = 0.5$')
-ax.plot(rho, abs(u[2]), color='#BC8F8F', label='$\omega_r = 1.0$')
-ax.plot(rho, abs(u[3]), color='#A52A2A', label='$\omega_r = 5.0$')
+ax.plot(rho, abs(psi[0]), color='#666699', label='$\omega_r = 0.01$')
+ax.plot(rho, abs(psi[1]), color='#DB7093', label='$\omega_r = 0.5$')
+ax.plot(rho, abs(psi[2]), color='#BC8F8F', label='$\omega_r = 1.0$')
+ax.plot(rho, abs(psi[3]), color='#A52A2A', label='$\omega_r = 5.0$')
 plt.legend()
 ax.set_xlabel(r'$\rho$')
-ax.set_ylabel(r'$u(\rho)$')
-ax.set_title(r'$u(\rho)$ for matrix of size $n$ = {} with various $\omega_r$'.format(n))
+ax.set_ylabel(r'$\psi(\rho)$')
+ax.set_title(r'$\psi(\rho)$ for matrix of size $n$ = {} with various $\omega_r$'.format(n))
 fig.savefig(f'../plots/resultsQM.pdf')

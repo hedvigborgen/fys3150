@@ -12,17 +12,8 @@ int main(int argc, char *argv[]) {
   solver.diagonalize(solver.m_A);
 
 
-  // Printing initial eigenvalues
-  if (strcmp(argv[4], "eigvals") == 0){
-  solver.print_eigvals(omega_r);
-  }
-
-  else if (strcmp(argv[4], "eigvecs") == 0){
-  solver.compare_eigvecs(rho_max);
-  }
-
   // Printing number of iterations
-  else if (strcmp(argv[4], "count") == 0){
+  if (strcmp(argv[4], "count") == 0){
     solver.print_count();
   }
 
@@ -36,9 +27,14 @@ int main(int argc, char *argv[]) {
     solver.eigenvecs(rho_max, omega_r);
   }
 
+  // Printing initial eigenvalues
+  else if (strcmp(argv[4], "eigvals") == 0){
+  solver.print_eigvals(omega_r);
+  }
+
   // Compare eigenvectors
-  else if (strcmp(argv[4], "compeig") == 0){
-    solver.compare_eigvecs(rho_max);
+  else if (strcmp(argv[4], "eigvecs") == 0){
+  solver.compare_eigvecs(rho_max);
   }
 
   return 0;
