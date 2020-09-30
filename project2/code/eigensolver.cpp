@@ -5,7 +5,7 @@ void Eigensolver::initialize(double rho_max, double omega_r){
   double h, d, a;
   m_A = mat(m_n,m_n).fill(0.0);
   m_lambda = vec(m_n); // Array for analytical eigenvalues
-  m_u = vec(m_n);
+  m_u = vec(m_n); //  Array for analytical eigenvectors
 
   if (rho_max == 0 && omega_r == 0){
     h = 1.0/(m_n+1);
@@ -18,10 +18,12 @@ void Eigensolver::initialize(double rho_max, double omega_r){
       m_A(i-1,i) = a;
       m_A(i,i-1) = a;
     }
+
     for (int i = 0; i < m_n; i++) {
       m_lambda(i) = d + 2*a*cos((i+1)*M_PI/(m_n+1));
     }
-    // Finding initial numerical eigenvalues
+
+    // Finding initial numerical eigenvalues and eigenvectors
     eig_sym(m_init_eigval, m_init_eigvec, m_A);
 
     int idx = m_lambda.index_min();
@@ -55,6 +57,7 @@ void Eigensolver::initialize(double rho_max, double omega_r){
     for (int j = 1; j < m_n; j++){
       m_lambda(j) = 4 + m_lambda(j-1);
     }
+
   // Finding initial numerical eigenvalues
   eig_sym(m_init_eigval, m_init_eigvec, m_A);
   }
@@ -71,7 +74,7 @@ void Eigensolver::initialize(double rho_max, double omega_r){
       m_A(i-1,i) = a;
       m_A(i,i-1) = a;
     }
-    m_lambda.fill(0.0);
+    //m_lambda.fill(0.0);
 
   // Finding initial numerical eigenvalues
   eig_sym(m_init_eigval, m_init_eigvec, m_A);
@@ -102,11 +105,9 @@ void Eigensolver::rotation(mat A){
   if (m_A(m_k, m_l) != 0){
     double t;
     if (tau > 0){
-      //t = -tau - sqrt(1 + pow(tau, 2));
       t = 1/(tau+sqrt(1+pow(tau,2)));
     }
     else {
-      //t = -tau + sqrt(1 + pow(tau, 2));
       t = 1/(tau-sqrt(1+pow(tau,2)));
     }
 
@@ -141,6 +142,7 @@ void Eigensolver::rotation(mat A){
     }
   }
 
+
 // Performing the diagonalization
 void Eigensolver::diagonalize(mat A){
   m_A = A;
@@ -158,25 +160,18 @@ void Eigensolver::diagonalize(mat A){
   eig_sym(m_eigval, m_eigvec, m_A);
 }
 
+
 // Function for printing number of iterations
 void Eigensolver::print_count(){
   cout << "Number of iterations needed for diagonalization: " << m_count << endl;
 }
 
 
-// Function for printing
+// Function for printing eigenvalues
 void Eigensolver::print_eigvals(){
   if (m_n <= 10){
-    //cout << "Initial eigenvalues: " << endl << m_init_eigval << endl;
     cout << "Numerical eigenvalues: " << endl << m_eigval << endl;
     cout << "Analytical eigenvalues:" << endl << m_lambda << endl;
-    cout << "Numerical eigenvector for the lowest eigenvalue:" << endl;
-    for (int i = 0; i < m_n; i++){
-      cout << "  " << m_init_eigvec(i,0) << endl;
-    }
-    cout << " " << endl;
-    cout << "Analytical eigenvector for the lowest eigenvalue" << endl << m_u << endl;
-
   }
 
   else {
@@ -192,9 +187,11 @@ void Eigensolver::print_eigvals(){
   }
 }
 
-void Eigensolver::print_test(){
+
+void Eigensolver::print_testeigvals(){
   cout << "Eigenvalues: " << endl << m_eigval << endl;
 }
+
 
 // Finding difference between smallest analytic and numerical eigenvalue
 void Eigensolver::difference(){
@@ -203,4 +200,12 @@ void Eigensolver::difference(){
 
   double diff = abs(m_lambda(index) - m_eigval(index));
   cout << diff << endl;
+}
+
+
+void Eigensolver::eigenvecs(){
+  for (int i = 0; i < m_n; i++){
+    cout << m_init_eigvec(i,0) << endl;
+  }
+  cout << m_u << endl;
 }

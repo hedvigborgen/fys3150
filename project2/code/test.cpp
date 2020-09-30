@@ -66,7 +66,7 @@ if (abs(val1 - i_val1) < eps && abs(val2 - i_val2) < eps && abs(val3 - i_val3) <
   cout << "Eigenvalues are NOT preserved." << endl;
  }
 
-//solver.print_test();
+//solver.print_testeigvals();
 
   return 0;
 }
