@@ -52,12 +52,7 @@ double val1, val2, val3;
 val1 = solver.m_val(0);
 val2 = solver.m_val(1);
 val3 = solver.m_val(2);
-// vec new_val;
-// mat new_vec;
-// eig_sym(new_val, new_vec, solver.m_A);
-// val1 = new_val(0);
-// val2 = new_val(1);
-// val3 = new_val(2);
+
 
 // TEST 2: Testing if eigenvalues are preserved
 double eps = 1e-8;
