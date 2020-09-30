@@ -79,7 +79,7 @@ void Eigensolver::initialize(double rho_max, double omega_r){
 }
 
 // Finding matrix element with maximum value and its indexes
-void Eigensolver::max_val() {//mat A){
+void Eigensolver::max_val(mat A)
   m_max_off_d = 0;
 
   for (int i = 0; i < m_n; i++){
@@ -95,8 +95,8 @@ void Eigensolver::max_val() {//mat A){
 
 
 // Performing the rotation
-void Eigensolver::rotation() {//mat A){
-  //m_A = A;
+void Eigensolver::rotation(mat A)
+  m_A = A;
   double tau = (m_A(m_l,m_l) - m_A(m_k,m_k))/(2*m_A(m_k,m_l));
   double s, c;
   if (m_A(m_k, m_l) != 0){
@@ -142,15 +142,15 @@ void Eigensolver::rotation() {//mat A){
   }
 
 // Performing the diagonalization
-void Eigensolver::diagonalize() {//mat A){
-  //m_A = A;
+void Eigensolver::diagonalize(mat A)
+  m_A = A;
   double eps = 1.0e-8;
   m_max_off_d = 100;
   m_count = 0;
 
   while (m_max_off_d > eps){
-    max_val();//m_A);
-    rotation();//m_A);
+    max_val(m_A);
+    rotation(m_A);
     m_count += 1;
   }
 

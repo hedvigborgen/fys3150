@@ -9,7 +9,6 @@ int main(int argc, char *argv[]) {
   double omega_r = atof(argv[3]);
   solver.initialize(rho_max, omega_r);
   solver.diagonalize(solver.m_A);
-  solver.print();
-  //solver.diff();
+  solver.difference();
   return 0;
 }

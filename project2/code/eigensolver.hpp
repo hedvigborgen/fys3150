@@ -15,7 +15,6 @@ class Eigensolver{
     int m_count;
     vec m_lambda;
     vec m_u;
-    int m_idx;
 
   public:
     int m_n;
