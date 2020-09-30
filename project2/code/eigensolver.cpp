@@ -3,8 +3,9 @@
 
 // Defining the initial matrix and finding eigenvalues & -vectors
 void Eigensolver::initialize(double rho_max, double omega_r){
+
   double h, d, a;
-  m_A = mat(m_n,m_n).fill(0.0);
+  m_A = mat(m_n,m_n).fill(0.0); // Initial matrix A
   m_lambda = vec(m_n); // Array for analytical eigenvalues
   m_u = vec(m_n); //  Array for analytical eigenvectors
 
@@ -20,13 +21,12 @@ void Eigensolver::initialize(double rho_max, double omega_r){
       m_A(i,i-1) = a;
     }
 
+    // Computing initial analytical eigenvalues
     for (int i = 0; i < m_n; i++) {
       m_lambda(i) = d + 2*a*cos((i+1)*M_PI/(m_n+1));
     }
 
-    // Finding initial numerical eigenvalues and eigenvectors
-    eig_sym(m_init_eigval, m_init_eigvec, m_A);
-
+    // Computing initial analytical eigenvectors
     int idx = m_lambda.index_min();
     double norm = 0.0;
     for (int i = 0; i < m_n; i++){
@@ -37,10 +37,16 @@ void Eigensolver::initialize(double rho_max, double omega_r){
     for (int i = 0; i < m_n; i++){
       m_u(i) /= norm;
     }
+
+    // Finding initial numerical eigenvalues and eigenvectors
+    eig_sym(m_init_eigval, m_init_eigvec, m_A);
+    m_eigval = m_init_eigval;
+    m_eigvec = m_init_eigvec;
   }
 
 
   else if(rho_max != 0 && omega_r == 0){
+
     h = rho_max/(m_n+1);
     d = 2.0/(h*h);
     a = -1.0/(h*h);
@@ -53,17 +59,20 @@ void Eigensolver::initialize(double rho_max, double omega_r){
       m_A(i,i-1) = a;
     }
 
-    // Computing the analytical eigenvalues
+    // Computing initial analytical eigenvalues
     m_lambda(0) = 3;
     for (int j = 1; j < m_n; j++){
       m_lambda(j) = 4 + m_lambda(j-1);
     }
 
-  // Finding initial numerical eigenvalues
+  // Finding initial numerical eigenvalues and eigenvectors
   eig_sym(m_init_eigval, m_init_eigvec, m_A);
+  m_eigval = m_init_eigval;
+  m_eigvec = m_init_eigvec;
   }
 
   else if(rho_max != 0 && omega_r != 0){
+
     h = rho_max/(m_n+1);
     d = 2.0/(h*h);
     a = -1.0/(h*h);
@@ -75,10 +84,11 @@ void Eigensolver::initialize(double rho_max, double omega_r){
       m_A(i-1,i) = a;
       m_A(i,i-1) = a;
     }
-    //m_lambda.fill(0.0);
 
   // Finding initial numerical eigenvalues
   eig_sym(m_init_eigval, m_init_eigvec, m_A);
+  m_eigval = m_init_eigval;
+  m_eigvec = m_init_eigvec;
   }
 }
 
@@ -131,7 +141,7 @@ void Eigensolver::rotation(mat A){
   m_A(m_k,m_l) = 0.0;
   m_A(m_l,m_k) = 0.0;
 
-
+  double v_ik, v_il;
   for (int i = 0; i < m_n; i++){
     if (i != m_k && i != m_l){
       Aik = m_A(i,m_k);
@@ -141,6 +151,13 @@ void Eigensolver::rotation(mat A){
       m_A(i,m_l) = Ail*c + Aik*s;
       m_A(m_l,i) = m_A(i, m_l);
       }
+
+    // Updating the numerical eigenvectors
+    v_ik = m_eigvec(i,m_k);
+    v_il = m_eigvec(i,m_l);
+
+    m_eigvec(i,m_k) = c*v_ik - s*v_il;
+    m_eigvec(i,m_l) = c*v_il + s*v_ik;
     }
   }
 
@@ -159,7 +176,7 @@ void Eigensolver::diagonalize(mat A){
   }
 
 // Finding new numerical eigenvalues & -vectors
-  eig_sym(m_eigval, m_eigvec, m_A);
+  eig_sym(m_val, m_vec, m_A);
 }
 
 
@@ -172,20 +189,30 @@ void Eigensolver::print_count(){
 // Function for printing eigenvalues
 void Eigensolver::print_eigvals(){
   if (m_n <= 10){
-    cout << "Numerical eigenvalues: " << endl << m_eigval << endl;
+    cout << "Numerical eigenvalues: " << endl << m_init_eigval << endl;
     cout << "Analytical eigenvalues:" << endl << m_lambda << endl;
   }
 
   else {
     cout << "First 10 numerical eigenvalues: " << endl;
     for (int i = 0; i < 10; i++){
-      cout << m_eigval(i) << endl;
+      cout << m_init_eigval(i) << endl;
     }
 
     cout << "First 10 analytical eigenvalues:"<< endl;
     for (int i = 0; i < 10; i++){
       cout << m_lambda(i) << endl;
     }
+  }
+}
+
+// Comparing eigenvectors
+void Eigensolver::compare_eigvecs(double rho_max){
+  cout << "Updated numerical eigenvectors: " << endl << m_eigvec << endl; // Updated numerical eigenvectors
+  cout << "New numerical eigenvectors: " << endl << m_vec << endl; // New found numerical eigenvectors
+  cout << "Initial numerical eigenvectors: " << endl << m_init_eigvec << endl; // Initial numerical eigenvectors
+  if (rho_max == 0){
+    cout << "Inital analytical eigenvectors: " << endl << m_u << endl; // Initial analytical eigenvector for least eigenvalue
   }
 }
 
@@ -199,7 +226,7 @@ void Eigensolver::difference(){
   cout << diff << endl;
 }
 
-
+// Printing initial eigenvectors for eigenvector_plot.py
 void Eigensolver::eigenvecs(){
   for (int i = 0; i < m_n; i++){
     cout << m_init_eigvec(i,0) << endl;

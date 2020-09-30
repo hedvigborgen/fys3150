@@ -15,6 +15,9 @@ class Eigensolver{
     int m_count;
     vec m_lambda;
     vec m_u;
+    mat m_vec;
+    vec m_val;
+
 
   public:
     int m_n;
@@ -28,6 +31,7 @@ class Eigensolver{
     void diagonalize(mat A);
     void print_count();
     void print_eigvals();
+    void compare_eigvecs(double rho_max);
     void difference();
     void eigenvecs();
 

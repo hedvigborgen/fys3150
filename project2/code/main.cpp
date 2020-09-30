@@ -17,17 +17,21 @@ int main(int argc, char *argv[]) {
   solver.print_eigvals();
   }
 
+  else if (strcmp(argv[4], "eigvecs") == 0){
+  solver.compare_eigvecs(rho_max);
+  }
+
   // Printing number of iterations
   else if (strcmp(argv[4], "count") == 0){
     solver.print_count();
   }
 
-  // Print differences for plotting
+  // Print differences for rho_vs_diff.py
   else if (strcmp(argv[4], "plotdiff") == 0){
     solver.difference();
   }
 
-  // Printing eigenvectors for plotting
+  // Printing eigenvectors for eigenvector_plot.py
   else if (strcmp(argv[4], "ploteig") == 0){
     solver.eigenvecs();
   }
