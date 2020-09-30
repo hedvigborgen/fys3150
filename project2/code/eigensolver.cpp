@@ -192,7 +192,7 @@ void Eigensolver::print_count(){
 // Function for printing initial eigenvalues
 void Eigensolver::print_eigvals(double omega_r){
   if (m_n <= 10){
-    cout << "Numerical eigenvalues: " << endl << m_init_eigval << endl;
+    cout << "Numerical eigenvalues: " << endl << m_val << endl;
     if (omega_r == 0){
       cout << "Analytical eigenvalues:" << endl << m_lambda << endl;
     }
@@ -201,24 +201,31 @@ void Eigensolver::print_eigvals(double omega_r){
   else {
     cout << "First 10 numerical eigenvalues: " << endl;
     for (int i = 0; i < 10; i++){
-      cout << m_init_eigval(i) << endl;
+      cout << m_val(i) << endl;
+    }
+    cout << "Last 10 numerical eigenvalues: " << endl;
+    for (int i = m_n-1; i > m_n - 11; i--){
+      cout << m_val(i) << endl;
     }
     if (omega_r == 0){
       cout << "First 10 analytical eigenvalues:"<< endl;
       for (int i = 0; i < 10; i++){
         cout << m_lambda(i) << endl;
       }
+      cout << "Last 10 analytical eigenvalues: " << endl;
+      for (int i = m_n-1; i > m_n - 11; i--){
+        cout << m_lambda(i) << endl;
+      }
     }
   }
 }
-
 
 // Finding difference between smallest analytic and numerical eigenvalue
 void Eigensolver::difference(){
   double least = 100;
   int index = m_lambda.index_min();
 
-  double diff = abs(m_lambda(index) - m_eigval(index));
+  double diff = abs(m_lambda(index) - m_val(index));
   cout << diff << endl;
 }
 
