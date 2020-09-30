@@ -8,8 +8,6 @@ Eigensolver solver;
 // Initializing test matrix
  solver.m_n = 3;
  int n = solver.m_n;
- double rho = 0;
- double omega = 0;
 
  mat A = mat(n,n, fill::eye);
  A(1,0) = 3;
@@ -51,10 +49,15 @@ i_val3 = eigval(2);
 
 // Defining the new eigenvalues
 double val1, val2, val3;
-val1 = solver.m_eigval(0);
-val2 = solver.m_eigval(1);
-val3 = solver.m_eigval(2);
-
+val1 = solver.m_val(0);
+val2 = solver.m_val(1);
+val3 = solver.m_val(2);
+// vec new_val;
+// mat new_vec;
+// eig_sym(new_val, new_vec, solver.m_A);
+// val1 = new_val(0);
+// val2 = new_val(1);
+// val3 = new_val(2);
 
 // TEST 2: Testing if eigenvalues are preserved
 double eps = 1e-8;

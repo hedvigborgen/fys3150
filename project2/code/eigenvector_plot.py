@@ -10,56 +10,36 @@ plt.rc('text.latex', preamble=r'\usepackage{amsmath}')
 # Writing output to files
 # subprocess.run(['make', 'compile'])
 
-n = [5, 10, 50] #, 100, 300]
+n = [5, 10, 50, 100, 300]
+
 
 for i, e in enumerate(n):
     with open(f'../output/eigenvector{e}.txt', 'wb') as outfile:
-        subprocess.call(['./main.exe', str(e), '0', '0'], stdout=outfile)
+        subprocess.call(['./main.exe', str(e), '0', '0', "ploteig"], stdout=outfile)
 
-"""
-def f(filename):
+
+def f(filename, n):
     infile = open(filename, 'r')
     lines = infile.readlines()
-    time = str(lines[0])
-    print(time)
-    n = int(lines[1])
-    lines = lines[2:]
-
-    x = np.zeros(n)
-    y = np.zeros(n)
-
+    numerical, theoretical = np.zeros(n), np.zeros(n)
     for i in range(n):
         line = lines[i]
-        vals = line.split()
-        x[i] = float(vals[0])
-        y[i] = float(vals[1])
-
+        numerical[i] = float(line)
+    for i in range(n, 2*n):
+        line = lines[i]
+        theoretical[i-n] = float(line)
     infile.close()
-    return x, y, n
+    return numerical, theoretical
 
-for i, element in enumerate(n):
-    fname = f'../output/eigenvector{element}.txt'
-    x, y, n = f(fname)
-
+for i, e in enumerate(n):
+    fname = f'../output/eigenvector{e}.txt'
+    numerical, theoretical = f(fname, e)
+    rho = np.linspace(0, 1, e+2)
     fig, ax = plt.subplots()
-    ax.plot(x, exact(x), '--', color='#CC3366', label='Exact solution')
-    ax.plot(x, y, color='#666699', label='Numerical approximation')
+    ax.plot(rho[1:-1], theoretical, color='#666699', label='Exact solution')
+    ax.plot(rho[1:-1], numerical, '--', color='#CC3366', label='Numerical approximation')
     plt.legend()
-    ax.set_xlabel('x')
-    ax.set_ylabel('U(x)')
-    ax.set_title(r'Results versus exact solution U(x)' + '\n n = {}'.format(n))
-    fig.savefig(f'{fname}.pdf')
-
-
-fig, ax = plt.subplots()
-ax.plot(rho_max, diff, color='#CC3366')
-ax.set_title(r'Difference between smallest numerical and analytical eigenvalues for various $\rho_{\text{max}}$')
-ax.set_xlabel(r'$\rho_{\text{max}}$')
-ax.set_ylabel(r'Difference')
-fig.savefig('../output/difference.pdf')
-
-
-rho = np.linspace(0, rho_max, n+2)
-
-plot(rho[1:-1], eigvec)
-"""
+    ax.set_xlabel(r'$\rho$')
+    ax.set_ylabel(r'$u(\rho)$')
+    ax.set_title(r'Numerical and analytical results of $u(\rho)$ for matrix size $n$ = {}'.format(e))
+    fig.savefig(f'../plots/BucklingBeam_{e}.pdf')

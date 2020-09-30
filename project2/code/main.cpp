@@ -12,9 +12,9 @@ int main(int argc, char *argv[]) {
   solver.diagonalize(solver.m_A);
 
 
-  // Printing eigenvalues
+  // Printing initial eigenvalues
   if (strcmp(argv[4], "eigvals") == 0){
-  solver.print_eigvals();
+  solver.print_eigvals(omega_r);
   }
 
   else if (strcmp(argv[4], "eigvecs") == 0){
@@ -31,11 +31,15 @@ int main(int argc, char *argv[]) {
     solver.difference();
   }
 
-  // Printing eigenvectors for eigenvector_plot.py
+  // Printing eigenvectors for eigenvector_plot.py and eigenvector_QM_plot.py
   else if (strcmp(argv[4], "ploteig") == 0){
-    solver.eigenvecs();
+    solver.eigenvecs(rho_max, omega_r);
   }
 
+  // Compare eigenvectors
+  else if (strcmp(argv[4], "compeig") == 0){
+    solver.compare_eigvecs(rho_max);
+  }
 
   return 0;
 }
