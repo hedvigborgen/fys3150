@@ -1,0 +1,24 @@
+First 10 numerical eigenvalues: 
+9.86648
+39.4285
+88.5739
+157.116
+244.796
+351.279
+476.164
+618.975
+779.17
+956.144
+First 10 analytical eigenvalues:
+9.86648
+39.4285
+88.5739
+157.116
+244.796
+351.279
+476.164
+618.975
+779.17
+956.144
+Number of iterations needed for diagonalization: 4313
+5.46052e-12
