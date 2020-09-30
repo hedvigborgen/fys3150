@@ -22,14 +22,14 @@ class Eigensolver{
     vec m_eigval;
     int m_k;
     int m_l;
-    //void V(double rho, double omega);
     void initialize(double rho_max, double omega_r);
     void rotation(mat A);
     void max_val(mat A);
     void diagonalize(mat A);
     void print_count();
     void print_eigvals();
-    void print_test();
+    void print_testeigvals();
     void difference();
+    void eigenvecs();
 
 };

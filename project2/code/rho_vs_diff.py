@@ -8,8 +8,17 @@ plt.rc('text', usetex=True)
 plt.rc('text.latex', preamble=r'\usepackage{amsmath}')
 
 
+# Reading files created
+def r_file(filename):
+    infile = open(filename, 'r')
+    print(infile.readline())
+    input()
+    diff = float(infile.readline())
+    infile.close()
+    return diff
+
 # Writing output to files
-# subprocess.run(['make', 'compile'])
+subprocess.run(['make', 'compile'])
 
 n = [5, 10, 50, 100, 300]
 for nn in n:
@@ -19,25 +28,16 @@ for nn in n:
 
     for i in range(len):
         outfile = open(f'../output/differences_rho{i}_n{nn}.txt', 'wb')
-        subprocess.call(['./main.exe', str(n), str(rho_max[i]), str(omega_r)], stdout=outfile)
-        # outfile.write(stdout)
+        subprocess.call(['./main.exe', str(n), str(rho_max[i]), str(omega_r), 'plotdiff'], stdout=outfile)
         outfile.close()
-
-
-    # Reading files created
-    def read_file(filename):
-        infile = open(filename, 'r')
-        diff = float(infile.readline())
-        infile.close()
-        return diff
 
     diff = np.zeros(len)
     for i in range(len):
-        diff[i] = read_file(f'../output/differences_rho{i}_n{nn}.txt')
+        diff[i] = r_file(f'../output/differences_rho{i}_n{nn}.txt')
 
     fig, ax = plt.subplots()
     ax.plot(rho_max, diff, color='#CC3366')
-    ax.set_title(r'Difference between smallest numerical and analytical eigenvalues for various $\rho_{\text{max}}$')
+    ax.set_title(r'Difference between smallest numerical and analytical eigenvalues for various $\rho_{\text{max}}$', f' n = {nn}')
     ax.set_xlabel(r'$\rho_{\text{max}}$')
     ax.set_ylabel(r'Difference')
     fig.savefig(f'../output/difference{nn}.pdf')
