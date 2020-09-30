@@ -24,10 +24,10 @@ void Eigensolver::initialize(double rho_max, double omega_r){
     // Finding initial numerical eigenvalues
     eig_sym(m_init_eigval, m_init_eigvec, m_A);
 
-    m_idx = m_lambda.index_min();
+    int idx = m_lambda.index_min();
     double norm = 0.0;
     for (int i = 0; i < m_n; i++){
-      m_u(i) = sin((i+1.0)*(m_idx+1.0)*M_PI/(m_n+1));
+      m_u(i) = sin((i+1.0)*(idx+1.0)*M_PI/(m_n+1));
       norm += m_u(i)*m_u(i);
     }
     norm /= sqrt(norm);
@@ -79,7 +79,11 @@ void Eigensolver::initialize(double rho_max, double omega_r){
 }
 
 // Finding matrix element with maximum value and its indexes
+<<<<<<< HEAD
 void Eigensolver::max_val(mat A)
+=======
+void Eigensolver::max_val(mat A){
+>>>>>>> a807150497f6906f48206443cd8844d570f17159
   m_max_off_d = 0;
 
   for (int i = 0; i < m_n; i++){
@@ -95,7 +99,11 @@ void Eigensolver::max_val(mat A)
 
 
 // Performing the rotation
+<<<<<<< HEAD
 void Eigensolver::rotation(mat A)
+=======
+void Eigensolver::rotation(mat A){
+>>>>>>> a807150497f6906f48206443cd8844d570f17159
   m_A = A;
   double tau = (m_A(m_l,m_l) - m_A(m_k,m_k))/(2*m_A(m_k,m_l));
   double s, c;
@@ -142,7 +150,11 @@ void Eigensolver::rotation(mat A)
   }
 
 // Performing the diagonalization
+<<<<<<< HEAD
 void Eigensolver::diagonalize(mat A)
+=======
+void Eigensolver::diagonalize(mat A){
+>>>>>>> a807150497f6906f48206443cd8844d570f17159
   m_A = A;
   double eps = 1.0e-8;
   m_max_off_d = 100;
