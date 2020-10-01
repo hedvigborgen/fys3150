@@ -7,13 +7,13 @@ In this project we use Jacobi’s method to solve three second order differentia
 
 ## The project is created with:
 * C++
-  * iostream
-  * math.h
-  * armadillo
+ 	* iostream
+  	* math.h
+  	* armadillo
 * Python version: 3
 	* Numpy 
 	* Matplotlib
-  * Subprocess
+  	* Subprocess
 * LaTeX
 
 ## How to run the code:
@@ -35,9 +35,9 @@ Here;
 * omega_r is the parameter reflecting the strength of an oscillating potential;
 * method determines your output; 
 	* enter count to print number of iterations needed for diagonalization of matrix A
-  * enter plotdiff to print numerical deviation from the smallest analytic eigenvalue of A
-  * enter ploteig to print initial eigenvector for smallest eigenvalue of A
-  * enter eigvals to print initial eigenvalues of matrix A
+  	* enter plotdiff to print numerical deviation from the smallest analytic eigenvalue of A
+ 	* enter ploteig to print initial eigenvector for smallest eigenvalue of A
+  	* enter eigvals to print initial eigenvalues of matrix A
 	* enter eigvecs to print eigenvectors of matrix A computed different ways
 
 	
@@ -69,7 +69,7 @@ python3 eigenvector_QM_plot.py
                                                               diagonalization of matrix A
 ```
 
-## Example run 2: Test script
+## Example run 2: Testing script
 ```
 >> make all_test                                            # Compiles and executes the script containing unit tests
 
@@ -78,7 +78,7 @@ Eigenvalues are preserved.                	            # Output is the result of
 ```
 
 
-## Example run 3: Plotting probability
+## Example run 3: Plotting probability for the Quantum Dot problem with two electrons
 ```
 >> python3 eigenvector_QM_plot.py                           # Compiles the main script
 
