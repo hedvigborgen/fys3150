@@ -1,40 +1,13 @@
-Numerical eigenvalues: 
-   9.8027e+00
-   3.8417e+01
-   8.3524e+01
-   1.4147e+02
-   2.0756e+02
-   2.7644e+02
-   3.4253e+02
-   4.0048e+02
-   4.4558e+02
-   4.7420e+02
-
-Analytical eigenvalues:
-   9.8027e+00
-   3.8417e+01
-   8.3524e+01
-   1.4147e+02
-   2.0756e+02
-   2.7644e+02
-   3.4253e+02
-   4.0048e+02
-   4.4558e+02
-   4.7420e+02
-
-Numerical eigenvector for the lowest eigenvalue:
-  0.120131
-  0.23053
-  0.322253
-  0.387868
-  0.422061
-  0.422061
-  0.387868
-  0.322253
-  0.23053
-  0.120131
- 
-Analytical eigenvector for the lowest eigenvalue
+0.120131
+0.23053
+0.322253
+0.387868
+0.422061
+0.422061
+0.387868
+0.322253
+0.23053
+0.120131
    0.1201
    0.2305
    0.3223
@@ -46,5 +19,3 @@ Analytical eigenvector for the lowest eigenvalue
    0.2305
    0.1201
 
-Number of iterations needed for diagonalization: 154
-4.26326e-14

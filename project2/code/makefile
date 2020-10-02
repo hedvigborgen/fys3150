@@ -1,4 +1,3 @@
-all: compile execute
 all_test: test_compile execute
 
 compile:

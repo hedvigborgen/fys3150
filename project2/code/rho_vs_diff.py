@@ -35,7 +35,8 @@ for nn in n:
 
     fig, ax = plt.subplots()
     ax.plot(rho_max, diff, color='#CC3366')
-    ax.set_title(r'Difference between smallest numerical and analytical eigenvalue for various $\rho_{\text{max}}$' + ', ' + r'$n$ = {}'.format(nn))
-    ax.set_xlabel(r'$\rho_{\text{max}}$')
-    ax.set_ylabel(r'Difference')
+    ax.tick_params(axis='both', which='major', labelsize=17)
+    ax.set_title(r'Difference from analytical eigenvalue for various $\rho_{\text{max}}$, ' + r'$n$ = {}'.format(nn), fontsize=22)
+    ax.set_xlabel(r'$\rho_{\text{max}}$', fontsize=22)
+    ax.set_ylabel(r'Difference', fontsize=22)
     fig.savefig(f'../plots/difference{nn}.pdf')
