@@ -6,12 +6,21 @@
 #include "velocityverlet.hpp"
 using namespace std;
 
-int main(int numArguments, char **arguments)
+int main(int numArg, char **arguments)
 {
-    int numTimesteps = 1000;
-    if(numArguments >= 2){
-      numTimesteps = atoi(arguments[1]);
-    }
+  int numTimesteps;
+  double dt;
+
+  if (numArg == 2){
+  numTimesteps = atoi(arguments[1]);
+  dt = atof(arguments[2]);
+}
+  else{
+    cout << "Enter number of time steps:" << endl;
+    cin >> numTimesteps;
+    cout << "Enter value for time step:" << endl;
+    cin >> dt;
+  }
 
     SolarSystem solarSystem;
     // To store the referance: CelestialBody &sun = solarSystem.createCelestialBody( vec3, vec3, mass);
@@ -26,17 +35,19 @@ int main(int numArguments, char **arguments)
         cout << "The position of this object is " << body.position << " with velocity " << body.velocity << endl;
     }
 
-    double dt = 0.001;
-    Euler integrator(dt);
-    // VelocityVerlet integrator(dt);
+
+    // Euler integrator(dt);
+    VelocityVerlet integrator(dt);
     for(int timestep=0; timestep<numTimesteps; timestep++) {
         // For the integrator to do as we want we need to calculate the forces in between the timesteps
         solarSystem.calculateForcesAndEnergy();
         integrator.integrateOneStep(solarSystem);
-        solarSystem.writeToFile("../output/euler.xyz");
-        // solarSystem.writeToFile("../output/verlet.xyz");
+        // solarSystem.writeToFile("../output/euler.xyz");
+        solarSystem.writeToFile("../output/verlet.xyz");
     }
 
     cout << "We just created a solar system that has " << solarSystem.bodies().size() << " objects." << endl;
     return 0;
+
+    cout << solarSystem.potentialEnergy()
 }
