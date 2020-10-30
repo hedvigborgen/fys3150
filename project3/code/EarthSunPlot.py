@@ -34,7 +34,7 @@ def f(filename):
     return x_Sun, y_Sun, z_Sun, x_Earth, y_Earth, z_Earth, n
 
 files = ["euler", "verlet"]
-
+names = ["forward Euler", "velocity Verlet"]
 
 for i, e in enumerate(files):
     x_Sun, y_Sun, z_Sun, x_Earth, y_Earth, z_Earth, n = f(f'../output/{e}.xyz')
@@ -43,11 +43,11 @@ for i, e in enumerate(files):
 
     timestep = n+1
     fig, ax = plt.subplots()
-    ax.plot(x_Sun, y_Sun, 'ro', color='#666699', label='Sun position')
-    ax.plot(x_Earth, y_Earth, 'ro', color='#CC3366', label='Earth position')
+    ax.plot(x_Sun, y_Sun, '*', color='#666699', label='Sun position')
+    ax.plot(x_Earth, y_Earth, 'o', color='#CC3366', label='Earth position')
     plt.legend(fontsize=15)
     ax.tick_params(axis='both', which='major', labelsize=15)
     ax.set_xlabel(r'x', fontsize=15)
     ax.set_ylabel(r'y', fontsize=15)
-    ax.set_title(r'Position of the Earth orbiting the Sun, '+'\n'+r'using {} method with n = {}'.format(e,timestep), fontsize=20)
+    ax.set_title(r'Position of the Earth orbiting the Sun, '+'\n'+r'using {} method with n = {}'.format(names[i],timestep), fontsize=20)
     fig.savefig(f'../plots/positions_{e}{timestep}.pdf')

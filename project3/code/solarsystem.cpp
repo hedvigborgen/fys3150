@@ -8,9 +8,9 @@ SolarSystem::SolarSystem()    // Constructer. Equivalent to __init__() in Python
   m_potentialEnergy = 0;
 }
 
-CelestialBody& SolarSystem::createCelestialBody(vec3 position, vec3 velocity, double mass) {
-    m_bodies.push_back( CelestialBody(position, velocity, mass) ); // push_back() = append() in Python
-    return m_bodies.back(); // Return reference to the newest added celstial body
+CelestialBody &SolarSystem::createCelestialBody(vec3 position, vec3 velocity, double mass) {
+    m_bodies.push_back(CelestialBody(position, velocity, mass)); // push_back() = append() in Python
+    return m_bodies.back(); // Return reference to the newest added celestial body
 }
 
 void SolarSystem::calculateForcesAndEnergy()
@@ -84,7 +84,6 @@ void SolarSystem::writeToFile(string filename)
         m_file << body.position.x() << " " << body.position.y() << " " << body.position.z() << "\n";
     }
 
-    for()
 }
 
 vec3 SolarSystem::angularMomentum() const
