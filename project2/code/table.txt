@@ -1,0 +1,11 @@
+$n$ 10,<space>$\rho_{\text{max}}=3.6$ 100,<space>$\rho_{\text{max}}=8$
+Numerical<space>eigenvalue         3.00004   2.99804
+                         <space>   7.02713   6.99018
+                         <space>   11.3681   10.976
+                         <space>   16.7048   14.9556
+                         <space>   23.4779   18.9288
+                         <space>   31.7695   22.8956
+                         <space>   41.5728   26.8561
+                         <space>   52.8726   30.8102
+                         <space>   65.6544   34.758
+                         <space>   79.9037   38.6993

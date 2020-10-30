@@ -80,7 +80,7 @@ Eigenvalues are preserved.                	            # Output is the result of
 
 ## Example run 3: Plotting probability for the Quantum Dot problem with two electrons
 ```
->> python3 eigenvector_QM_plot.py                           # Compiles the main script
+>> python3 eigenvector_QM_plot.py                           # Runs the pythonfile eigenvector_QM_plot.py
 
 << resultsQM.pdf                                            # Produces plot of probability as a function of rho
 
