@@ -8,9 +8,9 @@ SolarSystem::SolarSystem()    // Constructer. Equivalent to __init__() in Python
   m_potentialEnergy = 0;
 }
 
-CelestialBody &SolarSystem::createCelestialBody(vec3 position, vec3 velocity, double mass) {
-    m_bodies.push_back(CelestialBody(position, velocity, mass)); // push_back() = append() in Python
-    return m_bodies.back(); // Return reference to the newest added celestial body
+CelestialBody& SolarSystem::createCelestialBody(vec3 position, vec3 velocity, double mass) {
+    m_bodies.push_back( CelestialBody(position, velocity, mass) ); // push_back() = append() in Python
+    return m_bodies.back(); // Return reference to the newest added celstial body
 }
 
 void SolarSystem::calculateForcesAndEnergy()
@@ -37,7 +37,6 @@ void SolarSystem::calculateForcesAndEnergy()
             deltaRVector = body1.position - body2.position;
             dr = deltaRVector.length();
             body1.force -= G*M_1*M_2*deltaRVector/(dr*dr*dr);
-            //body2.force -= body1.force;
             m_potentialEnergy -= G*M_1*M_2/dr;
             // body1.m_potentialEnergy -= G*M_1*M_2/dr;
             // body2.m_potentialEnergy += body1.m_potentialEnergy;
@@ -67,23 +66,30 @@ double SolarSystem::kineticEnergy() const
     return m_kineticEnergy;
 }
 
-void SolarSystem::writeToFile(string filename)
+void SolarSystem::writeToFile(string filename1, string filename2, double t)
 {
-    if(!m_file.good()) {
-        m_file.open(filename.c_str(), ofstream::out);
-        if(!m_file.good()) {
-            cout << "Error opening file " << filename << ". Aborting!" << endl;
+    if (!m_file1.good()) {
+        m_file1.open(filename1.c_str(), ofstream::out);
+        if(!m_file1.good()) {
+            cout << "Error opening file " << filename1 << ". Aborting!" << endl;
+            terminate();
+        }
+    }
+    if (!m_file2.good()) {
+        m_file2.open(filename2.c_str(), ofstream::out);
+        if(!m_file2.good()) {
+            cout << "Error opening file " << filename2 << ". Aborting!" << endl;
             terminate();
         }
     }
 
-    //m_file << numberOfBodies() << endl;
-    //m_file << "Comment" << endl;
     for(CelestialBody &body : m_bodies) {
-        //m_file << "1 " << body.position.x() << " " << body.position.y() << " " << body.position.z() << "\n";
-        m_file << body.position.x() << " " << body.position.y() << " " << body.position.z() << "\n";
+        m_file1 << t << " "
+          << body.position.x() << " "
+          << body.position.y() << " "
+          << body.position.z() << "\n";
     }
-
+    m_file2 << t << " " << m_potentialEnergy << " " << m_kineticEnergy << " " << totalEnergy() << "\n";
 }
 
 vec3 SolarSystem::angularMomentum() const

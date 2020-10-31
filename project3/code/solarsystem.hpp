@@ -19,7 +19,7 @@ public:
     double totalEnergy() const;
     double potentialEnergy() const;
     double kineticEnergy() const;
-    void writeToFile(std::string filename);
+    void writeToFile(std::string filename1, std::string filename2, double t);
     vec3 angularMomentum() const;
     // Vector, named bodies, with different celestial bodies as elements.
     std::vector<CelestialBody> &bodies();
@@ -29,7 +29,7 @@ private:
     // We can only reach the value through methods of the class.
     std::vector<CelestialBody> m_bodies;
     vec3 m_angularMomentum;
-    std::ofstream m_file;
+    std::ofstream m_file1, m_file2;
     double m_kineticEnergy;
     double m_potentialEnergy;
 };

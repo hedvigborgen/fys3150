@@ -1,19 +1,26 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import subprocess
+import sys
+
 
 # For nice plots
 plt.style.use('seaborn')
 plt.rc('text', usetex=True)
 plt.rc('text.latex', preamble=r'\usepackage{amsmath}')
 
+timestep = input('Enter number of time steps: ')
+dt = input('Enter value for time step: ')
+
+pos_files = ['euler', 'verlet']
+energy_files = ['euler_system', 'verlet_system']
+names = ['forward Euler', 'velocity Verlet']
 
 
-# for i, e in enumerate(files):
-#     with open(f'../output/{e}.xyz', 'wb') as outfile:
-#         subprocess.call(['./main.exe', str(e)], stdout=outfile)
+for i in range(len(pos_files)):
+    subprocess.call(['./main.exe', str(timestep), str(dt), str(i+1)])
 
-def f(filename):
+def read_positions(filename):
     infile = open(filename, 'r')
     lines = infile.readlines()
     n = int((len(lines))/2)
@@ -22,32 +29,78 @@ def f(filename):
     for i in range(0,len(lines)-1,2):
         line = lines[i]
         vals = line.split()
-        x_Sun[i//2], y_Sun[i//2], z_Sun[i//2] = float(vals[0]), float(vals[1]), float(vals[2])
-        # print(x_Sun[i], y_Sun[i], z_Sun[i])
-        # input()
+        x_Sun[i//2], y_Sun[i//2], z_Sun[i//2] = float(vals[1]), float(vals[2]), float(vals[3])
         line = lines[i+1]
         vals = line.split()
-        x_Earth[i//2], y_Earth[i//2], z_Earth[i//2] = float(vals[0]), float(vals[1]), float(vals[2])
-        # print(x_Earth[i], y_Earth[i], z_Earth[i])
-        # input()
+        x_Earth[i//2], y_Earth[i//2], z_Earth[i//2] = float(vals[1]), float(vals[2]), float(vals[3])
     infile.close()
     return x_Sun, y_Sun, z_Sun, x_Earth, y_Earth, z_Earth, n
 
-files = ["euler", "verlet"]
-names = ["forward Euler", "velocity Verlet"]
 
-for i, e in enumerate(files):
-    x_Sun, y_Sun, z_Sun, x_Earth, y_Earth, z_Earth, n = f(f'../output/{e}.xyz')
-    # print(x_Earth[749], y_Earth[749], z_Earth[749])
-    # print(x_Sun[749], y_Sun[749], z_Sun[749])
+def read_energies(filename):
+    infile = open(filename, 'r')
+    lines = infile.readlines()
+    t, pot_E, kin_E, tot_E = np.zeros(len(lines)),np.zeros(len(lines)), np.zeros(len(lines)), np.zeros(len(lines))
+    for i in range(len(lines)):
+        line = lines[i]
+        vals = line.split()
+        t[i], pot_E[i], kin_E[i], tot_E[i] = float(vals[0]), float(vals[1]), float(vals[2]), float(vals[3])
 
-    timestep = n+1
+    infile.close()
+    return t, pot_E, kin_E, tot_E
+
+for i, e in enumerate(pos_files):
+    x_Sun, y_Sun, z_Sun, x_Earth, y_Earth, z_Earth, n = read_positions(f'../output/{e}.xyz')
+
+    timestep = n
     fig, ax = plt.subplots()
-    ax.plot(x_Sun, y_Sun, '*', color='#666699', label='Sun position')
-    ax.plot(x_Earth, y_Earth, 'o', color='#CC3366', label='Earth position')
+    ax.plot(x_Sun, y_Sun, '*', color='#FFC800', label='Position of the Sun')
+    ax.plot(x_Earth, y_Earth, color='#3498DB', label='Position of the Earth')
     plt.legend(fontsize=15)
     ax.tick_params(axis='both', which='major', labelsize=15)
-    ax.set_xlabel(r'x', fontsize=15)
-    ax.set_ylabel(r'y', fontsize=15)
-    ax.set_title(r'Position of the Earth orbiting the Sun, '+'\n'+r'using {} method with n = {}'.format(names[i],timestep), fontsize=20)
+    ax.set_xlabel(r'x(t)', fontsize=15)
+    ax.set_ylabel(r'y(t)', fontsize=15)
+    ax.set_title(r'The Earth orbiting the Sun, '+'\n'+r'using {} method with n = {}'.format(names[i],timestep), fontsize=20)
     fig.savefig(f'../plots/positions_{e}{timestep}.pdf')
+
+
+
+tot_E = np.zeros((2, timestep)) # Total energy as a function of time for both integration methods
+
+for i, e in enumerate(energy_files):
+    t, pot_E, kin_E, tot_E[i] = read_energies(f'../output/{e}.dat')
+
+    #Plotting the energy as a function of time
+    fig, ax = plt.subplots()
+    ax.plot(t, pot_E, label='Potential energy')
+    ax.plot(t, kin_E, label='Kinetic energy')
+    ax.plot(t, tot_E[i], label='Total energy')
+    plt.legend(fontsize=15)
+    ax.tick_params(axis='both', which='major', labelsize=15)
+    ax.set_xlabel(r't [years]', fontsize=15)
+    ax.set_ylabel(r'E []', fontsize=15)
+    ax.set_title(r'Energies as a function of time, '+'\n'+r'using {} method with n = {}'.format(names[i],timestep), fontsize=20)
+    fig.savefig(f'../plots/energies_{e}{timestep}.pdf')
+
+# Computing relative change in total energy
+rel_E_e = np.zeros(len(tot_E[0])-1)
+rel_E_v = np.zeros(len(tot_E[1])-1)
+
+
+print(tot_E[0,-1], tot_E[1,-1])
+for i in range(len(tot_E[0])-1):
+    rel_E_e[i] = (tot_E[0, i+1] - tot_E[0, i])/tot_E[0, i]
+for i in range(len(tot_E[1])-1):
+    rel_E_v[i] = (tot_E[1, i+1] - tot_E[1, i])/tot_E[1, i]
+
+
+# Plotting relative change in energy
+fig, ax = plt.subplots()
+ax.plot(t[:-1], rel_E_e, label='Relative change in total energy, forward Euler method')
+ax.plot(t[:-1], rel_E_v, label='Relative change in total energy, velocity Verlet method')
+plt.legend(fontsize=15)
+ax.tick_params(axis='both', which='major', labelsize=15)
+ax.set_xlabel(r't [years]', fontsize=15)
+ax.set_ylabel(r'${\Delta E}{E}$', fontsize=15)
+ax.set_title(r'The relative change in energy for one orbit, '+'\n'+r' with n = {}'.format(timestep), fontsize=20)
+fig.savefig(f'../plots/rel_energy_{timestep}.pdf')
