@@ -4,6 +4,7 @@
 #include "solarsystem.hpp"
 #include "euler.hpp"
 #include "velocityverlet.hpp"
+#include "time.h"
 using namespace std;
 
 int main(int numArg, char **arguments)
@@ -35,36 +36,43 @@ int main(int numArg, char **arguments)
   // To get a list (a reference, not copy) of all the bodies in the solar system, we use the .bodies() function
   vector<CelestialBody> &bodies = solarSystem.bodies();
 
-    // To check that the positions and velocities of the bodies are initialized
-    //for(int i = 0; i<bodies.size(); i++) {
-        //CelestialBody &body = bodies[i]; // Reference to this body
-        //cout << "The position of this object is " << body.position << " with velocity " << body.velocity << endl;
-    //}
-
-
   double t;
   if (method == 1){
-    // clock_t start, finish;
-    // start = clock();
+    clock_t start, finish;
+    start = clock();
 
     Euler integrator(dt);
-    solarSystem.writeToFile("../output/euler.xyz", "../output/euler_system.dat", 0);
+    solarSystem.writeToFile("../output/euler.xyz", "../output/euler_system.dat", "../output/angmom_euler.dat", 0);
     for(int timestep=0; timestep<numTimesteps; timestep++) {
       t = timestep*dt;
-      solarSystem.writeToFile("../output/euler.xyz", "../output/euler_system.dat", t);
+      solarSystem.calculateAngMomentum();
+      solarSystem.writeToFile("../output/euler.xyz", "../output/euler_system.dat", "../output/angmom_euler.dat", t);
       integrator.integrateOneStep(solarSystem);
     }
-    // finish = clock();
-    // double time = (double (finish - start)/CLOCKS_PER_SEC);
 
-  } else if (method == 2){
+    finish = clock();
+    double time = (double (finish - start)/CLOCKS_PER_SEC);
+    cout << "Integration took " << time << " seconds to execute with Euler's method with n = " <<numTimesteps<< "." << endl;
+
+  }
+
+  else if (method == 2){
+    clock_t start, finish;
+    start = clock();
+
     VelocityVerlet integrator(dt);
-    solarSystem.writeToFile("../output/verlet.xyz", "../output/verlet_system.dat", 0);
+    solarSystem.writeToFile("../output/verlet.xyz", "../output/verlet_system.dat", "../output/angmom_verlet.dat", 0);
     for(int timestep=0; timestep<numTimesteps; timestep++) {
       t = timestep*dt;
+      solarSystem.calculateAngMomentum();
       integrator.integrateOneStep(solarSystem);
-      solarSystem.writeToFile("../output/verlet.xyz", "../output/verlet_system.dat", t);
+      solarSystem.writeToFile("../output/verlet.xyz", "../output/verlet_system.dat", "../output/angmom_verlet.dat", t);
+
     }
+
+    finish = clock();
+    double time = (double (finish - start)/CLOCKS_PER_SEC);
+    cout << "Integration took " << time << " seconds to execute with Verlet's method with n = " <<numTimesteps<< "." << endl;
   }
 
   //cout << "We just created a solar system that has " << solarSystem.bodies().size() << " objects." << endl;
