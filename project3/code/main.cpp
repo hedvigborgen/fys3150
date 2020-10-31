@@ -44,6 +44,9 @@ int main(int numArg, char **arguments)
 
   double t;
   if (method == 1){
+    // clock_t start, finish;
+    // start = clock();
+
     Euler integrator(dt);
     solarSystem.writeToFile("../output/euler.xyz", "../output/euler_system.dat", 0);
     for(int timestep=0; timestep<numTimesteps; timestep++) {
@@ -51,6 +54,9 @@ int main(int numArg, char **arguments)
       solarSystem.writeToFile("../output/euler.xyz", "../output/euler_system.dat", t);
       integrator.integrateOneStep(solarSystem);
     }
+    // finish = clock();
+    // double time = (double (finish - start)/CLOCKS_PER_SEC);
+
   } else if (method == 2){
     VelocityVerlet integrator(dt);
     solarSystem.writeToFile("../output/verlet.xyz", "../output/verlet_system.dat", 0);

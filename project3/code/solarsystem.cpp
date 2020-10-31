@@ -18,7 +18,7 @@ void SolarSystem::calculateForcesAndEnergy()
     m_kineticEnergy = 0;
     m_potentialEnergy = 0;
     m_angularMomentum.zeros();
-    double G = 4*M_PI*M_PI; // [AU/(M_sun yr^2)], Gravitational constant
+    double G = 4*M_PI*M_PI; // [AU^3/(M_sun yr^2)], Gravitational constant
 
     for(CelestialBody &body : m_bodies) {
         // Reset forces on all bodies

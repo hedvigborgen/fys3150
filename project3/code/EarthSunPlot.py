@@ -1,5 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
+import matplotlib as mpl
 import subprocess
 import sys
 
@@ -8,6 +9,7 @@ import sys
 plt.style.use('seaborn')
 plt.rc('text', usetex=True)
 plt.rc('text.latex', preamble=r'\usepackage{amsmath}')
+
 
 timestep = input('Enter number of time steps: ')
 dt = input('Enter value for time step: ')
@@ -58,9 +60,11 @@ for i, e in enumerate(pos_files):
     ax.plot(x_Earth, y_Earth, color='#3498DB', label='Position of the Earth')
     plt.legend(fontsize=15)
     ax.tick_params(axis='both', which='major', labelsize=15)
-    ax.set_xlabel(r'x(t)', fontsize=15)
-    ax.set_ylabel(r'y(t)', fontsize=15)
+    ax.set_xlabel(r'x(t) [AU]', fontsize=15)
+    ax.set_ylabel(r'y(t) [AU]', fontsize=15)
     ax.set_title(r'The Earth orbiting the Sun, '+'\n'+r'using {} method with n = {}'.format(names[i],timestep), fontsize=20)
+    ax.axis('equal')
+    fig.tight_layout()
     fig.savefig(f'../plots/positions_{e}{timestep}.pdf')
 
 
@@ -75,32 +79,34 @@ for i, e in enumerate(energy_files):
     ax.plot(t, pot_E, label='Potential energy')
     ax.plot(t, kin_E, label='Kinetic energy')
     ax.plot(t, tot_E[i], label='Total energy')
-    plt.legend(fontsize=15)
+    ax.legend(fontsize=15)
     ax.tick_params(axis='both', which='major', labelsize=15)
     ax.set_xlabel(r't [years]', fontsize=15)
-    ax.set_ylabel(r'E []', fontsize=15)
+    ax.set_ylabel(r'E [M$_{\odot}\text{AU}^2$/yr]', fontsize=15)
     ax.set_title(r'Energies as a function of time, '+'\n'+r'using {} method with n = {}'.format(names[i],timestep), fontsize=20)
+    fig.tight_layout()
     fig.savefig(f'../plots/energies_{e}{timestep}.pdf')
 
+"""
 # Computing relative change in total energy
 rel_E_e = np.zeros(len(tot_E[0])-1)
 rel_E_v = np.zeros(len(tot_E[1])-1)
 
-
-print(tot_E[0,-1], tot_E[1,-1])
 for i in range(len(tot_E[0])-1):
-    rel_E_e[i] = (tot_E[0, i+1] - tot_E[0, i])/tot_E[0, i]
+    rel_E_e[i] = np.abs(tot_E[0, i+1] - tot_E[0, i])
 for i in range(len(tot_E[1])-1):
-    rel_E_v[i] = (tot_E[1, i+1] - tot_E[1, i])/tot_E[1, i]
+    rel_E_v[i] = np.abs(tot_E[1, i+1] - tot_E[1, i])
 
+"""
 
-# Plotting relative change in energy
+# Plotting absolute relative change in energy
 fig, ax = plt.subplots()
-ax.plot(t[:-1], rel_E_e, label='Relative change in total energy, forward Euler method')
-ax.plot(t[:-1], rel_E_v, label='Relative change in total energy, velocity Verlet method')
-plt.legend(fontsize=15)
+ax.plot(t, tot_E[0], label='Forward Euler method')
+ax.plot(t, tot_E[1], label='Velocity Verlet method')
+ax.legend(fontsize=15)
 ax.tick_params(axis='both', which='major', labelsize=15)
-ax.set_xlabel(r't [years]', fontsize=15)
-ax.set_ylabel(r'${\Delta E}{E}$', fontsize=15)
-ax.set_title(r'The relative change in energy for one orbit, '+'\n'+r' with n = {}'.format(timestep), fontsize=20)
-fig.savefig(f'../plots/rel_energy_{timestep}.pdf')
+ax.set_xlabel(r't [yr]', fontsize=15)
+ax.set_ylabel(r'E$_{\text{tot}}$' + r'[$\text{M}_{\odot}\text{AU}^2/\text{yr}$]', fontsize=15)
+ax.set_title(r'The total energy of the system as a function of time, '+'\n'+r' with n = {}'.format(timestep), fontsize=20)
+fig.tight_layout()
+fig.savefig(f'../plots/tot_energies_{timestep}.pdf')
