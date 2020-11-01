@@ -116,22 +116,26 @@ void SolarSystem::writeToFile(string filename1, string filename2, string filenam
 }
 
 
-void SolarSystem::writeToFile_test(string filename, double t){
+void SolarSystem::writeToFile_test(string filename, double t, double beta){
     if (!m_file_test.good()){
         m_file_test.open(filename.c_str(), ofstream::out);
         if(!m_file_test.good()){
             cout << "Error opening file " << filename << ". Aborting!" << endl;
             terminate();
         }
-
-        for (CelestialBody &body : m_bodies){
-            m_file_test << t << " "
-              << body.position.x() << " "
-              << body.position.y() << " "
-              << body.position.z() << "\n";
-        }
     }
-  }
+
+    if (t == 0){
+      m_file_test << beta << endl;
+    }
+
+    for (CelestialBody &body : m_bodies){
+      m_file_test << t << " "
+      << body.position.x() << " "
+      << body.position.y() << " "
+      << body.position.z() << "\n";
+    }
+}
 
 std::vector<CelestialBody> &SolarSystem::bodies(){
     return m_bodies;

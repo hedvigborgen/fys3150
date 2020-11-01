@@ -36,10 +36,10 @@ dt = input('Enter value for time step: ')
 tot_time = timestep*dt
 choice = '2'
 
-
+"../output/euler_test_positions_" << beta[idx] << ".xyz"
 # Data filenames
-euler_files = ['euler_test_positions']
-verlet_files = ['verlet_test_positions']
+euler_file = 'euler_test_positions.xyz'
+verlet_file = 'verlet_test_positions'
 
 
 # Compiling and executing c++ script

@@ -5,6 +5,9 @@
 #include "euler.hpp"
 #include "velocityverlet.hpp"
 #include "time.h"
+#include <fstream>
+#include <sstream>
+//#include <format>
 using namespace std;
 
 int main(int numArg, char **arguments){
@@ -49,7 +52,7 @@ if (choice == 1){
 
     Euler integrator(dt);
     solarSystem.writeToFile("../output/euler_positions.xyz", "../output/euler_energies.dat", "../output/euler_angmom.dat", 0);
-    for(int timestep=0; timestep<numTimesteps; timestep++) {
+    for (int timestep=0; timestep<numTimesteps; timestep++){
       t = timestep*dt;
       solarSystem.calculateAngMomentum();
       solarSystem.writeToFile("../output/euler_positions.xyz", "../output/euler_energies.dat", "../output/euler_angmom.dat", t);
@@ -102,25 +105,31 @@ else if (choice == 2){
 
     if (method == 1){
       Euler integrator(dt);
-      solarSystem.m_file_test << beta[idx] << endl;
-      solarSystem.writeToFile_test("../output/euler_test_positions_beta.xyz", 0);
+
+      if (idx == 0){
+        solarSystem.writeToFile_test("../output/euler_test_positions.xyz", 0, beta[idx]);
+      }
+
       for(int timestep=0; timestep<numTimesteps; timestep++) {
         t = timestep*dt;
         solarSystem.calculateAngMomentum();
-        solarSystem.writeToFile_test("../output/euler_test_positions_beta.xyz", t);
+        solarSystem.writeToFile_test("../output/euler_test_positions.xyz", t, beta[idx]);
         integrator.integrateOneStep(solarSystem, beta[idx]);
       }
     }
 
     else if (method == 2){
-      solarSystem.m_file_test << beta[idx] << endl;
       VelocityVerlet integrator(dt);
-      solarSystem.writeToFile_test("../output/verlet_test_positions_beta.xyz", 0);
+
+      if (idx == 0){
+        solarSystem.writeToFile_test("../output/verlet_test_positions.xyz", 0, beta[idx]);
+      }
+
       for(int timestep=0; timestep<numTimesteps; timestep++) {
         t = timestep*dt;
         solarSystem.calculateAngMomentum();
         integrator.integrateOneStep(solarSystem, beta[idx]);
-        solarSystem.writeToFile_test("../output/verlet_test_positions_beta.xyz", t);
+        solarSystem.writeToFile_test("../output/verlet_test_positions.xyz", t, beta[idx]);
       }
     }
   }
@@ -128,4 +137,3 @@ else if (choice == 2){
 
 return 0;
 }
-//linje 106, 110, 118, 123 må fikses
