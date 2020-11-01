@@ -9,75 +9,64 @@ plt.style.use('seaborn')
 plt.rc('text', usetex=True)
 plt.rc('text.latex', preamble=r'\usepackage{amsmath}')
 
-
 # Defining function to read data files
 def read_positions(filename):
     infile = open(filename, 'r')
     lines = infile.readlines()
-    n = int((len(lines) - 1)/2)
-    x_Sun, y_Sun, z_Sun = np.zeros(n), np.zeros(n), np.zeros(n)
-    x_Earth, y_Earth, z_Earth = np.zeros(n), np.zeros(n), np.zeros(n)
-    beta = float(lines[0])
-    for i in range(1,len(lines)-2,2):
-        line = lines[i]
-        vals = line.split()
-        x_Sun[i//2], y_Sun[i//2], z_Sun[i//2] = float(vals[1]), float(vals[2]), float(vals[3])
-        line = lines[i+1]
-        vals = line.split()
-        x_Earth[i//2], y_Earth[i//2], z_Earth[i//2] = float(vals[1]), float(vals[2]), float(vals[3])
+
+    n = timesteps
+    x_Sun, y_Sun, z_Sun = np.zeros((6,n)), np.zeros((6,n)), np.zeros((6,n))
+    x_Earth, y_Earth, z_Earth = np.zeros((6,n)), np.zeros((6,n)), np.zeros((6,n))
+    beta = np.zeros(6)
+
+    k = 0
+    for i in range(6):
+        beta[i] = float(lines[k])
+        k += 1
+        for j in range(0, 1000):
+            line = lines[k]
+            print(line)
+            vals = line.split()
+            x_Sun[i, j], y_Sun[i, j], z_Sun[i, j] = float(vals[1]), float(vals[2]), float(vals[3])
+            line = lines[k+1]
+            vals = line.split()
+            x_Earth[i, j], y_Earth[i, j], z_Earth[i, j] = float(vals[1]), float(vals[2]), float(vals[3])
+            k += 2
 
     infile.close()
-    return x_Sun, y_Sun, z_Sun, x_Earth, y_Earth, z_Earth, n, beta
+    return x_Sun, y_Sun, z_Sun, x_Earth, y_Earth, z_Earth, beta
 
 
 # Defining arguments for c++ script
-timestep = input('Enter number of time steps: ')
-dt = input('Enter value for time step: ')
-tot_time = timestep*dt
+timesteps = int(input('Enter number of time steps: '))
+dt = float(input('Enter value for time step: '))
+tot_time = timesteps*dt
 choice = '2'
-
-"../output/euler_test_positions_" << beta[idx] << ".xyz"
-# Data filenames
-euler_file = 'euler_test_positions.xyz'
-verlet_file = 'verlet_test_positions'
 
 
 # Compiling and executing c++ script
 subprocess.call(['c++', '-o', 'main.exe', 'main.cpp', 'celestialbody.cpp', 'solarsystem.cpp', 'euler.cpp', 'velocityverlet.cpp', 'vec3.cpp', '--std=c++11'])
 methods = ['1', '2']
-for i in range(len(methods)):
-    subprocess.call(['./main.exe', str(timestep), str(dt), methods[i], choice])
+for method in methods:
+    subprocess.call(['./main.exe', str(timesteps), str(dt), method, choice])
 
 
-#
-for i, e in enumerate(euler_files):
-    x_Sun, y_Sun, z_Sun, x_Earth, y_Earth, z_Earth, n, beta = read_positions(f'../output/{e}.xyz')
-
-    fig, ax = plt.subplots()
-    ax.plot(x_Sun, y_Sun, '*', color='#FFC800', label='Position of the Sun')
-    ax.plot(x_Earth, y_Earth, color='#3498DB', label='Position of the Earth')
-    plt.legend(fontsize=15)
-    ax.tick_params(axis='both', which='major', labelsize=15)
-    ax.set_xlabel(r'x(t) [AU]', fontsize=15)
-    ax.set_ylabel(r'y(t) [AU]', fontsize=15)
-    ax.set_title(r'The Earth orbiting the Sun, beta = {} '.format(beta) + '\n' + r'Forward Euler method for a time = {} years'.format(tot_time), fontsize=20)
-    ax.axis('equal')
-    fig.tight_layout()
-    fig.savefig(f'../plots/{e}_n{timestep}_dt{dt}.pdf')
+# Lists of data filenames and method names
+filenames = ['euler_test_positions', 'verlet_test_positions']
+method_names = ['Forward Euler', 'Velocity Verlet']
 
 
-#
-for i, e in enumerate(verlet_files):
-    x_Sun, y_Sun, z_Sun, x_Earth, y_Earth, z_Earth, n, beta = read_positions(f'../output/{e}.xyz')
-
-    fig, ax = plt.subplots()
-    ax.plot(x_Sun, y_Sun, '*', color='#FFC800', label='Position of the Sun')
-    ax.plot(x_Earth, y_Earth, color='#3498DB', label='Position of the Earth')
-    plt.legend(fontsize=15)
-    ax.tick_params(axis='both', which='major', labelsize=15)
-    ax.set_xlabel(r'x(t) [AU]', fontsize=15)
-    ax.set_ylabel(r'y(t) [AU]', fontsize=15)
-    ax.set_title(r'The Earth orbiting the Sun, beta = {} '.format(beta) + '\n' + r'Velocity Verlet method for a time = {} years'.format(tot_time), fontsize=20)
-    ax.axis('equal')
-    fig.tight_layout()
-    fig.savefig(f'../plots/{e}_n{timestep}_dt{dt}.pdf')
+for file in filenames:
+    x_Sun, y_Sun, z_Sun, x_Earth, y_Earth, z_Earth, n, beta = read_positions(f'../output/{file}.xyz')
+    for j in range(len(beta)):
+        fig, ax = plt.subplots()
+        ax.plot(x_Sun[j], y_Sun[j], '*', color='#FFC800', label='Position of the Sun')
+        ax.plot(x_Earth[j], y_Earth[j], color='#3498DB', label='Position of the Earth')
+        plt.legend(fontsize=15)
+        ax.tick_params(axis='both', which='major', labelsize=15)
+        ax.set_xlabel(r'x(t) [AU]', fontsize=15)
+        ax.set_ylabel(r'y(t) [AU]', fontsize=15)
+        ax.set_title(r'The Earth orbiting the Sun, beta = {} '.format(beta[j]) + '\n' + r'{} method for a time = {} years'.format(method_names[filenames.index(file)], tot_time), fontsize=20)
+        ax.axis('equal')
+        fig.tight_layout()
+        fig.savefig(f'../plots/plot_{file}_beta{beta[j]}_n{timesteps}_dt{dt}.pdf')

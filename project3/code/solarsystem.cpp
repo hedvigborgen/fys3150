@@ -92,7 +92,7 @@ void SolarSystem::writeToFile(string filename1, string filename2, string filenam
     }
     if (!m_file3.good()){
         m_file3.open(filename3.c_str(), ofstream::out);
-        if (!m_file3.good()) {
+        if (!m_file3.good()){
             cout << "Error opening file " << filename3 << ". Aborting!" << endl;
             terminate();
         }
@@ -102,16 +102,16 @@ void SolarSystem::writeToFile(string filename1, string filename2, string filenam
         m_file1 << t << " "
           << body.position.x() << " "
           << body.position.y() << " "
-          << body.position.z() << "\n";
+          << body.position.z() << endl;
     }
 
-    m_file2 << t << " " << m_potentialEnergy << " " << m_kineticEnergy << " " << totalEnergy() << "\n";
+    m_file2 << t << " " << m_potentialEnergy << " " << m_kineticEnergy << " " << totalEnergy() << endl;
 
     for (vec3 &angMom : m_angMomentum){
-      m_file3 << t << " "
+        m_file3 << t << " "
         << angMom(0) << " "
         << angMom(1) << " "
-        << angMom(2) << "\n";
+        << angMom(2) << endl;
     }
 }
 
@@ -133,7 +133,7 @@ void SolarSystem::writeToFile_test(string filename, double t, double beta){
       m_file_test << t << " "
       << body.position.x() << " "
       << body.position.y() << " "
-      << body.position.z() << "\n";
+      << body.position.z() << endl;
     }
 }
 
