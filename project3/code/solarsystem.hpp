@@ -12,7 +12,7 @@ class SolarSystem
 public:
     SolarSystem(); // Constructer. Equivalent to __init__() in Python.
     CelestialBody &createCelestialBody(vec3 position, vec3 velocity, double mass);
-    void calculateForcesAndEnergy();
+    void calculateForcesAndEnergy(double beta);
     void calculateAngMomentum();
     // With *const we cannot set functin() = something.
     // The value can only be changed within a method
@@ -21,8 +21,10 @@ public:
     double potentialEnergy() const;
     double kineticEnergy() const;
     void writeToFile(std::string filename1, std::string filename2, std::string filename3, double t);
+    void writeToFile_test(std::string filename, double t);
     std::vector<vec3> &angMomentum();
     std::vector<CelestialBody> &bodies();
+    std::ofstream m_file_test;
 
 private:
     // We cannot set m_value = something in main, since the value is private.
