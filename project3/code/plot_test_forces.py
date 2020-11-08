@@ -22,6 +22,7 @@ def read_positions(filename):
     k = 0
     for i in range(6):
         beta[i] = float(lines[k])
+
         k += 1
         for j in range(0, 1000):
             line = lines[k]
@@ -32,6 +33,7 @@ def read_positions(filename):
             vals = line.split()
             x_Earth[i, j], y_Earth[i, j], z_Earth[i, j] = float(vals[1]), float(vals[2]), float(vals[3])
             k += 2
+        print(k)
 
     infile.close()
     return x_Sun, y_Sun, z_Sun, x_Earth, y_Earth, z_Earth, beta

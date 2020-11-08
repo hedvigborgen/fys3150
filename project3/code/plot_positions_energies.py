@@ -13,8 +13,9 @@ plt.rc('text.latex', preamble=r'\usepackage{amsmath}')
 # Defining constant parameters
 timestep = input('Enter number of time steps: ')
 dt = input('Enter value for time step: ')
+file = input('Enter input filename: ') #'../files/ten_bodies.txt'
+numberOfBodies = int(input('Enter number of bodies: '))
 choice = '1'
-
 
 # Data filenames
 pos_files = ['euler_positions', 'verlet_positions']
@@ -22,23 +23,30 @@ energy_files = ['euler_energies', 'verlet_energies']
 
 
 # Defining functions to read data files
-def read_positions(filename):
+def read_positions(filename, numberOfBodies):
+
     infile = open(filename, 'r')
     lines = infile.readlines()
-    n = int((len(lines))/2)
-    x_Sun, y_Sun, z_Sun = np.zeros(n), np.zeros(n), np.zeros(n)
-    x_Earth, y_Earth, z_Earth = np.zeros(n), np.zeros(n), np.zeros(n)
-
-    for i in range(0,len(lines)-1,2):
-        line = lines[i]
-        vals = line.split()
-        x_Sun[i//2], y_Sun[i//2], z_Sun[i//2] = float(vals[1]), float(vals[2]), float(vals[3])
-        line = lines[i+1] # + num of bodies
-        vals = line.split()
-        x_Earth[i//2], y_Earth[i//2], z_Earth[i//2] = float(vals[1]), float(vals[2]), float(vals[3])
-
     infile.close()
-    return x_Sun, y_Sun, z_Sun, x_Earth, y_Earth, z_Earth, n
+
+    numTimesteps = int((len(lines))/(numberOfBodies))
+
+    positions = np.zeros((numTimesteps, numberOfBodies, 3))
+    time = np.zeros(numTimesteps)
+    names = []
+    for i in range(numTimesteps):
+        for j in range(numberOfBodies):
+            line = lines[i*numberOfBodies + j]
+            vals = line.split()
+            if len(names) < numberOfBodies:
+                names.append(vals[0])
+            if j == 0:
+                time[i] = vals[1]
+            positions[i, j] = [float(val) for val in vals[2:]]
+
+    return names, time, positions, numTimesteps
+
+
 
 def read_energies(filename):
     infile = open(filename, 'r')
@@ -57,24 +65,29 @@ def read_energies(filename):
 # Compiling and executing c++ script
 subprocess.call(['c++', '-o', 'main.exe', 'main.cpp', 'celestialbody.cpp', 'solarsystem.cpp', 'euler.cpp', 'velocityverlet.cpp', 'vec3.cpp', '--std=c++11'])
 for i in range(len(pos_files)):
-    subprocess.call(['./main.exe', str(timestep), str(dt), str(i+1), choice])
+    subprocess.call(['./main.exe', str(timestep), str(dt), str(file), str(numberOfBodies), str(i+1), choice])
 
 
-names = ['forward Euler', 'velocity Verlet']
+methods = ['forward Euler', 'velocity Verlet']
+colors = ['#3498DB', '#FFC800', '#9EC1CF', '#9EE09E', '#FDFD97', '#FEB144', '#FF6663', '#3498DB', '#CC99C9', '#EE452A']
+
 for i, e in enumerate(pos_files):
-    x_Sun, y_Sun, z_Sun, x_Earth, y_Earth, z_Earth, n = read_positions(f'../output/{e}.xyz')
-
+    names, time, positions, numTimesteps = read_positions(f'../output/{e}.xyz', numberOfBodies)
+    dt = time[-1]/(numTimesteps-1)
     fig, ax = plt.subplots()
-    ax.plot(x_Sun, y_Sun, '*', color='#FFC800', label='Position of the Sun')
-    ax.plot(x_Earth, y_Earth, color='#3498DB', label='Position of the Earth')
+    ax.plot(positions[:, 0, 0], positions[:, 0, 1], '*', color='#FFC800', label='Sun')
+
+    for j,f in enumerate(names[1:]):
+        ax.plot(positions[:, j+1, 0], positions[:, j+1, 1], color=colors[j], label=f'{f}')
+        ax.tick_params(axis='both', which='major', labelsize=15)
+        ax.set_xlabel(r'x(t) [AU]', fontsize=15)
+        ax.set_ylabel(r'y(t) [AU]', fontsize=15)
+
+    ax.set_title(r'The Earth orbiting the Sun, '+'\n'+r'using {} method with dt = {}'.format(methods[i],dt), fontsize=20)
     plt.legend(fontsize=15)
-    ax.tick_params(axis='both', which='major', labelsize=15)
-    ax.set_xlabel(r'x(t) [AU]', fontsize=15)
-    ax.set_ylabel(r'y(t) [AU]', fontsize=15)
-    ax.set_title(r'The Earth orbiting the Sun, '+'\n'+r'using {} method with n = {}'.format(names[i],timestep), fontsize=20)
     ax.axis('equal')
     fig.tight_layout()
-    fig.savefig(f'../plots/positions_{e}_n{timestep}_dt{dt}.pdf')
+    fig.savefig(f'../plots/positions_{e}_n{timestep}_dt{dt}_{numberOfBodies}.pdf')
 
 
 
@@ -92,9 +105,9 @@ for i, e in enumerate(energy_files):
     ax.tick_params(axis='both', which='major', labelsize=15)
     ax.set_xlabel(r't [years]', fontsize=15)
     ax.set_ylabel(r'E [M$_{\odot}\text{AU}^2$/yr]', fontsize=15)
-    ax.set_title(r'Energies as a function of time, '+'\n'+r'using {} method with n = {}'.format(names[i],timestep), fontsize=20)
+    ax.set_title(r'Energies as a function of time, '+'\n'+r'using {} method with n = {}'.format(methods[i],timestep), fontsize=20)
     fig.tight_layout()
-    fig.savefig(f'../plots/energies_{e}_n{timestep}_dt{dt}.pdf')
+    fig.savefig(f'../plots/energies_{e}_n{timestep}_dt{dt}_{numberOfBodies}.pdf')
 
 
 # Comparing absolute change in energy between Euler and Verlet method
@@ -107,19 +120,4 @@ ax.set_xlabel(r't [yr]', fontsize=15)
 ax.set_ylabel(r'E$_{\text{tot}}$' + r'[$\text{M}_{\odot}\text{AU}^2/\text{yr}$]', fontsize=15)
 ax.set_title(r'The total energy of the system as a function of time', fontsize=20)
 fig.tight_layout()
-fig.savefig(f'../plots/compare_energies_n{timestep}_dt{dt}.pdf')
-
-
-
-
-"""
-# Computing relative change in total energy
-rel_E_e = np.zeros(len(tot_E[0])-1)
-rel_E_v = np.zeros(len(tot_E[1])-1)
-
-for i in range(len(tot_E[0])-1):
-    rel_E_e[i] = np.abs(tot_E[0, i+1] - tot_E[0, i])
-for i in range(len(tot_E[1])-1):
-    rel_E_v[i] = np.abs(tot_E[1, i+1] - tot_E[1, i])
-
-"""
+fig.savefig(f'../plots/compare_energies_n{timestep}_dt{dt}_{numberOfBodies}.pdf')

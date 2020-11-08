@@ -1,137 +1,76 @@
-#include <iostream>
-#include <cmath>
-#include <cstdlib>
 #include "solarsystem.hpp"
 #include "euler.hpp"
 #include "velocityverlet.hpp"
-#include "time.h"
+#include "mainfunc.hpp"
+#include <iostream>
+#include <cmath>
+#include <cstdlib>
 #include <fstream>
 #include <sstream>
-//#include <format>
+#include "time.h"
 using namespace std;
 
-int main(int numArg, char **arguments){
-  int numTimesteps, method, choice;
+
+int main(int numArg, char *arguments[]){
+  int numTimesteps, numberOfBodies, method, choice;
   double dt;
+  string fname = "";
 
-
-  if (numArg == 5){
+  if (numArg == 7){
     numTimesteps = atoi(arguments[1]);
     dt = atof(arguments[2]);
-    method = atoi(arguments[3]);
-    choice = atoi(arguments[4]);
+    fname = fname.append(arguments[3]);
+    numberOfBodies = atoi(arguments[4]);
+    method = atoi(arguments[5]);
+    choice = atoi(arguments[6]);
   }
 
   else {
     cout << "Enter number of time steps:" << endl;
     cin >> numTimesteps;
-    cout << "Enter value for time step:" << endl;
+    cout << "Enter size of time step:" << endl;
     cin >> dt;
+    cout << "Enter input filename:" << endl;
+    cin >> fname;
+    cout << "Enter number of celestial bodies:" << endl;
+    cin >> numberOfBodies;
     cout << "Enter 1 for forward Euler method, or enter 2 for velocity Verlet method:" << endl;
     cin >> method;
     cout << "Enter 1 for normal gravitational force or 2 for test of different forces:" << endl;
     cin >> choice;
   }
 
+
 SolarSystem solarSystem;
-vector<CelestialBody> &bodies = solarSystem.bodies();
+MainFunc mainFunc;
 
-double t;
+solarSystem.readinfo_SolarSystem(fname, numberOfBodies);
+mainFunc.initializeBeta(choice);
 
+
+// Executing with normal gravitational force for beta = 3.0
 if (choice == 1){
-  double beta = 3.0;
+  // Initializing
+  solarSystem.calculateForcesAndEnergy(mainFunc.beta_vec[0]);
 
-  // To store the referance: CelestialBody &sun = solarSystem.createCelestialBody( vec3, vec3, mass);
-  solarSystem.createCelestialBody(vec3(0,0,0), vec3(0,0,0), 1.0); //Sun
-  solarSystem.createCelestialBody(vec3(1,0,0), vec3(0,2*M_PI,0), 3e-6); //Earth
-  solarSystem.calculateForcesAndEnergy(beta);
+// Timing the integration
+  clock_t start, finish;
+  start = clock();
 
-  if (method == 1){
-    clock_t start, finish;
-    start = clock();
+// Integration
+  mainFunc.integration1(method, numTimesteps, dt, mainFunc.beta_vec[0]);
 
-    Euler integrator(dt);
-    solarSystem.writeToFile("../output/euler_positions.xyz", "../output/euler_energies.dat", "../output/euler_angmom.dat", 0);
-    for (int timestep=0; timestep<numTimesteps; timestep++){
-      t = timestep*dt;
-      solarSystem.calculateAngMomentum();
-      solarSystem.writeToFile("../output/euler_positions.xyz", "../output/euler_energies.dat", "../output/euler_angmom.dat", t);
-      integrator.integrateOneStep(solarSystem, beta);
-    }
-
-    finish = clock();
-    double time = (double (finish - start)/CLOCKS_PER_SEC);
-    cout << "Integration took " << time << " seconds to execute with Euler's method with n = " <<numTimesteps<< "." << endl;
-
-  }
-
-  else if (method == 2){
-    clock_t start, finish;
-    start = clock();
-
-    VelocityVerlet integrator(dt);
-    solarSystem.writeToFile("../output/verlet_positions.xyz", "../output/verlet_energies.dat", "../output/verlet_angmom.dat", 0);
-    for(int timestep=0; timestep<numTimesteps; timestep++) {
-      t = timestep*dt;
-      solarSystem.calculateAngMomentum();
-      integrator.integrateOneStep(solarSystem, beta);
-      solarSystem.writeToFile("../output/verlet_positions.xyz", "../output/verlet_energies.dat", "../output/verlet_angmom.dat", t);
-
-    }
-
-    finish = clock();
-    double time = (double (finish - start)/CLOCKS_PER_SEC);
-    cout << "Integration took " << time << " seconds to execute with Verlet's method with n = " <<numTimesteps<< "." << endl;
-  }
+  finish = clock();
+  double time = (double (finish - start)/CLOCKS_PER_SEC);
+  cout << "Integration took " << time << " seconds to execute with Verlet's method with n = " <<numTimesteps<< "." << endl;
 }
 
 
-
-
-// Testing force for different betas
+// Testing gravitational force for different betas
 else if (choice == 2){
-  int idx = 0;
-  double beta[6];
-  for (int b=20; b<31; b+=2){
-    beta[idx] = b/10.0;
-    idx += 1;
-  }
-
-  for (int idx = 0; idx < 6; idx++){
-    // To store the referance: CelestialBody &sun = solarSystem.createCelestialBody( vec3, vec3, mass);
-    solarSystem.createCelestialBody(vec3(0,0,0), vec3(0,0,0), 1.0); //Sun
-    solarSystem.createCelestialBody(vec3(1,0,0), vec3(0,2*M_PI,0), 3e-6); //Earth
-    solarSystem.calculateForcesAndEnergy(beta[idx]);
-
-    if (method == 1){
-      Euler integrator(dt);
-
-      if (idx == 0){
-        solarSystem.writeToFile_test("../output/euler_test_positions.xyz", 0, beta[idx]);
-      }
-
-      for(int timestep=0; timestep<numTimesteps; timestep++) {
-        t = timestep*dt;
-        solarSystem.calculateAngMomentum();
-        solarSystem.writeToFile_test("../output/euler_test_positions.xyz", t, beta[idx]);
-        integrator.integrateOneStep(solarSystem, beta[idx]);
-      }
-    }
-
-    else if (method == 2){
-      VelocityVerlet integrator(dt);
-
-      if (idx == 0){
-        solarSystem.writeToFile_test("../output/verlet_test_positions.xyz", 0, beta[idx]);
-      }
-
-      for(int timestep=0; timestep<numTimesteps; timestep++) {
-        t = timestep*dt;
-        solarSystem.calculateAngMomentum();
-        integrator.integrateOneStep(solarSystem, beta[idx]);
-        solarSystem.writeToFile_test("../output/verlet_test_positions.xyz", t, beta[idx]);
-      }
-    }
+  for (int idx = 0; idx < mainFunc.beta_vec.size(); idx++){
+    solarSystem.calculateForcesAndEnergy(mainFunc.beta_vec[idx]);
+    mainFunc.integration2(method, numTimesteps, dt, mainFunc.beta_vec[idx]);
   }
 }
 

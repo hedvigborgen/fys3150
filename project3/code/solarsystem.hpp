@@ -6,36 +6,36 @@
 #include <string>
 #include <fstream>
 #include <math.h>
+#include <iostream>
 
-class SolarSystem
-{
+using namespace std;
+
+class SolarSystem {
 public:
-    SolarSystem(); // Constructer. Equivalent to __init__() in Python.
-    CelestialBody &createCelestialBody(vec3 position, vec3 velocity, double mass);
-    void calculateForcesAndEnergy(double beta);
-    void calculateAngMomentum();
-    // With *const we cannot set functin() = something.
-    // The value can only be changed within a method
-    int numberOfBodies() const;
-    double totalEnergy() const;
-    double potentialEnergy() const;
-    double kineticEnergy() const;
-    void writeToFile(std::string filename1, std::string filename2, std::string filename3, double t);
-    void writeToFile_test(std::string filename, double t, double beta);
-    std::vector<vec3> &angMomentum();
-    std::vector<CelestialBody> &bodies();
+  SolarSystem();
+  CelestialBody &createCelestialBody(string name, vec3 position, vec3 velocity, double mass);
+  void readinfo_SolarSystem(string fname, int numberOfBodies);
+  void calculateForcesAndEnergy(double beta);
+  void calculateAngMomentum();
+  int numberOfBodies() const;
+  double totalEnergy() const;
+  double potentialEnergy() const;
+  double kineticEnergy() const;
+  vector<vec3> angularMomentum() const;
+  vector<CelestialBody> &bodies();
 
 private:
-    // We cannot set m_value = something in main, since the value is private.
-    // We can only reach the value through methods of the class.
-    std::vector<vec3> m_angMomentum;
-    std::vector<CelestialBody> m_bodies;
-    std::ofstream m_file1, m_file2, m_file3, m_file_test;
-    double m_kineticEnergy;
-    double m_potentialEnergy;
-    double m_G;
+  vector<CelestialBody> m_bodies;
+  vec3 m_posCenterofMass;
+  vec3 m_velCenterofMass;
+  vec3 m_angMom;
+  vector<vec3> m_angMomentum;
+  double m_kineticEnergy;
+  double m_potentialEnergy;
+  double m_G;
+  void calculateCenterofMass();
+  void fixCenterofMass();
+  void resetForces_Energy();
 };
 
 #endif // SOLARSYSTEM_H
-
-//Constructer == special method that is automatically called when an object of a class is created.
