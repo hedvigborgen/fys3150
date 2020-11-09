@@ -1,1 +1,7 @@
 **/.DS_store
+project3/output/verlet_positions.xyz
+project3/output/euler_positions.xyz
+project3/plots/verlet_positions_n1000000_dt0.001_ten_bodies.pdf
+project3/plots/euler_positions_n1000000_dt0.001_ten_bodies.pdf
+
+
