@@ -24,6 +24,7 @@ public:
   vector<vec3> angularMomentum() const;
   vector<CelestialBody> &bodies();
 
+
 private:
   vector<CelestialBody> m_bodies;
   vec3 m_posCenterofMass;

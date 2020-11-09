@@ -25,7 +25,7 @@ int main(int numArg, char *arguments[]){
     choice = atoi(arguments[1]); // Determines if the code should;
     // 1: Use the normal gravitational force;
     // 2: Run for various betas, or;
-    // 3: Computes the precession of Mercury
+    // 3: Compute the precession of Mercury
 
     if (choice != 3){
       numTimesteps = atoi(arguments[2]); // Number of timesteps
@@ -33,6 +33,13 @@ int main(int numArg, char *arguments[]){
       fname = fname.append(arguments[4]); // Filename of inputfile
       numberOfBodies = atoi(arguments[5]); // Number of celestial bodies
       method = atoi(arguments[6]); // Euler or velocity Verlet method}
+
+      solarSystem.readinfo_SolarSystem(fname, numberOfBodies);
+      mainFunc.initializeBeta(choice);
+
+      // Initializes the solar system
+      mainFunc.initializeSolarSystem(solarSystem);
+
     }
   }
 
@@ -56,12 +63,13 @@ int main(int numArg, char *arguments[]){
       cout << "Enter 1 for forward Euler method, or enter 2 for velocity Verlet method:" << endl;
       cin >> method;
 
-
       solarSystem.readinfo_SolarSystem(fname, numberOfBodies);
       mainFunc.initializeBeta(choice);
+
+      // Initializes the solar system
+      mainFunc.initializeSolarSystem(solarSystem);
+
     }
-    // cout << "Enter 1 for normal gravitational force or 2 for test of different forces:" << endl;
-    // cin >> choice;
   }
 
 
@@ -100,6 +108,9 @@ int main(int numArg, char *arguments[]){
 
   // Computes the precession of Mercury
   else if (choice == 3){
+    // Initializes the solar system
+    mainFunc.initializeSolarSystem(solarSystem);
+
     // One century of Mercury's orbit around the Sun
     numTimesteps = 10000;
     dt = 0.001;

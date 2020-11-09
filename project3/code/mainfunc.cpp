@@ -1,5 +1,10 @@
 #include "mainfunc.hpp"
-SolarSystem solarSystem;
+
+
+// Initializes the solar system
+void MainFunc::initializeSolarSystem(SolarSystem system){
+  m_SolarSystem = system;
+}
 
 
 //Function returning power of 1/r for the gravitational force
@@ -29,11 +34,11 @@ void MainFunc::timeLoop_reg(int method, int numTimesteps, double dt, double beta
     Euler integrator(dt);
     for (int timestep=0; timestep<numTimesteps; timestep++){
       double t = timestep*dt;
-      solarSystem.calculateAngMomentum();
+      m_SolarSystem.calculateAngMomentum();
       writeToFile_Position("../output/euler_positions.xyz", t);
       writeToFile_Energy("../output/euler_energies.dat", t);
       writeToFile_AngMom("../output/euler_angmom.dat", t);
-      integrator.integrateOneStep(solarSystem, beta);
+      integrator.integrateOneStep(m_SolarSystem, beta);
     }
   }
 
@@ -44,11 +49,14 @@ void MainFunc::timeLoop_reg(int method, int numTimesteps, double dt, double beta
       writeToFile_Position("../output/verlet_positions.xyz", 0);
       writeToFile_Energy("../output/verlet_energies.dat", 0);
       writeToFile_AngMom("../output/verlet_angmom.dat", 0);
+      writeToFile_Position("../output/verlet_positions.xyz", 0);
+      writeToFile_Energy("../output/verlet_energies.dat", 0);
+      writeToFile_AngMom("../output/verlet_angmom.dat", 0);
 
       for(int timestep=0; timestep<numTimesteps; timestep++) {
         double t = timestep*dt;
-        solarSystem.calculateAngMomentum();
-        integrator.integrateOneStep(solarSystem, beta, choice);
+        m_SolarSystem.calculateAngMomentum();
+        integrator.integrateOneStep(m_SolarSystem, beta, choice);
         writeToFile_Position("../output/verlet_positions.xyz", t);
         writeToFile_Energy("../output/verlet_energies.dat", t);
         writeToFile_AngMom("../output/verlet_angmom.dat", t);
@@ -59,7 +67,7 @@ void MainFunc::timeLoop_reg(int method, int numTimesteps, double dt, double beta
       writeToFile_Position("../output/verlet_positions.xyz", 0);
       for(int timestep=0; timestep<numTimesteps; timestep++) {
         double t = timestep*dt;
-        integrator.integrateOneStep(solarSystem, beta, choice);
+        integrator.integrateOneStep(m_SolarSystem, beta, choice);
         writeToFile_Position("../output/verlet_positions.xyz", t);
       }
     }
@@ -76,7 +84,7 @@ void MainFunc::timeLoop_diffBeta(int method, int numTimesteps, double dt, double
   VelocityVerlet integrator(dt);
   for(int timestep=0; timestep<numTimesteps; timestep++){
     double t = timestep*dt;
-    integrator.integrateOneStep(solarSystem, beta, 2);
+    integrator.integrateOneStep(m_SolarSystem, beta, 2);
     writeToFile_Position("../output/verlet_test_positions.xyz", t, beta);
   }
 }
@@ -98,7 +106,8 @@ void MainFunc::openFile(ofstream &file, string filename){
 void MainFunc::writeToFile_Position(string filename, double t){
   openFile(m_file_pos, filename);
 
-  for (CelestialBody &body : solarSystem.bodies()){
+
+  for (CelestialBody &body : m_SolarSystem.bodies()){
     m_file_pos << body.nameOfBody << " " << t << " "
     << body.position.x() << " "
     << body.position.y() << " "
@@ -115,7 +124,7 @@ void MainFunc::writeToFile_Position(string filename, double t, double beta){
     m_file_pos << beta << endl;
   }
 
-  for (CelestialBody &body : solarSystem.bodies()){
+  for (CelestialBody &body : m_SolarSystem.bodies()){
     m_file_pos << body.nameOfBody << " " << t << " "
     << body.position.x() << " "
     << body.position.y() << " "
@@ -127,7 +136,7 @@ void MainFunc::writeToFile_Position(string filename, double t, double beta){
 // Writes energy for the solar system to file
 void MainFunc::writeToFile_Energy(string filename, double t){
   openFile(m_file_E, filename);
-  m_file_E << t << " " << solarSystem.potentialEnergy() << " " << solarSystem.kineticEnergy() << " " << solarSystem.totalEnergy() << endl;
+  m_file_E << t << " " << m_SolarSystem.potentialEnergy() << " " << m_SolarSystem.kineticEnergy() << " " << m_SolarSystem.totalEnergy() << endl;
 }
 
 
@@ -135,8 +144,8 @@ void MainFunc::writeToFile_Energy(string filename, double t){
 void MainFunc::writeToFile_AngMom(string filename, double t){
   openFile(m_file_AM, filename);
   int i = 0;
-  for (vec3 &angMom : solarSystem.angularMomentum()){
-      CelestialBody &body = solarSystem.bodies()[i];
+  for (vec3 &angMom : m_SolarSystem.angularMomentum()){
+      CelestialBody &body = m_SolarSystem.bodies()[i];
       m_file_AM << body.nameOfBody << " " << t << " "
       << angMom(0) << " "
       << angMom(1) << " "

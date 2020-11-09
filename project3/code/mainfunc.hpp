@@ -15,13 +15,15 @@ using namespace std;
 class MainFunc{
 public:
   vector<double> beta_vec;
+  void initializeSolarSystem(SolarSystem system);
   void initializeBeta(int choice);
   void timeLoop_reg(int method, int numTimesteps, double dt, double beta, int choice);
   void timeLoop_diffBeta(int method, int numTimesteps, double dt, double beta);
+  void openFile(ofstream &file, string filename);
 
 private:
-  std::ofstream m_file_pos, m_file_E, m_file_AM;
-  void openFile(ofstream &file, string filename);
+  SolarSystem m_SolarSystem;
+  ofstream m_file_pos, m_file_E, m_file_AM;
   void writeToFile_Position(string filename, double t);
   void writeToFile_Position(string filename, double t, double beta);
   void writeToFile_Energy(string filename, double t);

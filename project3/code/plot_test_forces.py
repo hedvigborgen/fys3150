@@ -51,7 +51,7 @@ def read_positions(filename):
 
 
 # Compiling and executing c++ script
-subprocess.call(['c++' '-o' 'main.exe' '$(wildcard *.cpp)' '--std=c++11'])
+subprocess.call(['c++','-o','main.exe','$(wildcard *.cpp)','--std=c++11'])
 subprocess.call(['./main.exe', choice, str(timesteps), str(dt), filename, num_bodies, method])
 
 
@@ -67,4 +67,4 @@ for j in range(len(beta)):
     ax.set_title(r'The Earth orbiting the Sun, beta = {} '.format(beta[j]) + '\n' + r'velocity Verlet method for a time = {} years'.format(tot_time), fontsize=20)
     ax.axis('equal')
     fig.tight_layout()
-    fig.savefig(f'../plots/plot_{file}_beta{beta[j]}_n{timesteps}_dt{dt}.pdf')
+    fig.savefig(f'../plots/plot_beta{beta[j]}_n{timesteps}_dt{dt}.pdf')

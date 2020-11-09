@@ -8,7 +8,7 @@ SolarSystem::SolarSystem(){
 
 
 // Creates celestial bodies
-CelestialBody& SolarSystem::createCelestialBody(string name, vec3 position, vec3 velocity, double mass){
+CelestialBody &SolarSystem::createCelestialBody(string name, vec3 position, vec3 velocity, double mass){
   m_bodies.push_back(CelestialBody(name, position, velocity, mass));
   return m_bodies.back();
 }
@@ -59,6 +59,7 @@ void SolarSystem::readinfo_SolarSystem(string fname, int numberOfBodies){
 
     fscanf(fp_init, "%s %lf %lf %lf %lf %lf %lf %lf", name, &x, &y, &z, &vx, &vy, &vz, &mass);
     vel = vec3(vx*365.25, vy*365.25, vz*365.25);
+    pos = vec3(x, y, z);
     createCelestialBody(name, pos, vel, mass/1.989e30);
   }
   fixCenterofMass();
@@ -95,10 +96,11 @@ void SolarSystem::calculateForcesAndEnergy(double beta, int choice){
           deltaRVector = body1.position - body2.position;
           dr = deltaRVector.length();
           body1.force -= m_G*M_1*M_2*deltaRVector/pow(dr, beta);
-          m_potentialEnergy -= m_G*M_1*M_2/dr;
+          m_potentialEnergy -= M_2/dr;
         }
       }
       m_kineticEnergy += 0.5*body1.mass*body1.velocity.lengthSquared();
+      m_potentialEnergy *= m_G*M_1;
     }
   }
 
