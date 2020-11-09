@@ -143,13 +143,6 @@ void MainFunc::writeToFile_Energy(string filename, double t){
 // Writes angular momentum for the solar system to file
 void MainFunc::writeToFile_AngMom(string filename, double t){
   openFile(m_file_AM, filename);
-  int i = 0;
-  for (vec3 &angMom : m_SolarSystem.angularMomentum()){
-      CelestialBody &body = m_SolarSystem.bodies()[i];
-      m_file_AM << body.nameOfBody << " " << t << " "
-      << angMom(0) << " "
-      << angMom(1) << " "
-      << angMom(2) << endl;
-      i += 1;
-  }
+  m_file_AM << t << m_SolarSystem.angularMomentum() << endl;
+
 }

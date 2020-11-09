@@ -87,7 +87,7 @@ int main(int numArg, char *arguments[]){
 
     finish = clock(); // Finish timing the integration
     double time = (double (finish - start)/CLOCKS_PER_SEC);
-    cout << "Integration took " << time << " seconds to execute with Verlet's method with n = " <<numTimesteps<< "." << endl;
+    cout << "Integration took " << time << " seconds to execute with n = " <<numTimesteps<< "." << endl;
   }
 
 

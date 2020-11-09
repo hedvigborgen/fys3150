@@ -21,7 +21,7 @@ public:
   double totalEnergy() const;
   double potentialEnergy() const;
   double kineticEnergy() const;
-  vector<vec3> angularMomentum() const;
+  double angularMomentum() const;
   vector<CelestialBody> &bodies();
 
 
@@ -30,7 +30,7 @@ private:
   vec3 m_posCenterofMass;
   vec3 m_velCenterofMass;
   vec3 m_angMom;
-  vector<vec3> m_angMomentum;
+  double m_angMomentum;
   double m_kineticEnergy;
   double m_potentialEnergy;
   double m_G;

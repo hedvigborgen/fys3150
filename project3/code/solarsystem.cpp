@@ -127,7 +127,7 @@ void SolarSystem::calculateForcesAndEnergy(double beta, int choice){
 
 // Calculates angular momentum for each celestial body
 void SolarSystem::calculateAngMomentum(){
-  m_angMomentum.clear();
+  m_angMomentum = 0;
   vec3 deltaRVector, pVector, angMom;
   double M_1, M_2, dr;
 
@@ -145,7 +145,7 @@ void SolarSystem::calculateAngMomentum(){
         angMom += deltaRVector.cross(pVector);
       }
     }
-    m_angMomentum.push_back(angMom);
+    m_angMomentum += angMom.length();
   }
 }
 
@@ -169,10 +169,9 @@ double SolarSystem::kineticEnergy() const{
 
 
 // Returns the angular momentum for each celestial body
-vector<vec3> SolarSystem::angularMomentum() const{
+double SolarSystem::angularMomentum() const{
   return m_angMomentum;
 }
-
 
 // Returns the celestial bodies
 vector<CelestialBody> &SolarSystem::bodies(){

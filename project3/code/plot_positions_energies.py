@@ -31,6 +31,7 @@ except:
     elif numberOfBodies == 10:
         file = "../input/ten_bodies.txt"
 
+
 # method = input('Enter 1 for Euler, 2 for Verlet, or 3 for both: ')
 choice = '1'
 
