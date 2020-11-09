@@ -8,7 +8,7 @@ void MainFunc::initializeBeta(int choice){
     beta_vec.push_back(3.0);
   }
 
-  else{
+  else {
     int idx = 0;
     for (int b=30; b<41; b+=2){
       beta_vec.push_back(b/10.0);
@@ -19,8 +19,9 @@ void MainFunc::initializeBeta(int choice){
 
 
 // Developes our solar system if the gravitational force is proportional to 1/r^2
-void MainFunc::integration1(int method, int numTimesteps, double dt, double beta){
-  if (method == 1){
+void MainFunc::timeLoop_reg(int method, int numTimesteps, double dt, double beta, int choice){
+
+  if (method == 1){ // The Euler method
     writeToFile_Position("../output/euler_positions.xyz", 0);
     writeToFile_Energy("../output/euler_energies.dat", 0);
     writeToFile_AngMom("../output/euler_angmom.dat", 0);
@@ -36,26 +37,38 @@ void MainFunc::integration1(int method, int numTimesteps, double dt, double beta
     }
   }
 
-  else if (method == 2){
-    writeToFile_Position("../output/verlet_positions.xyz", 0);
-    writeToFile_Energy("../output/verlet_energies.dat", 0);
-    writeToFile_AngMom("../output/verlet_angmom.dat", 0);
-
+  else if (method == 2){ // The velocity Verlet method
     VelocityVerlet integrator(dt);
-    for(int timestep=0; timestep<numTimesteps; timestep++) {
-      double t = timestep*dt;
-      solarSystem.calculateAngMomentum();
-      integrator.integrateOneStep(solarSystem, beta);
-      writeToFile_Position("../output/verlet_positions.xyz", t);
-      writeToFile_Energy("../output/verlet_energies.dat", t);
-      writeToFile_AngMom("../output/verlet_angmom.dat", t);
+
+    if (choice == 1){ // Computes positions, energies etc with x number of bodies
+      writeToFile_Position("../output/verlet_positions.xyz", 0);
+      writeToFile_Energy("../output/verlet_energies.dat", 0);
+      writeToFile_AngMom("../output/verlet_angmom.dat", 0);
+
+      for(int timestep=0; timestep<numTimesteps; timestep++) {
+        double t = timestep*dt;
+        solarSystem.calculateAngMomentum();
+        integrator.integrateOneStep(solarSystem, beta, choice);
+        writeToFile_Position("../output/verlet_positions.xyz", t);
+        writeToFile_Energy("../output/verlet_energies.dat", t);
+        writeToFile_AngMom("../output/verlet_angmom.dat", t);
+      }
+    }
+
+    else if (choice == 3){ // Computes only positions for the Sun and Mercury
+      writeToFile_Position("../output/verlet_positions.xyz", 0);
+      for(int timestep=0; timestep<numTimesteps; timestep++) {
+        double t = timestep*dt;
+        integrator.integrateOneStep(solarSystem, beta, choice);
+        writeToFile_Position("../output/verlet_positions.xyz", t);
+      }
     }
   }
 }
 
 
 // Developes our solar system if the gravitational force is tested for various betas
-void MainFunc::integration2(int method, int numTimesteps, double dt, double beta){
+void MainFunc::timeLoop_diffBeta(int method, int numTimesteps, double dt, double beta){
   if (beta == 3.0){
     writeToFile_Position("../output/verlet_test_positions.xyz", 0, beta);
   }
@@ -63,7 +76,7 @@ void MainFunc::integration2(int method, int numTimesteps, double dt, double beta
   VelocityVerlet integrator(dt);
   for(int timestep=0; timestep<numTimesteps; timestep++){
     double t = timestep*dt;
-    integrator.integrateOneStep(solarSystem, beta);
+    integrator.integrateOneStep(solarSystem, beta, 2);
     writeToFile_Position("../output/verlet_test_positions.xyz", t, beta);
   }
 }

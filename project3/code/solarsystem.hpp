@@ -7,15 +7,15 @@
 #include <fstream>
 #include <math.h>
 #include <iostream>
-
 using namespace std;
+
 
 class SolarSystem {
 public:
   SolarSystem();
   CelestialBody &createCelestialBody(string name, vec3 position, vec3 velocity, double mass);
   void readinfo_SolarSystem(string fname, int numberOfBodies);
-  void calculateForcesAndEnergy(double beta);
+  void calculateForcesAndEnergy(double beta, int choice);
   void calculateAngMomentum();
   int numberOfBodies() const;
   double totalEnergy() const;

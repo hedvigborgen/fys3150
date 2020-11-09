@@ -12,67 +12,107 @@ using namespace std;
 
 
 int main(int numArg, char *arguments[]){
+
+  SolarSystem solarSystem;
+  MainFunc mainFunc;
+
+  // Declaring input parameters
   int numTimesteps, numberOfBodies, method, choice;
   double dt;
   string fname = "";
 
   if (numArg == 7){
-    numTimesteps = atoi(arguments[1]);
-    dt = atof(arguments[2]);
-    fname = fname.append(arguments[3]);
-    numberOfBodies = atoi(arguments[4]);
-    method = atoi(arguments[5]);
-    choice = atoi(arguments[6]);
+    choice = atoi(arguments[1]); // Determines if the code should;
+    // 1: Use the normal gravitational force;
+    // 2: Run for various betas, or;
+    // 3: Computes the precession of Mercury
+
+    if (choice != 3){
+      numTimesteps = atoi(arguments[2]); // Number of timesteps
+      dt = atof(arguments[3]); // Size of timestep
+      fname = fname.append(arguments[4]); // Filename of inputfile
+      numberOfBodies = atoi(arguments[5]); // Number of celestial bodies
+      method = atoi(arguments[6]); // Euler or velocity Verlet method}
+    }
   }
 
+
+  // Asks for input arguments if not all were given
   else {
-    cout << "Enter number of time steps:" << endl;
-    cin >> numTimesteps;
-    cout << "Enter size of time step:" << endl;
-    cin >> dt;
-    cout << "Enter input filename:" << endl;
-    cin >> fname;
-    cout << "Enter number of celestial bodies:" << endl;
-    cin >> numberOfBodies;
-    cout << "Enter 1 for forward Euler method, or enter 2 for velocity Verlet method:" << endl;
-    cin >> method;
-    cout << "Enter 1 for normal gravitational force or 2 for test of different forces:" << endl;
+    cout << "Enter 1 for normal gravitational force," << endl;
+    cout << "enter 2 to run script for various betas, or" << endl;
+    cout << "enter 3 to calculate the precession of Mercury:" << endl;
     cin >> choice;
+
+    if (choice != 3){
+      cout << "Enter number of time steps:" << endl;
+      cin >> numTimesteps;
+      cout << "Enter size of time step:" << endl;
+      cin >> dt;
+      cout << "Enter input filename:" << endl;
+      cin >> fname;
+      cout << "Enter number of celestial bodies:" << endl;
+      cin >> numberOfBodies;
+      cout << "Enter 1 for forward Euler method, or enter 2 for velocity Verlet method:" << endl;
+      cin >> method;
+
+
+      solarSystem.readinfo_SolarSystem(fname, numberOfBodies);
+      mainFunc.initializeBeta(choice);
+    }
+    // cout << "Enter 1 for normal gravitational force or 2 for test of different forces:" << endl;
+    // cin >> choice;
   }
 
 
-SolarSystem solarSystem;
-MainFunc mainFunc;
+  // Executes with normal gravitational force for beta = 3.0
+  if (choice == 1){
 
-solarSystem.readinfo_SolarSystem(fname, numberOfBodies);
-mainFunc.initializeBeta(choice);
+    // Calculates force and energies for first timestep
+    solarSystem.calculateForcesAndEnergy(mainFunc.beta_vec[0], choice);
 
+    clock_t start, finish; // Times the integration
+    start = clock();
 
-// Executing with normal gravitational force for beta = 3.0
-if (choice == 1){
-  // Initializing
-  solarSystem.calculateForcesAndEnergy(mainFunc.beta_vec[0]);
+    // Loops over all timesteps and writes results to files
+    mainFunc.timeLoop_reg(method, numTimesteps, dt, mainFunc.beta_vec[0], choice);
 
-// Timing the integration
-  clock_t start, finish;
-  start = clock();
-
-// Integration
-  mainFunc.integration1(method, numTimesteps, dt, mainFunc.beta_vec[0]);
-
-  finish = clock();
-  double time = (double (finish - start)/CLOCKS_PER_SEC);
-  cout << "Integration took " << time << " seconds to execute with Verlet's method with n = " <<numTimesteps<< "." << endl;
-}
-
-
-// Testing gravitational force for different betas
-else if (choice == 2){
-  for (int idx = 0; idx < mainFunc.beta_vec.size(); idx++){
-    solarSystem.calculateForcesAndEnergy(mainFunc.beta_vec[idx]);
-    mainFunc.integration2(method, numTimesteps, dt, mainFunc.beta_vec[idx]);
+    finish = clock(); // Finish timing the integration
+    double time = (double (finish - start)/CLOCKS_PER_SEC);
+    cout << "Integration took " << time << " seconds to execute with Verlet's method with n = " <<numTimesteps<< "." << endl;
   }
-}
 
-return 0;
+
+  // Tests gravitational force for different betas
+  else if (choice == 2){
+
+    // Loops over varying betas
+    for (int idx = 0; idx < mainFunc.beta_vec.size(); idx++){
+
+      // Calculates force and energies for first timestep
+      solarSystem.calculateForcesAndEnergy(mainFunc.beta_vec[idx], choice);
+
+      // Loops over all timesteps and writes results to files
+      mainFunc.timeLoop_diffBeta(method, numTimesteps, dt, mainFunc.beta_vec[idx]);
+    }
+  }
+
+
+  // Computes the precession of Mercury
+  else if (choice == 3){
+    // One century of Mercury's orbit around the Sun
+    numTimesteps = 10000;
+    dt = 0.001;
+    fname = "";
+    numberOfBodies = 2;
+    method = 2; // Uses the velocity Verlet method
+
+
+    solarSystem.readinfo_SolarSystem(fname, numberOfBodies);
+    mainFunc.initializeBeta(1);
+    solarSystem.calculateForcesAndEnergy(mainFunc.beta_vec[0], choice);
+    mainFunc.timeLoop_reg(method, numTimesteps, dt, mainFunc.beta_vec[0], choice);
+  }
+
+  return 0;
 }

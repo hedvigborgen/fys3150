@@ -13,5 +13,5 @@ void Euler::integrateOneStep(SolarSystem &system, double beta)
         body.position += body.velocity*m_dt;
         body.velocity += body.force / body.mass * m_dt;
     }
-    system.calculateForcesAndEnergy(beta);
+    system.calculateForcesAndEnergy(beta, 1);
 }

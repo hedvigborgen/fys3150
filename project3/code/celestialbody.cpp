@@ -1,6 +1,5 @@
 #include "celestialbody.hpp"
 
-// Function overloading
 
 CelestialBody::CelestialBody(string name, vec3 pos, vec3 vel, double mass_){
   nameOfBody = name;
