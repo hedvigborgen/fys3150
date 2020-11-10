@@ -46,9 +46,9 @@ void MainFunc::timeLoop_reg(int method, int numTimesteps, double dt, double beta
     VelocityVerlet integrator(dt);
 
     if (choice == 1){ // Computes positions, energies etc with x number of bodies
-      writeToFile_Position("../output/verlet_positions.xyz", 0);
-      writeToFile_Energy("../output/verlet_energies.dat", 0);
-      writeToFile_AngMom("../output/verlet_angmom.dat", 0);
+      // writeToFile_Position("../output/verlet_positions.xyz", 0);
+      // writeToFile_Energy("../output/verlet_energies.dat", 0);
+      // writeToFile_AngMom("../output/verlet_angmom.dat", 0);
       writeToFile_Position("../output/verlet_positions.xyz", 0);
       writeToFile_Energy("../output/verlet_energies.dat", 0);
       writeToFile_AngMom("../output/verlet_angmom.dat", 0);
@@ -143,6 +143,6 @@ void MainFunc::writeToFile_Energy(string filename, double t){
 // Writes angular momentum for the solar system to file
 void MainFunc::writeToFile_AngMom(string filename, double t){
   openFile(m_file_AM, filename);
-  m_file_AM << t << m_SolarSystem.angularMomentum() << endl;
+  m_file_AM << t << " " << m_SolarSystem.angularMomentum() << endl;
 
 }

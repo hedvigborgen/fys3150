@@ -81,19 +81,19 @@ def read_energies(filename):
 
 
 # Compiling and executing c++ script
-subprocess.call(['c++','-o','main.exe','$(wildcard *.cpp)','--std=c++11'])
+subprocess.call(['c++', '-o', 'main.exe', 'celestialbody.cpp', 'euler.cpp', 'main.cpp', 'mainfunc.cpp', 'solarsystem.cpp', 'vec3.cpp', 'velocityverlet.cpp', '--std=c++11'])
 for i in range(len(pos_input)):
     subprocess.call(['./main.exe', choice, str(timestep), str(dt), str(file), str(numberOfBodies), str(i+1)])
-#
+
 # if method == '1':
-#     subprocess.call(['./main.exe', str(timestep), str(dt), str(1), str(file), str(numberOfBodies), choice])
+#     subprocess.call(['./main.exe', choice, str(timestep), str(dt), str(file), str(numberOfBodies), str(1)])
 #
 # elif method == '2':
-#     subprocess.call(['./main.exe', str(timestep), str(dt), str(2), str(file), str(numberOfBodies), choice])
+#     subprocess.call(['./main.exe', choice, str(timestep), str(dt), str(file), str(numberOfBodies), str(2)])
 #
 # elif method == '3':
 #     for i in range(len(pos_input)):
-#         subprocess.call(['./main.exe', str(timestep), str(dt), str(i+1), str(file), str(numberOfBodies), choice])
+#         subprocess.call(['./main.exe', choice, str(timestep), str(dt), str(file), str(numberOfBodies), str(i+1)])
 
 
 methods = ['forward Euler', 'velocity Verlet']
@@ -117,12 +117,7 @@ for i, pos_file in enumerate(pos_input):
         ax.set_xlabel(r'x(t) [AU]', fontsize=15)
         ax.set_ylabel(r'y(t) [AU]', fontsize=15)
 
-    # black = plt.gca()
-    # black.set_facecolor('black')
-    # l = plt.legend(fontsize=15)
-    # for text in l.get_texts():
-    #     text.set_color("#89B5C8")
-    ax.set_title(f'The Earth orbiting the Sun using {methods[i]} method, ' + title, fontsize=20)
+    ax.set_title(f'The position of the celestial bodies using {methods[i]} method, ' + title, fontsize=20)
     plt.legend(fontsize=15)
     ax.axis('equal')
     fig.tight_layout()
@@ -158,6 +153,6 @@ ax.tick_params(axis='both', which='major', labelsize=15)
 ax.set_xlabel(r't [yr]', fontsize=15)
 ax.set_ylabel(r'E$_{\text{tot}}$' + r'[$\text{M}_{\odot}\text{AU}^2/\text{yr}$]', fontsize=15)
 ax.set_title(f'The total energy of the system as a function of time, ' + title, fontsize=20)
-ax.set_ylim([-0.00025, 0.00005])
+# ax.set_ylim([-0.00025, 0.00005])
 fig.tight_layout()
 fig.savefig(f'../plots/compare_energies_n{timestep}_dt{dt}_{outfile}.pdf')

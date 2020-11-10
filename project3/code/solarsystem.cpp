@@ -96,11 +96,10 @@ void SolarSystem::calculateForcesAndEnergy(double beta, int choice){
           deltaRVector = body1.position - body2.position;
           dr = deltaRVector.length();
           body1.force -= m_G*M_1*M_2*deltaRVector/pow(dr, beta);
-          m_potentialEnergy -= M_2/dr;
+          m_potentialEnergy -= m_G*M_1*M_2/dr;
         }
+        m_kineticEnergy += 0.5*body1.mass*body1.velocity.lengthSquared();
       }
-      m_kineticEnergy += 0.5*body1.mass*body1.velocity.lengthSquared();
-      m_potentialEnergy *= m_G*M_1;
     }
   }
 
@@ -145,8 +144,8 @@ void SolarSystem::calculateAngMomentum(){
         angMom += deltaRVector.cross(pVector);
       }
     }
-    m_angMomentum += angMom.length();
   }
+  m_angMomentum += angMom.length();
 }
 
 

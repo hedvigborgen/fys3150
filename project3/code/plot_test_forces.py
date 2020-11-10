@@ -15,7 +15,7 @@ choice = '2'
 timesteps = int(input('Enter number of time steps: '))
 dt = float(input('Enter value for time step: '))
 tot_time = timesteps*dt
-filename = "../input/beta_test.txt"
+filename = "../input/two_bodies_elliptical.txt" #eller two_bodies_elliptical??
 num_bodies = '2'
 method = '2'
 
@@ -26,6 +26,7 @@ def read_positions(filename):
     lines = infile.readlines()
 
     n = timesteps
+    time = np.linspace(0, tot_time, n)
     x_Sun, y_Sun, z_Sun = np.zeros((6,n)), np.zeros((6,n)), np.zeros((6,n))
     x_Earth, y_Earth, z_Earth = np.zeros((6,n)), np.zeros((6,n)), np.zeros((6,n))
     beta = np.zeros(6)
@@ -37,33 +38,31 @@ def read_positions(filename):
         k += 1
         for j in range(0, 1000):
             line = lines[k]
-            print(line)
             vals = line.split()
             x_Sun[i, j], y_Sun[i, j], z_Sun[i, j] = float(vals[1]), float(vals[2]), float(vals[3])
             line = lines[k+1]
             vals = line.split()
             x_Earth[i, j], y_Earth[i, j], z_Earth[i, j] = float(vals[1]), float(vals[2]), float(vals[3])
             k += 2
-        print(k)
 
     infile.close()
-    return x_Sun, y_Sun, z_Sun, x_Earth, y_Earth, z_Earth, beta
+    return x_Sun, y_Sun, z_Sun, x_Earth, y_Earth, z_Earth, beta - 1, time
 
 
 # Compiling and executing c++ script
-subprocess.call(['c++','-o','main.exe','$(wildcard *.cpp)','--std=c++11'])
+subprocess.call(['c++', '-o', 'main.exe', 'celestialbody.cpp', 'euler.cpp', 'main.cpp', 'mainfunc.cpp', 'solarsystem.cpp', 'vec3.cpp', 'velocityverlet.cpp', '--std=c++11'])
 subprocess.call(['./main.exe', choice, str(timesteps), str(dt), filename, num_bodies, method])
 
 
-x_Sun, y_Sun, z_Sun, x_Earth, y_Earth, z_Earth, n, beta = read_positions('../output/test_beta_positions.xyz')
+x_Sun, y_Sun, z_Sun, x_Earth, y_Earth, z_Earth, beta, time = read_positions('../output/verlet_test_positions.xyz')
 for j in range(len(beta)):
     fig, ax = plt.subplots()
-    ax.plot(x_Sun[j], y_Sun[j], '*', color='#FFC800', label='Position of the Sun')
-    ax.plot(x_Earth[j], y_Earth[j], color='#3498DB', label='Position of the Earth')
+    ax.plot(y_Sun[j], z_Sun[j], '*', color='#FFC800', label='Position of the Sun')
+    ax.plot(y_Earth[j], z_Earth[j], color='#3498DB', label='Position of the Earth')
     plt.legend(fontsize=15)
     ax.tick_params(axis='both', which='major', labelsize=15)
-    ax.set_xlabel(r'x(t) [AU]', fontsize=15)
-    ax.set_ylabel(r'y(t) [AU]', fontsize=15)
+    ax.set_xlabel(r'y(t) [AU]', fontsize=15)
+    ax.set_ylabel(r'z(t) [AU]', fontsize=15)
     ax.set_title(r'The Earth orbiting the Sun, beta = {} '.format(beta[j]) + '\n' + r'velocity Verlet method for a time = {} years'.format(tot_time), fontsize=20)
     ax.axis('equal')
     fig.tight_layout()
