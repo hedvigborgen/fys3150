@@ -108,19 +108,19 @@ int main(int numArg, char *arguments[]){
 
   // Computes the precession of Mercury
   else if (choice == 3){
-    // Initializes the solar system
-    mainFunc.initializeSolarSystem(solarSystem);
-
     // One century of Mercury's orbit around the Sun
-    numTimesteps = 10000;
+    numTimesteps = 24000; //25 år på jorda svarer til 100 år på merkur ca
     dt = 0.001;
-    fname = "";
+    fname = "../input/precession_mercury.txt";
     numberOfBodies = 2;
     method = 2; // Uses the velocity Verlet method
 
-
     solarSystem.readinfo_SolarSystem(fname, numberOfBodies);
     mainFunc.initializeBeta(1);
+
+    // Initializes the solar system
+    mainFunc.initializeSolarSystem(solarSystem);
+
     solarSystem.calculateForcesAndEnergy(mainFunc.beta_vec[0], choice);
     mainFunc.timeLoop_reg(method, numTimesteps, dt, mainFunc.beta_vec[0], choice);
   }

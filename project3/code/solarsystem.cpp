@@ -54,9 +54,7 @@ void SolarSystem::readinfo_SolarSystem(string fname, int numberOfBodies){
   const char *filename = fname.c_str();   //Each line of file gives initial condition for a particle on the form: name x y z vx vy vz mass
   //Open files
   FILE *fp_init = fopen(filename, "r");
-
   for(int i=0; i < numberOfBodies; i++) {
-
     fscanf(fp_init, "%s %lf %lf %lf %lf %lf %lf %lf", name, &x, &y, &z, &vx, &vy, &vz, &mass);
     vel = vec3(vx*365.25, vy*365.25, vz*365.25);
     pos = vec3(x, y, z);

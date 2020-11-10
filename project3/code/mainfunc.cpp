@@ -46,9 +46,6 @@ void MainFunc::timeLoop_reg(int method, int numTimesteps, double dt, double beta
     VelocityVerlet integrator(dt);
 
     if (choice == 1){ // Computes positions, energies etc with x number of bodies
-      // writeToFile_Position("../output/verlet_positions.xyz", 0);
-      // writeToFile_Energy("../output/verlet_energies.dat", 0);
-      // writeToFile_AngMom("../output/verlet_angmom.dat", 0);
       writeToFile_Position("../output/verlet_positions.xyz", 0);
       writeToFile_Energy("../output/verlet_energies.dat", 0);
       writeToFile_AngMom("../output/verlet_angmom.dat", 0);
