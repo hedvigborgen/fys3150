@@ -26,10 +26,10 @@ int main(int numArg, char *arguments[]){
     // 1: Use the normal gravitational force;
     // 2: Run for various betas, or;
     // 3: Compute the precession of Mercury
+    numTimesteps = atoi(arguments[2]); // Number of timesteps
+    dt = atof(arguments[3]); // Size of timestep
 
     if (choice != 3){
-      numTimesteps = atoi(arguments[2]); // Number of timesteps
-      dt = atof(arguments[3]); // Size of timestep
       fname = fname.append(arguments[4]); // Filename of inputfile
       numberOfBodies = atoi(arguments[5]); // Number of celestial bodies
       method = atoi(arguments[6]); // Euler or velocity Verlet method}
@@ -50,12 +50,12 @@ int main(int numArg, char *arguments[]){
     cout << "enter 2 to run script for various betas, or" << endl;
     cout << "enter 3 to calculate the precession of Mercury:" << endl;
     cin >> choice;
+    cout << "Enter number of time steps:" << endl;
+    cin >> numTimesteps;
+    cout << "Enter size of time step:" << endl;
+    cin >> dt;
 
     if (choice != 3){
-      cout << "Enter number of time steps:" << endl;
-      cin >> numTimesteps;
-      cout << "Enter size of time step:" << endl;
-      cin >> dt;
       cout << "Enter input filename:" << endl;
       cin >> fname;
       cout << "Enter number of celestial bodies:" << endl;
@@ -108,9 +108,6 @@ int main(int numArg, char *arguments[]){
 
   // Computes the precession of Mercury
   else if (choice == 3){
-    // One century of Mercury's orbit around the Sun
-    numTimesteps = 24000; //25 år på jorda svarer til 100 år på merkur ca
-    dt = 0.001;
     fname = "../input/precession_mercury.txt";
     numberOfBodies = 2;
     method = 2; // Uses the velocity Verlet method

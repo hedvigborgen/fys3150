@@ -141,5 +141,4 @@ void MainFunc::writeToFile_Energy(string filename, double t){
 void MainFunc::writeToFile_AngMom(string filename, double t){
   openFile(m_file_AM, filename);
   m_file_AM << t << " " << m_SolarSystem.angularMomentum() << endl;
-
 }

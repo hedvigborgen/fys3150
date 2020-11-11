@@ -22,6 +22,7 @@ except:
 numberOfBodies = '2'
 choice = '1'
 
+
 # Defining function to read data file
 def read_angmom(filename):
     infile = open(filename, 'r')
@@ -36,6 +37,7 @@ def read_angmom(filename):
     infile.close()
     return t, angmom
 
+
 # Compiling and executing c++ script
 subprocess.call(['c++', '-o', 'main.exe', 'celestialbody.cpp', 'euler.cpp', 'main.cpp', 'mainfunc.cpp', 'solarsystem.cpp', 'vec3.cpp', 'velocityverlet.cpp', '--std=c++11'])
 subprocess.call(['./main.exe', choice, str(timestep), str(dt), '../input/two_bodies_circular.txt', numberOfBodies, '2'])
@@ -46,6 +48,7 @@ subprocess.call(['c++', '-o', 'main.exe', 'celestialbody.cpp', 'euler.cpp', 'mai
 subprocess.call(['./main.exe', choice, str(timestep), str(dt), '../input/two_bodies_elliptical.txt', numberOfBodies, '2'])
 
 t, angmom_elliptical = read_angmom(f'../output/verlet_angmom.dat')
+
 
 # Plotting the angular momentum as a function of time, for both circular and elliptical orbits
 fig, ax = plt.subplots()

@@ -15,7 +15,7 @@ choice = '2'
 timesteps = int(input('Enter number of time steps: '))
 dt = float(input('Enter value for time step: '))
 tot_time = timesteps*dt
-filename = "../input/two_bodies_elliptical.txt" #eller two_bodies_elliptical??
+filename = "../input/two_bodies_elliptical.txt"
 num_bodies = '2'
 method = '2'
 
@@ -36,7 +36,7 @@ def read_positions(filename):
         beta[i] = float(lines[k])
 
         k += 1
-        for j in range(0, 1000):
+        for j in range(0, n):
             line = lines[k]
             vals = line.split()
             x_Sun[i, j], y_Sun[i, j], z_Sun[i, j] = float(vals[1]), float(vals[2]), float(vals[3])
@@ -54,6 +54,7 @@ subprocess.call(['c++', '-o', 'main.exe', 'celestialbody.cpp', 'euler.cpp', 'mai
 subprocess.call(['./main.exe', choice, str(timesteps), str(dt), filename, num_bodies, method])
 
 
+# Plotting
 x_Sun, y_Sun, z_Sun, x_Earth, y_Earth, z_Earth, beta, time = read_positions('../output/verlet_test_positions.xyz')
 for j in range(len(beta)):
     fig, ax = plt.subplots()

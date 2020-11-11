@@ -10,7 +10,7 @@ plt.rc('text', usetex=True)
 plt.rc('text.latex', preamble=r'\usepackage{amsmath}')
 
 
-# Defining constant parameters
+# Defining arguments for c++ script
 try:
     timestep, dt, numberOfBodies, file = sys.argv[1:]
     timestep = int(timestep)
@@ -30,17 +30,15 @@ except:
         file = "../input/three_bodies.txt"
     elif numberOfBodies == 10:
         file = "../input/ten_bodies.txt"
-
-
-# method = input('Enter 1 for Euler, 2 for Verlet, or 3 for both: ')
 choice = '1'
+
 
 # Data filenames
 pos_input = ['euler_positions', 'verlet_positions']
 energy_input = ['euler_energies', 'verlet_energies']
 
 
-# Defining functions to read data files
+# Defining function to read position files
 def read_positions(filename, numberOfBodies):
 
     infile = open(filename, 'r')
@@ -65,7 +63,7 @@ def read_positions(filename, numberOfBodies):
     return names, time, positions, numTimesteps
 
 
-
+# Defining functions to read files containing mechanical energies
 def read_energies(filename):
     infile = open(filename, 'r')
     lines = infile.readlines()
@@ -85,17 +83,6 @@ subprocess.call(['c++', '-o', 'main.exe', 'celestialbody.cpp', 'euler.cpp', 'mai
 for i in range(len(pos_input)):
     subprocess.call(['./main.exe', choice, str(timestep), str(dt), str(file), str(numberOfBodies), str(i+1)])
 
-# if method == '1':
-#     subprocess.call(['./main.exe', choice, str(timestep), str(dt), str(file), str(numberOfBodies), str(1)])
-#
-# elif method == '2':
-#     subprocess.call(['./main.exe', choice, str(timestep), str(dt), str(file), str(numberOfBodies), str(2)])
-#
-# elif method == '3':
-#     for i in range(len(pos_input)):
-#         subprocess.call(['./main.exe', choice, str(timestep), str(dt), str(file), str(numberOfBodies), str(i+1)])
-
-
 methods = ['forward Euler', 'velocity Verlet']
 colors = ['#3498DB', '#33D7FF', '#9EC1CF', '#9EE09E', '#FDFD97', '#FEB144', '#FF6663', '#3498DB', '#FF3386']#, '#EE452A']
 
@@ -105,6 +92,7 @@ title = '\n with ' + n_str + ' and ' + dt_str
 outfile = f'{file}'.replace('../input/','').replace('.txt', '')
 
 
+# Plotting the positions as a function of time
 for i, pos_file in enumerate(pos_input):
     names, time, positions, numTimesteps = read_positions(f'../output/{pos_file}.xyz', numberOfBodies)
     dt = time[-1]/(numTimesteps-1)
@@ -153,6 +141,6 @@ ax.tick_params(axis='both', which='major', labelsize=15)
 ax.set_xlabel(r't [yr]', fontsize=15)
 ax.set_ylabel(r'E$_{\text{tot}}$' + r'[$\text{M}_{\odot}\text{AU}^2/\text{yr}$]', fontsize=15)
 ax.set_title(f'The total energy of the system as a function of time, ' + title, fontsize=20)
-# ax.set_ylim([-0.00025, 0.00005])
+ax.set_ylim([-0.00025, 0.00005])
 fig.tight_layout()
 fig.savefig(f'../plots/compare_energies_n{timestep}_dt{dt}_{outfile}.pdf')
