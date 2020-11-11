@@ -26,7 +26,7 @@ In this project, the numerical integration methods utilized are the forward Eule
 ## How to run the code:
 Open terminal window, these commands compile and execute the programs: 
 ```
-#To compile the main script:
+# To compile the main script:
 make compile
 
 # To execute the same script:
@@ -43,20 +43,21 @@ Here;
 * fname determines the input file containing initial information;
 * numberOfBodies determines the number of celestial bodies simulated;
 * method determines the integration algorithm;
-    * Enter 1 for Forward Euler
+    * Enter 1 for forward Euler
     * Enter 2 for velocity Verlet
     
     
 ## To compile and execute the script;
 ```
-### producing output files for ten celestial bodies by the velocity Verlet algorithm, with; numTimesteps = 100,000, dt = 0.001:
+## producing output files for ten celestial bodies by the velocity Verlet algorithm,
+## with numTimesteps = 100,000, dt = 0.001:
 make example
 
-### producing output files with various values of beta by the velocity Verlet algorithm, with; numTimesteps = 1000, dt = 0.001:
+## producing output files with various values of beta by the velocity Verlet algorithm, with numTimesteps = 1000, dt = 0.001:
 make compile
 make test_beta
 
-### producing output files for the precession of Mercury, numTimesteps = 1,000,000, dt = 0.0001:
+## producing output files for the precession of Mercury, numTimesteps = 1,000,000, dt = 0.0001:
 make compile
 make precession
 ```
