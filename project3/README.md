@@ -52,14 +52,17 @@ Here;
 ```
 # producing output files for ten celestial bodies by the velocity Verlet algorithm,
 # with numTimesteps = 100,000, dt = 0.001:
+
 make example
 
 # producing output files with various values of beta by the velocity Verlet algorithm,
 # with numTimesteps = 1000, dt = 0.001:
+
 make compile
 make test_beta
 
 # producing output files for the precession of Mercury, numTimesteps = 1,000,000, dt = 0.0001:
+
 make compile
 make precession
 ```
@@ -93,9 +96,9 @@ python3 plot_precession.py
 ```
 >> make compile                         				# Compiles the main script
 
->> ./main.exe 1 1000 0.001 ../input/two_bodies_elliptical.txt 2 2       # Produces output files for the positions of the celestial
-									bodies, energy and angular momentum for the system, timing
-									the integration
+>> ./main.exe 1 1000 0.001 ../input/two_bodies_elliptical.txt 2 2       # Produces output files for the positions of the
+									celestial bodies, energy and angular momentum
+									for the system, timing the integration
 
 ```
 
