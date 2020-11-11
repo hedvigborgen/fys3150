@@ -7,20 +7,21 @@ In this project, the numerical integration methods utilized are the forward Eule
 
 ## The project is created with:
 * C++
-	* iostream
-  	* math.h
- 	* vector
-   	* string
-    	* fstream
-    	* cmath
-    	* sstream
-    	* cstdlib
+   * iostream
+   * math.h
+   * vector
+   * string
+   * fstream
+   * cmath
+   * sstream
+   * cstdlib
     
 * Python version: 3
-	* numpy 
-	* matplotlib
-  	* subprocess
-	* sys
+  * numpy	
+  * matplotlib
+  * subprocess
+  * sys
+  
 * LaTeX
 
 ## How to run the code:
@@ -49,38 +50,39 @@ Here;
     
 ## To compile and execute the script;
 ```
-## producing output files for ten celestial bodies by the velocity Verlet algorithm,
-## with numTimesteps = 100,000, dt = 0.001:
+# producing output files for ten celestial bodies by the velocity Verlet algorithm,
+# with numTimesteps = 100,000, dt = 0.001:
 make example
 
-## producing output files with various values of beta by the velocity Verlet algorithm, with numTimesteps = 1000, dt = 0.001:
+# producing output files with various values of beta by the velocity Verlet algorithm,
+# with numTimesteps = 1000, dt = 0.001:
 make compile
 make test_beta
 
-## producing output files for the precession of Mercury, numTimesteps = 1,000,000, dt = 0.0001:
+# producing output files for the precession of Mercury, numTimesteps = 1,000,000, dt = 0.0001:
 make compile
 make precession
 ```
 
-## To make plots of positions of celestial bodies and mechanical energies for the solar system, with both forward Euler and velocity Verlet algorithm:
+### To make plots of positions of celestial bodies and mechanical energies for the solar system, with both forward Euler and velocity Verlet algorithm:
 ```
 python3 plot_positions_energies.py numTimesteps dt numberOfBodies fname
 ```
 
 
-## To make plots of positions of celestial bodies with force of gravity tested with various values of beta, with velocity Verlet algorithm:
+### To make plots of positions of celestial bodies with force of gravity tested with various values of beta, with velocity Verlet algorithm:
 ```
 python3 plot_test_forces.py
 ```
 
 
-## To make a plot of the total angular momentum as a function of time for both elliptical and circular orbits with two-body system using velocity Verlet algorithm:
+### To make a plot of the total angular momentum as a function of time for both elliptical and circular orbits with two-body system using velocity Verlet algorithm:
 ```
 python3 plot_angmom.py numTimesteps dt
 ```
 
 	
-## To make a plot of the precession of Mercury's orbit, force of gravity with relativistic correction calulated with velocity Verlet method:
+### To make a plot of the precession of Mercury's orbit, force of gravity with relativistic correction calulated with velocity Verlet method:
 ```
 python3 plot_precession.py
 ```
@@ -91,7 +93,9 @@ python3 plot_precession.py
 ```
 >> make compile                         				# Compiles the main script
 
->> ./main.exe 1 1000 0.001 ../input/two_bodies_elliptical.txt 2 2       # Produces output files for the positions of the celestial bodies, energy and angular 										momentum for the system, timing the integration
+>> ./main.exe 1 1000 0.001 ../input/two_bodies_elliptical.txt 2 2       # Produces output files for the positions of the celestial
+									bodies, energy and angular momentum for the system, timing
+									the integration
 
 ```
 
