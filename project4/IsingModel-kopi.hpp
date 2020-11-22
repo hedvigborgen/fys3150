@@ -25,7 +25,6 @@ public:
   void CalculateObservables();
   void MetropolisSampling(int NumSamp);
   void WriteToFile(string filename);
-  void ResetFile();
 
 private:
   int m_L;
@@ -34,10 +33,8 @@ private:
   double m_MagneticMoment;
   vec m_Index;
   vec m_BoltzFactor;
-  vec m_EnergyVec;
   mat m_SpinMatrix;
   ofstream m_file;
-  void VecEnergy();
 };
 
 #endif //ISINGMODEL_H

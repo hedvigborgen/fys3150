@@ -30,13 +30,12 @@ T = np.linspace(0.1, 100, 1001)
 #subprocess.call(['c++', '-o', 'main.exe', 'isingmodel.cpp', '-larmadillo'])
 #subprocess.call(['./main.exe', '2', '10', '1.0', '>>', '../output/data.dat'])
 
-n_ordered, expEnergy_ordered, expEnergySquared_ordered, expMagneticMoment_ordered, expMagneticMomentSquared_ordered = read('../output/OrderedOrientation.dat')
-n_random, expEnergy_random, expEnergySquared_random, expMagneticMoment_random, expMagneticMomentSquared_random = read('../output/RandomOrientation.dat')
+n, expEnergy, expEnergySquared, expMagneticMoment, expMagneticMomentSquared = read('../output/OrderedOrientation.dat')
 
 T = 1
 k_b = 1
-C_v = (expEnergySquared_ordered - expEnergy_ordered**2)/(k_b*T**2)
-Chi = (expMagneticMomentSquared_ordered - expMagneticMoment_ordered**2)/(k_b*T)
+C_v = (expEnergySquared - expEnergy**2)/(k_b*T**2)
+Chi = (expMagneticMomentSquared - expMagneticMoment**2)/(k_b*T)
 
 #print(C_v, Chi)
 
@@ -62,21 +61,11 @@ Chi = (expMagneticMomentSquared_ordered - expMagneticMoment_ordered**2)/(k_b*T)
 # fig.savefig(f'../plots/vartandreplott.pdf')
 
 fig, ax = plt.subplots()
-ax.plot(n_ordered, expEnergy_ordered)
+ax.plot(n, expEnergy)
 #ax.legend(fontsize=15)
 ax.tick_params(axis='both', which='major', labelsize=15)
 ax.set_xlabel(r'Time', fontsize=15)
 ax.set_ylabel(r'Energy', fontsize=15)
 ax.set_title(f'Expectation energy', fontsize=20)
 fig.tight_layout()
-fig.savefig(f'../plots/Ordered.pdf')
-
-fig, ax = plt.subplots()
-ax.plot(n_random, expEnergy_random)
-#ax.legend(fontsize=15)
-ax.tick_params(axis='both', which='major', labelsize=15)
-ax.set_xlabel(r'Time', fontsize=15)
-ax.set_ylabel(r'Energy', fontsize=15)
-ax.set_title(f'Expectation energy', fontsize=20)
-fig.tight_layout()
-fig.savefig(f'../plots/Random.pdf')
+fig.savefig(f'../plots/OrderedEnergy.pdf')

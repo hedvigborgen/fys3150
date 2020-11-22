@@ -2,7 +2,6 @@
 
 // Constructor: Initializes energy and magnetization
 IsingModel::IsingModel(){
-  m_N = 0;
   m_Energy = 0;
   m_ExpEnergy = 0;
   m_ExpEnergySquared = 0;
@@ -81,8 +80,6 @@ void IsingModel::CalculateObservables(){
 // The metropolis algorithm including the loop over Monte Carlo cycles
 void IsingModel::MetropolisSampling(int NumSamp){
   m_N = NumSamp;
-  m_EnergyVec = vec(NumSamp).fill(0);
-  m_EnergyVec(0) = m_Energy;
 
   // Initialize the seed and call the Mersienne algo
   random_device rd;
@@ -98,14 +95,10 @@ void IsingModel::MetropolisSampling(int NumSamp){
       *(m_SpinMatrix(m_Index(i+1), m_Index(j)) + m_SpinMatrix(m_Index(i-1), m_Index(j))
       + m_SpinMatrix(m_Index(i), m_Index(j+1)) + m_SpinMatrix(m_Index(i), m_Index(j-1)));
 
-
     uniform_real_distribution<double> RandomDoubleGenerator(0.0,1.0);
     int r = RandomDoubleGenerator(gen);
     if ((DeltaEnergy < 0) || (r < m_BoltzFactor(DeltaEnergy + 8))){
       m_Energy += DeltaEnergy;
-      if (n < m_N){
-        m_EnergyVec(n) = m_EnergyVec(n-1) + DeltaEnergy;
-      }
       m_SpinMatrix(m_Index(i), m_Index(j)) *= -1;
       m_MagneticMoment += 2*m_SpinMatrix(m_Index(i), m_Index(j));
     }
@@ -123,12 +116,6 @@ void IsingModel::MetropolisSampling(int NumSamp){
 }
 
 
-void IsingModel::VecEnergy(){
-  vec UniqueElements = unique(m_EnergyVec);
-  uvec Histogram = hist(m_EnergyVec, UniqueElements);
-}
-
-
 // Checks if file is open and writes to file
 void IsingModel::WriteToFile(string filename){
   if(!m_file.good()) {
@@ -139,9 +126,4 @@ void IsingModel::WriteToFile(string filename){
     }
   }
   m_file << m_N << " " << m_ExpEnergy << " " << m_ExpEnergySquared << " " << m_ExpMagneticMoment << " " << m_ExpMagneticMomentSquared << endl;
-}
-
-
-void IsingModel::ResetFile(){
-  m_file.close();
 }
