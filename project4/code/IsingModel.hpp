@@ -12,8 +12,6 @@
 #include <string>
 using namespace  std;
 using namespace arma;
-// output file
-ofstream ofile;
 
 class IsingModel{
 public:
@@ -21,9 +19,11 @@ public:
   double m_ExpEnergySquared;
   double m_ExpMagneticMoment;
   double m_ExpMagneticMomentSquared;
+  IsingModel();
   void InitializeLattice(int L);
   void CalculateObservables();
   void MetropolisSampling(int NumSamp, int T);
+  void openFile();
 
 private:
   int m_L;
@@ -31,7 +31,6 @@ private:
   double m_MagneticMoment;
   vec m_Index;
   mat m_SpinMatrix;
-  IsingModel();
 };
 
 #endif //ISINGMODEL_H
