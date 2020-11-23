@@ -1,19 +1,25 @@
 #include "IsingModel.hpp"
 
 // Constructor: Initializes energy and magnetization
-IsingModel::IsingModel(){
-  m_N = 0;
-  m_Energy = 0;
-  m_ExpEnergy = 0;
-  m_ExpEnergySquared = 0;
-  m_ExpMagneticMoment = 0;
-  m_ExpMagneticMomentSquared = 0;
+IsingModel::IsingModel(int L, int whichmatrix, double T){
+  m_L = L;
+  m_NSpins = L*L;
+  m_Energy = 0.;
+  m_ExpEnergy = 0.;
+  m_ExpEnergySquared = 0.;
+  m_ExpMagneticMoment = 0.;
+  m_ExpMagneticMomentSquared = 0.;
+
+  InitializeLattice(whichmatrix);
+  CalculateObservables();
+  BoltzFactor(T);
+
 }
 
 
 // Creates an array for ...
 void IsingModel::BoltzFactor(double T){
-  double beta = 1/T;
+  double beta = 1./T;
   m_BoltzFactor = vec(17).fill(0.0);
   m_BoltzFactor(0) = exp(beta*8);
   m_BoltzFactor(4) = exp(beta*4);
@@ -24,8 +30,7 @@ void IsingModel::BoltzFactor(double T){
 
 
 // Initializes lattice spin values
-void IsingModel::InitializeLattice(int L, int whichMatrix){
-  m_L = L;
+void IsingModel::InitializeLattice(int whichMatrix){
 
   // Creating an index array fixing the problem with the boundary elements
   m_Index = vec(m_L+2);
@@ -37,7 +42,7 @@ void IsingModel::InitializeLattice(int L, int whichMatrix){
 
   // Creating an ordered spin matrix
   if (whichMatrix == 1){
-    m_SpinMatrix = mat(L,L).fill(1.0);
+    m_SpinMatrix = mat(m_L,m_L).fill(1.0);
   }
 
  // Creating random spin matrix
@@ -79,31 +84,31 @@ void IsingModel::CalculateObservables(){
 
 
 // The metropolis algorithm including the loop over Monte Carlo cycles
-void IsingModel::MetropolisSampling(int NumSamp){
-  m_N = NumSamp;
-  m_EnergyVec = vec(NumSamp).fill(0);
+void IsingModel::MetropolisSampling(int NSamp){
+  m_NSamp = NSamp;
+  m_EnergyVec = vec(m_NSamp).fill(0);
   m_EnergyVec(0) = m_Energy;
 
   // Initialize the seed and call the Mersienne algo
   random_device rd;
   mt19937_64 gen(rd());
+  uniform_int_distribution<int> RandomIntGenerator(1, m_L);
+  uniform_real_distribution<double> RandomDoubleGenerator(0.0,1.0);
 
   // Sampling N times
-  for (int n = 1; n <= m_N; n++){
-    uniform_int_distribution<int> RandomIntGenerator(1, m_L);
-    int i = RandomIntGenerator(gen);
-    int j = RandomIntGenerator(gen);
+  int i, j, DeltaEnergy;
+  for (int n = 1; n <= m_NSamp; n++){
+    i = RandomIntGenerator(gen);
+    j = RandomIntGenerator(gen);
 
-    int DeltaEnergy = 2*m_SpinMatrix(m_Index(i), m_Index(j))
+    DeltaEnergy = 2*m_SpinMatrix(m_Index(i), m_Index(j))
       *(m_SpinMatrix(m_Index(i+1), m_Index(j)) + m_SpinMatrix(m_Index(i-1), m_Index(j))
       + m_SpinMatrix(m_Index(i), m_Index(j+1)) + m_SpinMatrix(m_Index(i), m_Index(j-1)));
 
-
-    uniform_real_distribution<double> RandomDoubleGenerator(0.0,1.0);
-    int r = RandomDoubleGenerator(gen);
+    double r = RandomDoubleGenerator(gen);
     if ((DeltaEnergy < 0) || (r < m_BoltzFactor(DeltaEnergy + 8))){
       m_Energy += DeltaEnergy;
-      if (n < m_N){
+      if (n < m_NSamp){
         m_EnergyVec(n) = m_EnergyVec(n-1) + DeltaEnergy;
       }
       m_SpinMatrix(m_Index(i), m_Index(j)) *= -1;
@@ -116,10 +121,10 @@ void IsingModel::MetropolisSampling(int NumSamp){
     m_ExpMagneticMomentSquared += m_MagneticMoment*m_MagneticMoment;
   }
 
-  m_ExpEnergy /= m_N;
-  m_ExpEnergySquared /= m_N;
-  m_ExpMagneticMoment /= m_N;
-  m_ExpMagneticMomentSquared /= m_N;
+  m_ExpEnergy /= m_NSamp;
+  m_ExpEnergySquared /= m_NSamp;
+  m_ExpMagneticMoment /= m_NSamp;
+  m_ExpMagneticMomentSquared /= m_NSamp;
 }
 
 
@@ -130,18 +135,32 @@ void IsingModel::VecEnergy(){
 
 
 // Checks if file is open and writes to file
-void IsingModel::WriteToFile(string filename){
-  if(!m_file.good()) {
-    m_file.open(filename.c_str(), ofstream::out);
-    if(!m_file.good()) {
-      cout << "Error opening file " << filename << ". Aborting!" << endl;
-      terminate();
+void IsingModel::WriteToFile(string filename, int whichMatrix){
+  if (whichMatrix == 1){
+    if(!m_fileOrdered.good()) {
+      m_fileOrdered.open(filename.c_str(), ofstream::out);
+      if(!m_fileOrdered.good()) {
+        cout << "Error opening file " << filename << ". Aborting!" << endl;
+        terminate();
+      }
     }
+    m_fileOrdered << m_NSamp << " " << m_ExpEnergy*(1./m_NSpins) << " "
+    << m_ExpEnergySquared/m_NSpins << " " << m_ExpMagneticMoment/m_NSpins
+    << " " << m_ExpMagneticMomentSquared/m_NSpins << endl;
   }
-  m_file << m_N << " " << m_ExpEnergy << " " << m_ExpEnergySquared << " " << m_ExpMagneticMoment << " " << m_ExpMagneticMomentSquared << endl;
-}
 
 
-void IsingModel::ResetFile(){
-  m_file.close();
+  else if (whichMatrix == 2){
+    if(!m_fileRandom.good()) {
+      m_fileRandom.open(filename.c_str(), ofstream::out);
+      if(!m_fileRandom.good()) {
+        cout << "Error opening file " << filename << ". Aborting!" << endl;
+        terminate();
+      }
+    }
+    m_fileRandom << m_NSamp << " " << m_ExpEnergy/m_NSpins << " "
+    << m_ExpEnergySquared/m_NSpins << " " << m_ExpMagneticMoment/m_NSpins
+    << " " << m_ExpMagneticMomentSquared/m_NSpins << endl;
+  }
+
 }

@@ -1,7 +1,0 @@
-all: compile execute
-
-compile:
-	c++ -o main.exe $(wildcard *.cpp) -larmadillo
-
-execute:
-	./main.exe 20 1.0

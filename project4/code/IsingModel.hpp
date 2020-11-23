@@ -15,28 +15,20 @@ using namespace arma;
 
 class IsingModel{
 public:
-  double m_ExpEnergy;
-  double m_ExpEnergySquared;
-  double m_ExpMagneticMoment;
-  double m_ExpMagneticMomentSquared;
-  IsingModel();
-  void BoltzFactor(double T);
-  void InitializeLattice(int L, int whichMatrix);
-  void CalculateObservables();
-  void MetropolisSampling(int NumSamp);
-  void WriteToFile(string filename);
-  void ResetFile();
+  double m_ExpEnergy, m_ExpEnergySquared, m_ExpMagneticMoment, m_ExpMagneticMomentSquared;
+  IsingModel(int L, int whichMatrix, double T);
+  void MetropolisSampling(int NSamp);
+  void WriteToFile(string filename, int whichMatrix);
 
 private:
-  int m_L;
-  int m_N;
-  double m_Energy;
-  double m_MagneticMoment;
-  vec m_Index;
-  vec m_BoltzFactor;
-  vec m_EnergyVec;
+  int m_L, m_NSpins, m_NSamp;
+  double m_Energy, m_MagneticMoment;
+  vec m_Index, m_BoltzFactor, m_EnergyVec;
   mat m_SpinMatrix;
-  ofstream m_file;
+  ofstream m_fileOrdered, m_fileRandom;
+  void BoltzFactor(double T);
+  void InitializeLattice(int whichMatrix);
+  void CalculateObservables();
   void VecEnergy();
 };
 
