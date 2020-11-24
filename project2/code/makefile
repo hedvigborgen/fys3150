@@ -8,4 +8,4 @@ test_compile:
 
 
 execute:
-	./main.exe
+	./main.exe 2 1.0 2

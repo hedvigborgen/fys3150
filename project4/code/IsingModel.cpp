@@ -1,25 +1,28 @@
 #include "IsingModel.hpp"
 
-// Constructor: Initializes energy and magnetization
-IsingModel::IsingModel(int L, int whichmatrix, double T){
-  m_L = L;
-  m_NSpins = L*L;
-  m_Energy = 0.;
-  m_ExpEnergy = 0.;
-  m_ExpEnergySquared = 0.;
-  m_ExpMagneticMoment = 0.;
-  m_ExpMagneticMomentSquared = 0.;
+// Constructor
+IsingModel::IsingModel(int L, int WhichMatrix, double T){
+  m_L = L; // Dimension of the matrix
+  m_NSpins = L*L; // Total number of lattice spins
 
-  InitializeLattice(whichmatrix);
-  CalculateObservables();
+  // Initializing observables
+  m_Energy = 0;
+  m_MagneticMoment = 0;
+  m_ExpEnergy = 0.0;
+  m_ExpEnergySquared = 0.0;
+  m_ExpMagneticMoment = 0.0;
+  m_ExpMagneticMomentSquared = 0.0;
+
+  // Calling instances for initializing the system
+  InitializeLattice(WhichMatrix);
+  CalculateObservables(WhichMatrix);
   BoltzFactor(T);
-
 }
 
 
-// Creates an array for ...
+// Creates an array for easy access to the Boltzmann's factors needed
 void IsingModel::BoltzFactor(double T){
-  double beta = 1./T;
+  double beta = 1.0/T;
   m_BoltzFactor = vec(17).fill(0.0);
   m_BoltzFactor(0) = exp(beta*8);
   m_BoltzFactor(4) = exp(beta*4);
@@ -30,7 +33,7 @@ void IsingModel::BoltzFactor(double T){
 
 
 // Initializes lattice spin values
-void IsingModel::InitializeLattice(int whichMatrix){
+void IsingModel::InitializeLattice(int WhichMatrix){
 
   // Creating an index array fixing the problem with the boundary elements
   m_Index = vec(m_L+2);
@@ -41,19 +44,19 @@ void IsingModel::InitializeLattice(int whichMatrix){
   }
 
   // Creating an ordered spin matrix
-  if (whichMatrix == 1){
-    m_SpinMatrix = mat(m_L,m_L).fill(1.0);
+  if (WhichMatrix == 1){
+    m_SpinMatrix = mat(m_L,m_L).fill(1);
   }
 
  // Creating random spin matrix
-  else if (whichMatrix == 2){
-    // Initialize the seed and call the Mersienne algo
+  else if (WhichMatrix == 2){
+    // Initializing the seed and calling the Mersienne algo
     random_device rd;
     mt19937_64 gen(rd());
-    // Set up the uniform distribution for x \in ((0, 1)
+    // Setting up the uniform distribution for x \in (0, 1)
     uniform_real_distribution<double> RandomDoubleGenerator(0.0,1.0);
 
-    m_SpinMatrix = mat(m_L,m_L).fill(0.0);
+    m_SpinMatrix = mat(m_L,m_L).fill(0);
     for (int i = 0; i < m_L; i++){
       for (int j = 0; j < m_L; j++){
         double r = RandomDoubleGenerator(gen);
@@ -69,9 +72,8 @@ void IsingModel::InitializeLattice(int whichMatrix){
 }
 
 
-// Calulates energy and magnetic moment
-void IsingModel::CalculateObservables(){
-  int J = 1; // Coupling constant
+// Calculates initial energy and magnetic moment for the configuration
+void IsingModel::CalculateObservables(int WhichMatrix){
   for (int i = 1; i <= m_L; i++){
     for (int j = 1; j <= m_L; j++){
       m_Energy -= m_SpinMatrix(m_Index(i), m_Index(j))
@@ -79,64 +81,88 @@ void IsingModel::CalculateObservables(){
       m_MagneticMoment += m_SpinMatrix(i-1,j-1);
     }
   }
+
+  int J = 1; // Coupling constant
   m_Energy *= J;
+  m_ExpEnergy += m_Energy; // Adding the initial energy to the expectation value
 }
 
 
-// The metropolis algorithm including the loop over Monte Carlo cycles
-void IsingModel::MetropolisSampling(int NSamp){
-  m_NSamp = NSamp;
-  m_EnergyVec = vec(m_NSamp).fill(0);
-  m_EnergyVec(0) = m_Energy;
+// void IsingModel::CalculateExpectationValues(int Cycle){
+//   m_ExpEnergy += m_sumEnergy;
+//   m_ExpEnergySquared += m_sumEnergy*m_sumEnergy/Cycle;
+//   m_ExpMagneticMoment += abs(m_sumMagneticMoment)/Cycle;
+//   m_ExpMagneticMomentSquared += m_sumMagneticMoment*m_sumMagneticMoment/Cycle;
+// }
 
-  // Initialize the seed and call the Mersienne algo
+
+// Performs the Metropolis algorithm including the loop over Monte Carlo cycles
+void IsingModel::MetropolisCycle(int NCycles, string filename, int WhichMatrix){
+  m_NCycles = NCycles; // Number of MCCs
+  m_NumberOfFlips = vec(m_NCycles); // Array for storing the number of allowed flips for different numbers of cycles
+
+  // Initializing the seed and calling the Mersenne algorithm
   random_device rd;
   mt19937_64 gen(rd());
   uniform_int_distribution<int> RandomIntGenerator(1, m_L);
   uniform_real_distribution<double> RandomDoubleGenerator(0.0,1.0);
 
-  // Sampling N times
-  int i, j, DeltaEnergy;
-  for (int n = 1; n <= m_NSamp; n++){
-    i = RandomIntGenerator(gen);
-    j = RandomIntGenerator(gen);
+  //WriteToFile(filename, WhichMatrix, 0); // Writing the initial expectation values to file
+  int count;
 
-    DeltaEnergy = 2*m_SpinMatrix(m_Index(i), m_Index(j))
-      *(m_SpinMatrix(m_Index(i+1), m_Index(j)) + m_SpinMatrix(m_Index(i-1), m_Index(j))
-      + m_SpinMatrix(m_Index(i), m_Index(j+1)) + m_SpinMatrix(m_Index(i), m_Index(j-1)));
+  // Running the MCCs
+  for (int Cycle = 1; Cycle < m_NCycles; Cycle++){
+    //m_Energy = 0; // Initializing the energy for each state
+    count = 0; // Initializing the count for each state
 
-    double r = RandomDoubleGenerator(gen);
-    if ((DeltaEnergy < 0) || (r < m_BoltzFactor(DeltaEnergy + 8))){
-      m_Energy += DeltaEnergy;
-      if (n < m_NSamp){
-        m_EnergyVec(n) = m_EnergyVec(n-1) + DeltaEnergy;
+    // Sampling L^2 times
+    int i, j, DeltaEnergy;
+    for (int n = 1; n <= m_NSpins; n++){
+      i = RandomIntGenerator(gen);
+      j = RandomIntGenerator(gen);
+
+      // Calculating the change in energy
+      DeltaEnergy = 2*m_SpinMatrix(m_Index(i), m_Index(j))
+        *(m_SpinMatrix(m_Index(i+1), m_Index(j)) + m_SpinMatrix(m_Index(i-1), m_Index(j))
+        + m_SpinMatrix(m_Index(i), m_Index(j+1)) + m_SpinMatrix(m_Index(i), m_Index(j-1)));
+
+      // Adding the change of energy to the energy if the flip is allowed
+      if (DeltaEnergy <= 0){
+        count += 1; // Counting number of allowed flips
+        m_SpinMatrix(m_Index(i), m_Index(j)) *= -1;
+        m_Energy += DeltaEnergy;
+        m_MagneticMoment += 2*m_SpinMatrix(m_Index(i), m_Index(j));
       }
-      m_SpinMatrix(m_Index(i), m_Index(j)) *= -1;
-      m_MagneticMoment += 2*m_SpinMatrix(m_Index(i), m_Index(j));
+      else if (RandomDoubleGenerator(gen) < m_BoltzFactor(DeltaEnergy + 8)){
+        count += 1; // Counting number of allowed flips
+        m_SpinMatrix(m_Index(i), m_Index(j)) *= -1;
+        m_Energy += DeltaEnergy;
+        m_MagneticMoment += 2*m_SpinMatrix(m_Index(i), m_Index(j));
+      }
     }
 
+    m_NumberOfFlips(Cycle-1) = count; // Storing the number of allowed flips per cycle
+    WriteToFile(filename, WhichMatrix, Cycle);
+
+    // Updating the sum of the observables
     m_ExpEnergy += m_Energy;
     m_ExpEnergySquared += m_Energy*m_Energy;
     m_ExpMagneticMoment += abs(m_MagneticMoment);
     m_ExpMagneticMomentSquared += m_MagneticMoment*m_MagneticMoment;
+    // m_sumEnergy += m_Energy;
+    // m_sumMagneticMoment += m_MagneticMoment;
+
+    // Updating expectation values
+    // CalculateExpectationValues(Cycle);
   }
-
-  m_ExpEnergy /= m_NSamp;
-  m_ExpEnergySquared /= m_NSamp;
-  m_ExpMagneticMoment /= m_NSamp;
-  m_ExpMagneticMomentSquared /= m_NSamp;
-}
-
-
-void IsingModel::VecEnergy(){
-  vec UniqueElements = unique(m_EnergyVec);
-  uvec Histogram = hist(m_EnergyVec, UniqueElements);
 }
 
 
 // Checks if file is open and writes to file
-void IsingModel::WriteToFile(string filename, int whichMatrix){
-  if (whichMatrix == 1){
+void IsingModel::WriteToFile(string filename, int WhichMatrix, int Cycle){
+
+  if (WhichMatrix == 1){
+    // Checking if file is open
     if(!m_fileOrdered.good()) {
       m_fileOrdered.open(filename.c_str(), ofstream::out);
       if(!m_fileOrdered.good()) {
@@ -144,13 +170,15 @@ void IsingModel::WriteToFile(string filename, int whichMatrix){
         terminate();
       }
     }
-    m_fileOrdered << m_NSamp << " " << m_ExpEnergy*(1./m_NSpins) << " "
-    << m_ExpEnergySquared/m_NSpins << " " << m_ExpMagneticMoment/m_NSpins
-    << " " << m_ExpMagneticMomentSquared/m_NSpins << endl;
+
+    // Writing expectation values to file
+    m_fileOrdered << Cycle << " " << m_ExpEnergy*(1.0/(m_NSpins*Cycle)) << " "
+      << m_ExpEnergySquared*(1.0/(m_NSpins*Cycle)) << " " << m_ExpMagneticMoment*(1.0/(m_NSpins*Cycle))
+      << " " << m_ExpMagneticMomentSquared*(1.0/(m_NSpins*Cycle)) << m_NumberOfFlips(Cycle-1) << endl;
   }
 
-
-  else if (whichMatrix == 2){
+  else if (WhichMatrix == 2){
+    // Checking if file is open
     if(!m_fileRandom.good()) {
       m_fileRandom.open(filename.c_str(), ofstream::out);
       if(!m_fileRandom.good()) {
@@ -158,9 +186,17 @@ void IsingModel::WriteToFile(string filename, int whichMatrix){
         terminate();
       }
     }
-    m_fileRandom << m_NSamp << " " << m_ExpEnergy/m_NSpins << " "
-    << m_ExpEnergySquared/m_NSpins << " " << m_ExpMagneticMoment/m_NSpins
-    << " " << m_ExpMagneticMomentSquared/m_NSpins << endl;
-  }
 
+    // Writing expectation values to file
+    m_fileRandom << Cycle << " " << m_ExpEnergy*(1.0/(m_NSpins*Cycle)) << " "
+    << m_ExpEnergySquared*(1.0/(m_NSpins*Cycle)) << " " << m_ExpMagneticMoment*(1.0/(m_NSpins*Cycle))
+    << " " << m_ExpMagneticMomentSquared*(1.0/(m_NSpins*Cycle)) << m_NumberOfFlips(Cycle-1) << endl;
+  }
+}
+
+
+// Resets files after program is finished
+void IsingModel::CloseFiles(){
+  m_fileOrdered.close();
+  m_fileRandom.close();
 }

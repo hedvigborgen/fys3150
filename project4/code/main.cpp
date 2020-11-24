@@ -3,13 +3,14 @@
 
 int main(int numArg, char *arguments[]) {
 
-  int L, NumSamp, whichMatrix;
+  int L, NCycles, whichMatrix;
   double T;
   string filename;
 
   L = atoi(arguments[1]);
   T = atof(arguments[2]);
   whichMatrix = atoi(arguments[3]);
+  NCycles = atoi(arguments[4]);
 
   if (whichMatrix == 1){
     filename = "../output/OrderedOrientation.dat";
@@ -19,17 +20,15 @@ int main(int numArg, char *arguments[]) {
     filename = "../output/RandomOrientation.dat";
   }
 
-  
+
   IsingModel isingModel(L, whichMatrix, T);
-  isingModel.WriteToFile(filename, whichMatrix);
 
-    // Caluclating observables for the spin matrix
-    // & writing to file for different number of Monte Carlo cycles
-    for (int NSamp = 1; NSamp < 10000; NSamp += 10){
-      isingModel.MetropolisSampling(NSamp);
-      //isingModel.CalcExpVal();
-      isingModel.WriteToFile(filename, whichMatrix);
-    }
+  // Caluclating observables for the spin matrix
+  // & writing to file for different number of Monte Carlo cycles
+  isingModel.MetropolisCycle(NCycles, filename, whichMatrix);
+  //isingModel.WriteToFile(filename, whichMatrix);
 
+
+  isingModel.CloseFiles();
   return 0;
 }
