@@ -85,21 +85,15 @@ void IsingModel::CalculateObservables(int WhichMatrix){
   int J = 1; // Coupling constant
   m_Energy *= J;
   m_ExpEnergy += m_Energy; // Adding the initial energy to the expectation value
+  m_ExpMagneticMoment += m_MagneticMoment;
 }
 
 
-// void IsingModel::CalculateExpectationValues(int Cycle){
-//   m_ExpEnergy += m_sumEnergy;
-//   m_ExpEnergySquared += m_sumEnergy*m_sumEnergy/Cycle;
-//   m_ExpMagneticMoment += abs(m_sumMagneticMoment)/Cycle;
-//   m_ExpMagneticMomentSquared += m_sumMagneticMoment*m_sumMagneticMoment/Cycle;
-// }
-
-
 // Performs the Metropolis algorithm including the loop over Monte Carlo cycles
-void IsingModel::MetropolisCycle(int NCycles, string filename, int WhichMatrix){
-  m_NCycles = NCycles; // Number of MCCs
-  m_NumberOfFlips = vec(m_NCycles); // Array for storing the number of allowed flips for different numbers of cycles
+void IsingModel::MetropolisCycle(int MCCs, string filename, int WhichMatrix){
+  m_MCCs = MCCs; // Number of MCCs
+  m_NumberOfFlips = vec(m_MCCs); // Array for storing the number of allowed flips for different numbers of cycles
+  int count;
 
   // Initializing the seed and calling the Mersenne algorithm
   random_device rd;
@@ -107,17 +101,21 @@ void IsingModel::MetropolisCycle(int NCycles, string filename, int WhichMatrix){
   uniform_int_distribution<int> RandomIntGenerator(1, m_L);
   uniform_real_distribution<double> RandomDoubleGenerator(0.0,1.0);
 
-  //WriteToFile(filename, WhichMatrix, 0); // Writing the initial expectation values to file
-  int count;
+  // Storing energies for calculating probability
+  int BurnInPeriod = 10000;
+  m_StoreEnergies = vec(int(m_MCCs - BurnInPeriod));
+  int k = 0;
+  double totEnergy;
 
   // Running the MCCs
-  for (int Cycle = 1; Cycle < m_NCycles; Cycle++){
-    //m_Energy = 0; // Initializing the energy for each state
+  for (int Cycle = 1; Cycle <= m_MCCs; Cycle++){
     count = 0; // Initializing the count for each state
+    totEnergy = 0;
 
     // Sampling L^2 times
-    int i, j, DeltaEnergy;
+    int i, j, DeltaEnergy, totEnergy;
     for (int n = 1; n <= m_NSpins; n++){
+
       i = RandomIntGenerator(gen);
       j = RandomIntGenerator(gen);
 
@@ -127,12 +125,13 @@ void IsingModel::MetropolisCycle(int NCycles, string filename, int WhichMatrix){
         + m_SpinMatrix(m_Index(i), m_Index(j+1)) + m_SpinMatrix(m_Index(i), m_Index(j-1)));
 
       // Adding the change of energy to the energy if the flip is allowed
-      if (DeltaEnergy <= 0){
+      if (DeltaEnergy < 0){
         count += 1; // Counting number of allowed flips
         m_SpinMatrix(m_Index(i), m_Index(j)) *= -1;
         m_Energy += DeltaEnergy;
         m_MagneticMoment += 2*m_SpinMatrix(m_Index(i), m_Index(j));
       }
+
       else if (RandomDoubleGenerator(gen) < m_BoltzFactor(DeltaEnergy + 8)){
         count += 1; // Counting number of allowed flips
         m_SpinMatrix(m_Index(i), m_Index(j)) *= -1;
@@ -141,20 +140,26 @@ void IsingModel::MetropolisCycle(int NCycles, string filename, int WhichMatrix){
       }
     }
 
+    //Storing energies for calculating probability
+    if (Cycle > BurnInPeriod){
+      m_StoreEnergies(k) = m_Energy/(m_NSpins);
+      k += 1;
+    }
+
     m_NumberOfFlips(Cycle-1) = count; // Storing the number of allowed flips per cycle
-    WriteToFile(filename, WhichMatrix, Cycle);
+    WriteToFile(filename, WhichMatrix, Cycle); // Writing expectation values and flips to file
 
     // Updating the sum of the observables
     m_ExpEnergy += m_Energy;
     m_ExpEnergySquared += m_Energy*m_Energy;
     m_ExpMagneticMoment += abs(m_MagneticMoment);
     m_ExpMagneticMomentSquared += m_MagneticMoment*m_MagneticMoment;
-    // m_sumEnergy += m_Energy;
-    // m_sumMagneticMoment += m_MagneticMoment;
+
 
     // Updating expectation values
     // CalculateExpectationValues(Cycle);
   }
+//cout << m_StoreEnergies << endl;
 }
 
 
@@ -173,8 +178,8 @@ void IsingModel::WriteToFile(string filename, int WhichMatrix, int Cycle){
 
     // Writing expectation values to file
     m_fileOrdered << Cycle << " " << m_ExpEnergy*(1.0/(m_NSpins*Cycle)) << " "
-      << m_ExpEnergySquared*(1.0/(m_NSpins*Cycle)) << " " << m_ExpMagneticMoment*(1.0/(m_NSpins*Cycle))
-      << " " << m_ExpMagneticMomentSquared*(1.0/(m_NSpins*Cycle)) << m_NumberOfFlips(Cycle-1) << endl;
+      << m_ExpEnergySquared*(1.0/(m_NSpins*m_NSpins*Cycle)) << " " << m_ExpMagneticMoment*(1.0/(m_NSpins*Cycle))
+      << " " << m_ExpMagneticMomentSquared*(1.0/(m_NSpins*m_NSpins*Cycle)) << " " << m_NumberOfFlips(Cycle-1) << endl;
   }
 
   else if (WhichMatrix == 2){
@@ -189,8 +194,8 @@ void IsingModel::WriteToFile(string filename, int WhichMatrix, int Cycle){
 
     // Writing expectation values to file
     m_fileRandom << Cycle << " " << m_ExpEnergy*(1.0/(m_NSpins*Cycle)) << " "
-    << m_ExpEnergySquared*(1.0/(m_NSpins*Cycle)) << " " << m_ExpMagneticMoment*(1.0/(m_NSpins*Cycle))
-    << " " << m_ExpMagneticMomentSquared*(1.0/(m_NSpins*Cycle)) << m_NumberOfFlips(Cycle-1) << endl;
+    << m_ExpEnergySquared*(1.0/(m_NSpins*m_NSpins*Cycle)) << " " << m_ExpMagneticMoment*(1.0/(m_NSpins*Cycle))
+    << " " << m_ExpMagneticMomentSquared*(1.0/(m_NSpins*m_NSpins*Cycle)) << " " << m_NumberOfFlips(Cycle-1) << endl;
   }
 }
 
