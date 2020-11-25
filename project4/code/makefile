@@ -4,4 +4,4 @@ compile:
 	c++ -o main.exe $(wildcard *.cpp) -larmadillo -O3 -march=native
 
 execute:
-	./main.exe 20 2.4 2 100000
+	./main.exe 20 1.0 2 100000

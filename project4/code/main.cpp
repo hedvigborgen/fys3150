@@ -1,4 +1,4 @@
-#include "IsingModel.hpp"
+#include "isingmodel.hpp"
 
 
 int main(int numArg, char *arguments[]) {
