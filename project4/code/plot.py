@@ -11,7 +11,7 @@ plt.rc('text.latex', preamble=r'\usepackage{amsmath}')
 
 L = 2
 LL = L**2
-MCCs = 100_000
+MCCs = 100000
 temperature = np.linspace(0.5,5,1000)
 temperature_num = np.linspace(0.5,5,10)
 
@@ -24,12 +24,14 @@ expMagneticMomentSquared = np.zeros(len(temperature_num))
 for i, T in enumerate(temperature_num):
     # Compiling the C++ script
     subprocess.call(['c++', '-o', 'main.exe', 'isingmodel.cpp', 'main.cpp', '-larmadillo', '-O3', '-march=native'])
-    os.system(f'./main.exe 20 {T} 2 {MCCs}')
-    values = np.loadtxt(f'../output/RandomOrientation_{T}.dat')
-    expEnergy[i] = values[:,1][-1]#*LL
-    expEnergySquared[i] = values[:,2][-1]#*LL*LL
-    expMagneticMoment[i] = values[:,3][-1]#*LL
-    expMagneticMomentSquared[i] = values[:,4][-1]#*LL*LL
+    os.system(f"./main.exe 20 {T} 2 {MCCs}")
+    values = np.loadtxt(f"../output/RandomOrientation_{T}.dat")
+    MCCs_max = values[:,0][-1]
+    expEnergy[i] = values[:,1][-1]/MCCs_max
+    expEnergySquared[i] = values[:,2][-1]/MCCs_max
+    expMagneticMoment[i] = values[:,3][-1]/MCCs_max
+    expMagneticMomentSquared[i] = values[:,4][-1]/MCCs_max
+
     if T == 1:
         beta = 1/T
         cv_numerical = beta/T*(expEnergySquared[i] - expEnergy[i]**2)
@@ -56,6 +58,32 @@ for i, T in enumerate(temperature_num):
         print("Analytical chi=", chi_analytical)
 
 
+        MCCs_T1 = values[:,0]
+        expEnergy_T1 = values[:,1]/MCCs_T1
+        expEnergySquared_T1 = values[:,2]/MCCs_T1
+        expMagneticMoment_T1 = values[:,3]/MCCs_T1
+        expMagneticMomentSquared_T1 = values[:,4]/MCCs_T1
+        cv_numerical_T1 = beta/T*(expEnergySquared_T1 - expEnergy_T1**2)
+        chi_numerical_T1 = beta*(expMagneticMomentSquared_T1 - expMagneticMoment_T1**2)
+
+        e_exp_T1 = np.ones(len(MCCs_T1))*e_exp
+        e_squared_exp_T1 = np.ones(len(MCCs_T1))*e_squared_exp
+        m_exp_T1 = np.ones(len(MCCs_T1))*m_exp
+        m_squared_exp_T1 = np.ones(len(MCCs_T1))*m_squared_exp
+        cv_analytical_T1 = np.ones(len(MCCs_T1))*cv_analytical
+        chi_analytical_T1 = np.ones(len(MCCs_T1))*chi_analytical
+
+
+        fig, ax = plt.subplots()
+        ax.plot(MCCs_T1, cv_analytical_T1, color="#B1C084", label=f"Analyticalheat capacity" )
+        ax.plot(MCCs_T1, cv_numerical_T1, color='#1A7DA8', label=f"Numerical heat capacity")
+        ax.set_title(f"The specific heat capacity $C_V$ as a function of MCCs", fontsize=20)
+        ax.set_xlabel("MCCs", fontsize=15)
+        ax.set_ylabel("$c_V(T)$", fontsize=15)
+        ax.legend(fontsize=15)
+        fig.savefig(f'../plots/specific_heat_capacity_cycle_{MCCs}.pdf')
+
+
 k_b = 1
 beta = 1/temperature
 beta_num = 1/temperature_num
@@ -76,7 +104,7 @@ chi_analytical = beta*(m_squared_exp - m_exp**2)
 
 # c_v
 fig, ax = plt.subplots()
-ax.plot(temperature, cv_analytical, color="#B1C084", label=f"Analytical heat capacity" )
+ax.plot(temperature, cv_analytical, color="#B1C084", label=f"Analyticalheat capacity" )
 ax.plot(temperature_num, cv_numerical, color='#1A7DA8', label=f"Numerical heat capacity")
 ax.set_title(f"The specific heat capacity $C_V$ as a function of temperature $T$", fontsize=20)
 ax.set_xlabel("$T$[J]", fontsize=15)
@@ -86,7 +114,7 @@ fig.savefig(f'../plots/specific_heat_capacity{MCCs}.pdf')
 
 # chi
 fig, ax = plt.subplots()
-ax.plot(temperature, chi_analytical, color="#B1C084", label=f"Analytical heat susceptibility" )
+ax.plot(temperature, chi_analytical, color="#B1C084", label=f"Analyticalheat susceptibility" )
 ax.plot(temperature_num, chi_numerical, color='#1A7DA8', label=f"Numerical heat susceptibility")
 ax.set_title(f"The susceptibility $\chi$ as a function of temperature $T$", fontsize=20)
 ax.set_xlabel("$T$[J]", fontsize=15)

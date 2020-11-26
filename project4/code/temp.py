@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 import subprocess
 import os
 
+
 # For nice plots
 plt.style.use('seaborn')
 plt.rc('text', usetex=True)
@@ -11,7 +12,7 @@ plt.rc('text.latex', preamble=r'\usepackage{amsmath}')
 temperature = [1, 2.4]
 whichMatrix = [1,2]
 L = 20
-MCCs = int(100_000)
+MCCs = int(10000)
 
 # try:
 # 	L, MCCs = sys.argv[1:]
@@ -34,13 +35,24 @@ ax.set(xscale="log")
 for i, T in enumerate(temperature):
 	os.system(f"./main.exe 20 {T} 1 {MCCs}")
 	ordered = np.loadtxt(f"../output/OrderedOrientation_{T}.dat")
-	ax.plot(ordered[:,0], ordered[:,1], f"{style[0]}", color = colors[i], label=f"Ordered spins, T = {T}")
+	MCCs_ordered = ordered[:,0]
+	expEnergy_ordered = ordered[:,1]#/(MCCs_ordered)
+	# print(MCCs_ordered)
+	# print(expEnergy_ordered)
+    # expEnergySquared[i] = values[:,2][-1]/MCCs_max
+    # expMagneticMoment[i] = values[:,3][-1]/MCCs_max
+    # expMagneticMomentSquared[i] = values[:,4][-1]/MCCs_max
+	ax.plot(MCCs_ordered, expEnergy_ordered, f"{style[0]}", color = colors[i], label=f"Ordered spins, T = {T}")
 
 
 for i, T in enumerate(temperature):
 	os.system(f"./main.exe 20 {T} 2 {MCCs}")
 	random = np.loadtxt(f"../output/RandomOrientation_{T}.dat")
-	ax.plot(random[:,0], random[:,1], f"{style[1]}", color = colors[i], label=f"Random spins, T = {T}")
+	MCCs_random = random[:,0]
+	expEnergy_random = random[:,1]#/(MCCs_random)
+	# print(MCCs_random)
+	# print(expEnergy_random)
+	ax.plot(MCCs_random, expEnergy_random, f"{style[1]}", color = colors[i], label=f"Random spins, T = {T}")
 
 
 ax.legend(fontsize=15)
@@ -51,7 +63,7 @@ ax.set_title(f'Expectation value for the energy', fontsize=20)
 fig.tight_layout()
 fig.savefig(f'../plots/expecationvalueEnergy{MCCs}.pdf')
 
-# Plotting the magnetization (absolute values) as function of the number of MCCs,
+#Plotting the magnetization (absolute values) as function of the number of MCCs,
 #for both ordered and random matrices with T = 1 and 2.4.
 fig, ax = plt.subplots()
 ax.set(xscale="log")
