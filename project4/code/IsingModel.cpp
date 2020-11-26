@@ -175,9 +175,12 @@ void IsingModel::WriteToFile(string filename, int WhichMatrix, int Cycle){
     }
 
     // Writing expectation values to file
-    m_fileOrdered << Cycle << " " << m_ExpEnergy*(1.0/(m_NSpins*Cycle)) << " "
-      << m_ExpEnergySquared*(1.0/(m_NSpins*m_NSpins*Cycle)) << " " << m_ExpMagneticMoment*(1.0/(m_NSpins*Cycle))
-      << " " << m_ExpMagneticMomentSquared*(1.0/(m_NSpins*m_NSpins*Cycle)) << " " << m_NumberOfFlips(Cycle-1) << " " << m_StoreEnergies(Cycle-1) << endl;
+    m_fileOrdered << Cycle << " " << m_ExpEnergy*(1.0/(m_NSpins)) << " "
+      << m_ExpEnergySquared*(1.0/(m_NSpins*m_NSpins)) << " " << m_ExpMagneticMoment*(1.0/(m_NSpins))
+      << " " << m_ExpMagneticMomentSquared*(1.0/(m_NSpins*m_NSpins)) << " " << m_NumberOfFlips(Cycle-1) << " " << m_StoreEnergies(Cycle-1) << endl;
+    // m_fileOrdered << Cycle << " " << m_ExpEnergy*(1.0/(m_NSpins*Cycle)) << " "
+    //   << m_ExpEnergySquared*(1.0/(m_NSpins*m_NSpins*Cycle)) << " " << m_ExpMagneticMoment*(1.0/(m_NSpins*Cycle))
+    //   << " " << m_ExpMagneticMomentSquared*(1.0/(m_NSpins*m_NSpins*Cycle)) << " " << m_NumberOfFlips(Cycle-1) << " " << m_StoreEnergies(Cycle-1) << endl;
   }
 
   else if (WhichMatrix == 2){
@@ -194,6 +197,9 @@ void IsingModel::WriteToFile(string filename, int WhichMatrix, int Cycle){
     m_fileRandom << Cycle << " " << m_ExpEnergy*(1.0/(m_NSpins)) << " "
     << m_ExpEnergySquared*(1.0/(m_NSpins*m_NSpins)) << " " << m_ExpMagneticMoment*(1.0/(m_NSpins))
     << " " << m_ExpMagneticMomentSquared*(1.0/(m_NSpins*m_NSpins)) << " " << m_NumberOfFlips(Cycle-1) << " " << m_StoreEnergies(Cycle-1) << endl;
+    // m_fileRandom << Cycle << " " << m_ExpEnergy*(1.0/(m_NSpins*Cycle)) << " "
+    // << m_ExpEnergySquared*(1.0/(m_NSpins*m_NSpins*Cycle)) << " " << m_ExpMagneticMoment*(1.0/(m_NSpins*Cycle))
+    // << " " << m_ExpMagneticMomentSquared*(1.0/(m_NSpins*m_NSpins*Cycle)) << " " << m_NumberOfFlips(Cycle-1) << " " << m_StoreEnergies(Cycle-1) << endl;
   }
 }
 
