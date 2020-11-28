@@ -8,13 +8,16 @@ plt.style.use('seaborn')
 plt.rc('text', usetex=True)
 plt.rc('text.latex', preamble=r'\usepackage{amsmath}')
 
-
+part = 'c'
+MCCs = 100_000
+WhichMatrix = 2
 L = 2
 LL = L**2
-MCCs = 100000
 temperature = np.linspace(0.5,5,1000)
 temperature_num = np.linspace(0.5,5,10)
 
+# Compiling the C++ script
+subprocess.call(['c++', '-std=c++11', '-o', 'main.exe', 'isingmodel.cpp', 'main.cpp', '-larmadillo', '-O3', '-march=native', '-Xpreprocessor', '-fopenmp', '-lomp'])
 
 expEnergy = np.zeros(len(temperature_num))
 expEnergySquared = np.zeros(len(temperature_num))
@@ -22,15 +25,13 @@ expMagneticMoment = np.zeros(len(temperature_num))
 expMagneticMomentSquared = np.zeros(len(temperature_num))
 
 for i, T in enumerate(temperature_num):
-    # Compiling the C++ script
-    subprocess.call(['c++', '-o', 'main.exe', 'isingmodel.cpp', 'main.cpp', '-larmadillo', '-O3', '-march=native'])
-    os.system(f"./main.exe 20 2 {MCCs} {T}")
-    values = np.loadtxt(f"../output/RandomOrientation_{T}.dat")
-    MCCs_max = values[:,0][-1]
-    expEnergy[i] = values[:,1][-1]/MCCs_max
-    expEnergySquared[i] = values[:,2][-1]/MCCs_max
-    expMagneticMoment[i] = values[:,3][-1]/MCCs_max
-    expMagneticMomentSquared[i] = values[:,4][-1]/MCCs_max
+    os.system(f'./main.exe {part} {MCCs} {WhichMatrix} {L} {T}')
+    values = np.loadtxt(f'../output/part4c_{T}.dat')
+    MCCs_max = values[-1,0]
+    expEnergy[i] = values[-1,1]
+    expEnergySquared[i] = values[-1,2]
+    expMagneticMoment[i] = values[-1,3]
+    expMagneticMomentSquared[i] = values[-1,4]
 
     if T == 1:
         beta = 1/T
@@ -59,10 +60,10 @@ for i, T in enumerate(temperature_num):
 
 
         MCCs_T1 = values[:,0]
-        expEnergy_T1 = values[:,1]/MCCs_T1
-        expEnergySquared_T1 = values[:,2]/MCCs_T1
-        expMagneticMoment_T1 = values[:,3]/MCCs_T1
-        expMagneticMomentSquared_T1 = values[:,4]/MCCs_T1
+        expEnergy_T1 = values[:,1] #/MCCs_T1
+        expEnergySquared_T1 = values[:,2] #/MCCs_T1
+        expMagneticMoment_T1 = values[:,3] #/MCCs_T1
+        expMagneticMomentSquared_T1 = values[:,4] #/MCCs_T1
         cv_numerical_T1 = beta/T*(expEnergySquared_T1 - expEnergy_T1**2)
         chi_numerical_T1 = beta*(expMagneticMomentSquared_T1 - expMagneticMoment_T1**2)
 
@@ -75,13 +76,22 @@ for i, T in enumerate(temperature_num):
 
 
         fig, ax = plt.subplots()
-        ax.plot(MCCs_T1, cv_analytical_T1, color="#B1C084", label=f"Analyticalheat capacity" )
-        ax.plot(MCCs_T1, cv_numerical_T1, color='#1A7DA8', label=f"Numerical heat capacity")
+        ax.plot(MCCs_T1[1:], cv_analytical_T1[1:], color="#B1C084", label=f"Analytical heat capacity" )
+        ax.plot(MCCs_T1[1:], cv_numerical_T1[1:], color='#1A7DA8', label=f"Numerical heat capacity")
         ax.set_title(f"The specific heat capacity $C_V$ as a function of MCCs", fontsize=20)
         ax.set_xlabel("MCCs", fontsize=15)
         ax.set_ylabel("$c_V(T)$", fontsize=15)
         ax.legend(fontsize=15)
-        fig.savefig(f'../plots/specific_heat_capacity_cycle_{MCCs}.pdf')
+        fig.savefig(f'../plots/cv_functionofMCCs_cycle_{MCCs}.pdf')
+
+        fig, ax = plt.subplots()
+        ax.plot(MCCs_T1, chi_analytical_T1, color="#B1C084", label=f"Analytical susceptibility" )
+        ax.plot(MCCs_T1, chi_numerical_T1, color='#1A7DA8', label=f"Numerical susceptibility")
+        ax.set_title(f"Susceptibility $\chi$ as a function of MCCs", fontsize=20)
+        ax.set_xlabel("MCCs", fontsize=15)
+        ax.set_ylabel("$\chi(T)$", fontsize=15)
+        ax.legend(fontsize=15)
+        fig.savefig(f'../plots/chi_functionofMCCs_cycle_{MCCs}.pdf')
 
 
 beta = 1/temperature
@@ -109,7 +119,7 @@ ax.set_title(f"The specific heat capacity $C_V$ as a function of temperature $T$
 ax.set_xlabel("$T$[J]", fontsize=15)
 ax.set_ylabel("$C_V(T)$", fontsize=15)
 ax.legend(fontsize=15)
-fig.savefig(f'../plots/specific_heat_capacity{MCCs}.pdf')
+fig.savefig(f'../plots/cv_functionofTemp_MCCs_{MCCs}.pdf')
 
 # Plotting the magnetic susceptibility as function of temperature
 fig, ax = plt.subplots()
@@ -119,7 +129,7 @@ ax.set_title(f"The susceptibility $\chi$ as a function of temperature $T$", font
 ax.set_xlabel("$T$[J]", fontsize=15)
 ax.set_ylabel("$\chi(T)$", fontsize=15)
 ax.legend(fontsize=15)
-fig.savefig(f'../plots/susceptibility{MCCs}.pdf')
+fig.savefig(f'../plots/chi_functionofTemp_MCCs_{MCCs}.pdf')
 
 # Expectation magnetization
 fig, ax = plt.subplots()
