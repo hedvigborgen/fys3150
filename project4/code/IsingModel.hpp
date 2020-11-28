@@ -28,7 +28,7 @@ private:
   mat m_SpinMatrix;
   void BoltzFactor(double);
   void InitializeLattice(int);
-  void CalculateObservables(int);
+  void InitializeObservables(int);
   void UpdateExpectationvalues(int, double);
   void WriteToFile(string, int, int);
   void WriteToFile(string);

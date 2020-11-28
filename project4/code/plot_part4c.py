@@ -17,7 +17,7 @@ temperature = np.linspace(0.5,5,1000)
 temperature_num = np.linspace(0.5,5,10)
 
 # Compiling the C++ script
-subprocess.call(['c++', '-std=c++11', '-o', 'main.exe', 'isingmodel.cpp', 'main.cpp', '-larmadillo', '-O3', '-march=native', '-Xpreprocessor', '-fopenmp', '-lomp'])
+subprocess.call(['c++', '-std=c++11', '-o', 'main.exe', 'IsingModel.cpp', 'main.cpp', '-larmadillo', '-O3', '-march=native', '-Xpreprocessor', '-fopenmp', '-lomp'])
 
 expEnergy = np.zeros(len(temperature_num))
 expEnergySquared = np.zeros(len(temperature_num))
@@ -76,8 +76,8 @@ for i, T in enumerate(temperature_num):
 
 
         fig, ax = plt.subplots()
-        ax.plot(MCCs_T1[1:], cv_analytical_T1[1:], color="#B1C084", label=f"Analytical heat capacity" )
-        ax.plot(MCCs_T1[1:], cv_numerical_T1[1:], color='#1A7DA8', label=f"Numerical heat capacity")
+        ax.plot(MCCs_T1, cv_analytical_T1, color="#B1C084", label=f"Analytical heat capacity" )
+        ax.plot(MCCs_T1, cv_numerical_T1, color='#1A7DA8', label=f"Numerical heat capacity")
         ax.set_title(f"The specific heat capacity $C_V$ as a function of MCCs", fontsize=20)
         ax.set_xlabel("MCCs", fontsize=15)
         ax.set_ylabel("$c_V(T)$", fontsize=15)
