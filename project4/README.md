@@ -3,7 +3,7 @@
 
 Kamilla Ida Julie Sulebakk, Hedvig Borgen Reiersrud and Andrea Jensen Marthinussen
 
-In this project, we have utilized the Ising model in two dimension, in order to study phase transitions in magnetic systems. 
+In this project we have utilized the Ising model in two dimensions to study phase transitions in magnetic systems. 
 
 ## The project is created with:
 * C++
@@ -15,6 +15,7 @@ In this project, we have utilized the Ising model in two dimension, in order to 
    * cmath
    * sstream
    * cstdlib
+   * omp.h
     
 * Python version: 3
   * numpy	
