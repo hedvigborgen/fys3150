@@ -37,6 +37,7 @@ make part4c
 make part4d
 make part4e
 make part4f
+make test
 
 ```
 Here; 
@@ -56,6 +57,12 @@ Here;
     * mean energy, mean energy squared, mean absolute magnetization, mean magnetization squared 
     * for randomly oriented spins
     * with different temperatures T between 2.15 and 2.45, L = 40, L = 60, L = 80 and L = 100 and MCCs = 1,000,000.
+* make test produces output file containing values for computed observables at final MCC to test parallelized code;
+    * mean energy, mean energy squared, mean absolute magnetization, mean magnetization squared 
+    * for randomly oriented spins
+    * with T = 2.4 for L = 2 and MCCs = 1,000,000.
+    
+ 
 
 
 ### Plotting for part 4c)
