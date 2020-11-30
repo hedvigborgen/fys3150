@@ -20,7 +20,7 @@ public:
   void MetropolisCycle(int, string);
 
 private:
-  int m_L, m_NSpins, m_MCCs, m_BurnInPeriod;
+  long int m_L, m_NSpins, m_MCCs, m_BurnInPeriod;
   double m_T, m_Energy, m_MagneticMoment, m_sumEnergy, m_sumEnergySquared, m_sumMagneticMoment, m_sumMagneticMomentSquared;
   double m_expEnergy, m_expEnergySquared, m_expMagneticMoment, m_expMagneticMomentSquared;
   vec m_expEvec, m_expESquaredvec, m_expMvec, m_expMSquaredvec;
