@@ -6,7 +6,7 @@ IsingModel::IsingModel(int L, int whichMatrix, double T){
   m_L = L; // Dimension of the matrix
   m_NSpins = L*L; // Total number of spins
   m_T = T; // Temperature in Joule
-  
+
   // Initializing observables
   m_Energy = 0;
   m_MagneticMoment = 0;
@@ -248,6 +248,7 @@ void IsingModel::MetropolisCycle(int MCCs, string filename, int whichMatrix, int
 // when we only want to sample the final expectation values
 void IsingModel::MetropolisCycle(int MCCs, string filename){
   m_MCCs = MCCs; // Number of MCCs
+  m_BurnInPeriod = 10000; // Burn in period
 
   // Initializing the seed and calling the Mersenne algorithm
   random_device rd;
@@ -281,12 +282,13 @@ void IsingModel::MetropolisCycle(int MCCs, string filename){
         m_MagneticMoment += 2*m_SpinMatrix(m_Index(i), m_Index(j));
       }
     }
-
-    // Updating the sum of the observables
-    m_sumEnergy += m_Energy;
-    m_sumEnergySquared += m_Energy*m_Energy;
-    m_sumMagneticMoment += abs(m_MagneticMoment);
-    m_sumMagneticMomentSquared += m_MagneticMoment*m_MagneticMoment;
+    if (Cycle > m_BurnInPeriod){
+      // Updating the sum of the observables
+      m_sumEnergy += m_Energy;
+      m_sumEnergySquared += m_Energy*m_Energy;
+      m_sumMagneticMoment += abs(m_MagneticMoment);
+      m_sumMagneticMomentSquared += m_MagneticMoment*m_MagneticMoment;
+    }
   }
 
   // Scaling factor
@@ -357,7 +359,6 @@ void IsingModel::WriteToFile(string filename){
   // Writing the expectation values to file
   ofile << " " << m_expEnergy << " "
     << m_expEnergySquared << " " << m_expMagneticMoment
-    << " " << m_expMagneticMomentSquared << endl;
-
+    << " " << m_expMagneticMomentSquared << " " << endl;
   ofile.close(); // Closing file after use
 }
