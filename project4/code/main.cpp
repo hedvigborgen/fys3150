@@ -73,9 +73,9 @@ int main(int numArg, char *arguments[]) {
   else if (part == "f"){
     whichMatrix = atoi(arguments[4]);
 
-    double T_start = 2.0;
-    double T_end = 2.3;
-    int Ntemps = 100;
+    double T_start = 2.15;
+    double T_end = 2.45;
+    int Ntemps = 20;
     double h = (T_end - T_start)/(Ntemps - 1);
 
 
@@ -102,27 +102,36 @@ int main(int numArg, char *arguments[]) {
   }
 
 
+else if (part == "unparallelized_f"){
+  whichMatrix = atoi(arguments[4]);
 
-  // if (numArg == 6){
-  //   T = atof(arguments[5]);
-  //
-  //   if (whichMatrix == 1){
-  //     filename = "../output/OrderedOrientation_";
-  //     filename.append(arguments[4]).append(".dat");
-  //   }
-  //
-  //   else if (whichMatrix == 2){
-  //     filename = "../output/RandomOrientation_";
-  //     filename.append(arguments[4]).append(".dat");
-  //   }
-  //
-  //
-  //   IsingModel isingModel(L, whichMatrix, T);
-  //
-  //   // Caluclating observables for the spin matrix
-  //   // & writing to file for different number of Monte Carlo cycles
-  //   isingModel.MetropolisCycle(MCCs, filename, whichMatrix, method);
-  // }
+  double T_start = 2.15;
+  double T_end = 2.45;
+  int Ntemps = 20;
+  double h = (T_end - T_start)/(Ntemps - 1);
+
+  // Timing the test
+  clock_t start, finish;
+  start = clock();
+
+  for (int i = 0; i < Ntemps; i++){
+    T = T_start + i*h;
+    filename = "../output/test_";
+    filename.append(to_string(i)).append("_L_").append(arguments[3]).append(".dat");
+
+    // Initializing the system
+    IsingModel isingModel(L, whichMatrix, T);
+
+    // Calculating observables for the system and writing to file
+    isingModel.MetropolisCycle(MCCs, filename);
+  }
+
+  // Finishing the timing
+  finish = clock();
+  double time = (double (finish - start)/CLOCKS_PER_SEC);
+  cout << "Unparallelized code took " << time << " seconds to execute with L = " << L << "." << endl;
+
+}
 
   return 0;
 }
