@@ -102,7 +102,8 @@ python3 plot_part4fg.py
 
 ## Example run 2:
 ```
->> python3 plot_part4d.py               
+>> python3 plot_part4d.py   
+
 # Compiles and executes the main script producing output files, makes plots
 of mean energy, mean magnetization and total number of accepted configurations
 
