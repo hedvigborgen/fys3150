@@ -93,6 +93,7 @@ for i, T in enumerate(temperature_num):
         ax.set_title(f"The specific heat capacity $C_V$ as a function of MCCs", fontsize=20)
         ax.set_xlabel("MCCs", fontsize=15)
         ax.set_ylabel("$c_V(T)$", fontsize=15)
+        ax.set_ylim(-0.01, 0.02)
         ax.legend(fontsize=15)
         fig.savefig(f'../plots/part_c/cv_functionofMCCs_cycle_{MCCs}.pdf')
 
@@ -103,7 +104,8 @@ for i, T in enumerate(temperature_num):
         ax.plot(MCCs_T1, chi_numerical_T1, color='#1A7DA8', label=f"Numerical susceptibility")
         ax.set_title(f"Susceptibility $\chi$ as a function of MCCs", fontsize=20)
         ax.set_xlabel("MCCs", fontsize=15)
-        ax.set_ylabel("$\chi(T)$", fontsize=15)
+        ax.set_ylabel("$\chi(T)$ [J$^{-1}$]", fontsize=15)
+        ax.set_ylim(-0.01, 0.01)
         ax.legend(fontsize=15)
         fig.savefig(f'../plots/part_c/chi_functionofMCCs_cycle_{MCCs}.pdf')
 
@@ -140,7 +142,7 @@ ax.plot(temperature, chi_analytical, color="#B1C084", label=f"Analytical heat su
 ax.plot(temperature_num, chi_numerical, color='#1A7DA8', label=f"Numerical heat susceptibility")
 ax.set_title(f"The susceptibility $\chi$ as a function of temperature $T$", fontsize=20)
 ax.set_xlabel("$T$[J]", fontsize=15)
-ax.set_ylabel("$\chi(T)$", fontsize=15)
+ax.set_ylabel("$\chi(T)$ [J$^{-1}$]", fontsize=15)
 ax.legend(fontsize=15)
 fig.savefig(f'../plots/part_c/chi_functionofTemp_MCCs_{MCCs}.pdf')
 

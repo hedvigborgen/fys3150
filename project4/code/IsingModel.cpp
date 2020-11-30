@@ -6,7 +6,7 @@ IsingModel::IsingModel(int L, int whichMatrix, double T){
   m_L = L; // Dimension of the matrix
   m_NSpins = L*L; // Total number of spins
   m_T = T; // Temperature in Joule
-
+  
   // Initializing observables
   m_Energy = 0;
   m_MagneticMoment = 0;
@@ -351,7 +351,6 @@ void IsingModel::WriteToFile(string filename, int whichMatrix, int ChoiceofSampl
 
 // Writes final expectation values to files
 void IsingModel::WriteToFile(string filename){
-
   ofstream ofile;
   ofile.open(filename);
 

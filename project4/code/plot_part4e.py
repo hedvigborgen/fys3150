@@ -36,4 +36,6 @@ for i, T in enumerate(temperatures):
     fig.savefig(f'../plots/part_e/probability_T_{T}_{MCCs}.pdf')
 
     variance = expEnergySquared - expEnergy**2
+    std = np.sqrt(variance)
     print("Computed variance in energy for T =", T, ":", variance)
+    print("Computed standard deviation in energy for T =", T, ":", std)
