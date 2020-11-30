@@ -28,13 +28,11 @@ In this project we have utilized the Ising model in two dimensions to study phas
 ## How to run the code:
 Open terminal window, these commands compile and execute the programs: 
 ```
-# To compile all scripts at once:
-make compile 
-
-# To execute all scripts at once:
+# To compile and execute all scripts at once:
 make all 
 
-# Alternatively, to execute one task at a time 
+# Alternatively, to compile and then execute one task at a time:
+make compile
 make part4c
 make part4d
 make part4e
@@ -42,44 +40,44 @@ make part4f
 
 ```
 Here; 
-* make part4c produces output files containing values for the computed observables
-    * MCC, mean energy, squared mean energy, magnetization, squared magnetization 
-    * for random spin orientation 
+* make part4c produces output files containing values for the computed observables for all MCCs;
+    * MCC, mean energy, mean energy squared, mean absolute magnetization, mean magnetization squared
+    * for randomly oriented spins
     * with T = 1.0, L = 2 and MCCs = 100,000. 
-* make part4d produces output files containing values for computed observables;
-    * MCC, mean energy, squared mean energy, magnetization, squared magnetization, accepted spin configuration
-    * for both random and ordered spin orientation
+* make part4d produces output files containing values for computed observables for all MCCs;
+    * MCC, mean energy, mean energy squared, mean absolute magnetization, mean magnetization squared, number of accepted configurations
+    * for both randomly oriented and ordered spins
     * with T = 1.0 and T = 2.4, L = 20 and MCCs = 100,000.
-* make part4e produces output files containing values for computed observables;
-    * MCC, mean energy, squared mean energy, magnetization, squared magnetization, total energy 
-    * for random spin orientation 
+* make part4e produces output files containing values for computed observables after burn in period;
+    * MCC, mean energy, mean energy squared, mean absolute magnetization, mean magnetization squared, total energy per configuration 
+    * for randomly oriented spins
     * with T = 1.0 and T = 2.4, L = 20 and MCCs = 100,000
-* make part4f produces output files containing values for computed observables;
-    * MCC, mean energy, squared mean energy, magnetization, squared magnetization 
-    * for random spin orientation 
-    * with different temperatures T between 2.0 and 2.3, L = 40, L = 60, L = 80 and L = 100 and MCCs = 100,000.
+* make part4f produces output files containing values for computed observables at final MCC;
+    * mean energy, mean energy squared, mean absolute magnetization, mean magnetization squared 
+    * for randomly oriented spins
+    * with different temperatures T between 2.15 and 2.45, L = 40, L = 60, L = 80 and L = 100 and MCCs = 1,000,000.
 
 
 
-### To make plots of analytical and numerical mean energy, mean magnetization, specific heat and magnetic susceptibility for T = 1.0:
+### To make plots of analytical and numerical mean energy, mean absolute magnetization, specific heat capacity and magnetic susceptibility for T = 1.0 with L = 2:
 ```
 python3 plot_part4c.py
 ```
 
 
-### To make plots of mean energy, mean magnetization and total number of accepted configurations for both random and ordered spin orientation, with T = 1.0 and T = 2.4:
+### To make plots of mean energy, mean absolute magnetization and total number of accepted configurations as functions of MCCs for both randomly oriented and ordered spins, with T = 1.0 and T = 2.4 with L = 20:
 ```
 python3 plot_part4d.py
 ```
 
 
-### To make plots of the probability of each energy state and print variance in energy for T = 1.0 and T = 2.4:
+### To make plots of the probability of each energy state and print variance and standard deviation in energy for T = 1.0 and T = 2.4 with L = 20:
 ```
 python3 plot_part4e.py
 ```
 
 	
-### To make plots of analytical and numerical mean energy, mean magnetization, specific heat and magnetic susceptibility for temperatures between 2.0 and 2.3 with L = 40, 60, 80, 100:
+### To make plots of the specific heat capacity and magnetic susceptibility as functions of temperatures between 2.15 and 2.45 with L = 40, 60, 80, 100:
 ```
 python3 plot_part4fg.py
 ```
@@ -106,7 +104,7 @@ python3 plot_part4fg.py
 >> python3 plot_part4d.py   
 
 # Compiles and executes the main script producing output files, makes plots
-of mean energy, mean magnetization and total number of accepted configurations
+of mean energy, mean absolute magnetization and total number of accepted configurations
 
 ```
 
