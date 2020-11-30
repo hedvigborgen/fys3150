@@ -43,93 +43,60 @@ make part 4f
 Here; 
 * make part4c produces output files containing values for the computed observables
     * MCC, mean energy, squared mean energy, magnetization, squared magnetization 
-    * with random spin orientation 
-    * for T = 1.0, L = 2 and MCCs = 100,000. 
+    * for random spin orientation 
+    * with T = 1.0, L = 2 and MCCs = 100,000. 
 * make part4d produces output files containing values for computed observables;
     * MCC, mean energy, squared mean energy, magnetization, squared magnetization, accepted spin configuration
-    * with both random and ordered spin orientation
-    * for T = 1.0 and T = 2.4, L = 20 and MCCs = 100,000.
+    * for both random and ordered spin orientation
+    * with T = 1.0 and T = 2.4, L = 20 and MCCs = 100,000.
 * make part4e produces output files containing values for computed observables;
     * MCC, mean energy, squared mean energy, magnetization, squared magnetization, total energy 
-    * with random spin orientation 
-    * for T = 1.0 and T = 2.4, L = 20 and MCCs = 100,000
+    * for random spin orientation 
+    * with T = 1.0 and T = 2.4, L = 20 and MCCs = 100,000
 * make part4f produces output files containing values for computed observables;
     * MCC, mean energy, squared mean energy, magnetization, squared magnetization 
-    * with random spin orientation 
-    * for different temperatures T between 2.0 and 2.3, L = 40, L = 60, L = 80 and L = 100 and MCCs = 100,000.
+    * for random spin orientation 
+    * with different temperatures T between 2.0 and 2.3, L = 40, L = 60, L = 80 and L = 100 and MCCs = 100,000.
 
-    
-    
-    
-## To compile and execute the script;
+
+
+### To make plots of analytical and numerical mean energy, mean magnetization, specific heat and magnetic susceptibility for T = 1.0:
 ```
-# producing output files for ten celestial bodies by the velocity Verlet algorithm,
-# with numTimesteps = 100,000, dt = 0.001:
-
-make example
-
-# producing output files with various values of beta by the velocity Verlet algorithm,
-# with numTimesteps = 1000, dt = 0.001:
-
-make compile
-make test_beta
-
-# producing output files for the precession of Mercury, numTimesteps = 1,000,000, dt = 0.0001:
-
-make compile
-make precession
-```
-
-### To make plots of positions of celestial bodies and mechanical energies for the solar system, with both forward Euler and velocity Verlet algorithm:
-```
-python3 plot_positions_energies.py numTimesteps dt numberOfBodies fname
+python3 plot_part4c.py
 ```
 
 
-### To make plots of positions of celestial bodies with force of gravity tested with various values of beta, with velocity Verlet algorithm:
+### To make plots of mean energy and magnetization and total number of accepted configurations as function of MCCs, for both random and ordered spin orientation, with T = 1.0 and T = 2.4:
 ```
-python3 plot_test_forces.py
+python3 plot_part4d.py
 ```
 
 
-### To make a plot of the total angular momentum as a function of time for both elliptical and circular orbits with two-body system using velocity Verlet algorithm:
+### To make plots of the probability of each energy state and print variance in energy for T = 1.0 and T = 2.4:
 ```
-python3 plot_angmom.py numTimesteps dt
+python3 plot_part4e.py
 ```
 
 	
-### To make a plot of the precession of Mercury's orbit, force of gravity with relativistic correction calulated with velocity Verlet method:
+### To make plots of analytical and numerical mean energy, mean magnetization, specific heat and magnetic susceptibility for temperatures between 2.0 and 2.3 with L = 40, 60, 80, 100:
 ```
-python3 plot_precession.py
+python3 plot_part4fg.py
 ```
 
 
 
 ## Example run 1: 
 ```
->> make compile                         				# Compiles the main script
+>> make compile                         # Compiles the script
 
->> ./main.exe 1 1000 0.001 ../input/two_bodies_elliptical.txt 2 2       # Produces output files for the positions of the
-									celestial bodies, energy and angular momentum
-									for the system, timing the integration
+>> make execute4d_T1_ordered
+>> make execute4d_T2_ordered
+>> make execute4d_T1_random
+>> make execute4d_T2_random		# Produces output files output files MCCs, mean energy, squared mean energy, magnetization, squared magnetization and accepted spin configuration for both random and ordered spin orientation with T = 1.0 and T = 2.4, L = 20 and number of MCCs = 100,000.
 
 ```
 
-
-## Example run 2: Testing the force of gravity for various beta
-```
->> python3 plot_test_forces.py                              
-
-<< Enter number of time steps: 
-
->> 1000
-
-<< Enter value for time step:
-
->> 0.001				# Compiles and executes the main script producing output files, makes plots
-```
-
-## Example run 3: Plotting the precession of Mercury's orbit
+## Example run 2: Plotting the precession of Mercury's orbit
 ```
 >> python3 plot_precession.py                                           
 
