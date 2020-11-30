@@ -36,8 +36,8 @@ make all
 # Alternatively, to execute one task at a time 
 make part4c
 make part4d
-make part 4e
-make part 4f
+make part4e
+make part4f
 
 ```
 Here; 
