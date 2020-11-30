@@ -46,7 +46,7 @@ Here;
     * with random spin orientation 
     * for T = 1.0, L = 2 and MCCs = 100,000. 
 * make part4d produces output files containing values for computed observables;
-    * MCC, mean energy, squared mean energy, magnetization, squared magnetization, accepted configuration
+    * MCC, mean energy, squared mean energy, magnetization, squared magnetization, accepted spin configuration
     * with both random and ordered spin orientation
     * for T = 1.0 and T = 2.4, L = 20 and MCCs = 100,000.
 * make part4e produces output files containing values for computed observables;
@@ -56,9 +56,7 @@ Here;
 * make part4f produces output files containing values for computed observables;
     * MCC, mean energy, squared mean energy, magnetization, squared magnetization 
     * with random spin orientation 
-    * for different temperatures T between 2.0 and 2.3
-    * L = 40, L = 60, L = 80 and L = 100
-    * MCCs = 100,000.
+    * for different temperatures T between 2.0 and 2.3, L = 40, L = 60, L = 80 and L = 100 and MCCs = 100,000.
 
     
     
