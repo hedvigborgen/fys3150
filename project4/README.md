@@ -58,26 +58,26 @@ Here;
     * with different temperatures T between 2.15 and 2.45, L = 40, L = 60, L = 80 and L = 100 and MCCs = 1,000,000.
 
 
-
-### To make plots of analytical and numerical mean energy, mean absolute magnetization, specific heat capacity and magnetic susceptibility for T = 1.0 with L = 2:
+### Plotting for part 4c)
+#### Analytical and numerical mean energy, mean absolute magnetization, specific heat capacity and magnetic susceptibility for T = 1.0 with L = 2:
 ```
 python3 plot_part4c.py
 ```
 
-
-### To make plots of mean energy, mean absolute magnetization and total number of accepted configurations as functions of MCCs for both randomly oriented and ordered spins, with T = 1.0 and T = 2.4 with L = 20:
+### Plotting for part 4d)
+#### Mean energy, mean absolute magnetization and total number of accepted configurations as functions of MCCs for both randomly oriented and ordered spins, with T = 1.0 and T = 2.4 with L = 20:
 ```
 python3 plot_part4d.py
 ```
 
-
-### To make plots of the probability of each energy state and print variance and standard deviation in energy for T = 1.0 and T = 2.4 with L = 20:
+### Plotting for part 4e)
+#### The probability of each energy state and print variance and standard deviation in energy for T = 1.0 and T = 2.4 with L = 20:
 ```
 python3 plot_part4e.py
 ```
 
-	
-### To make plots of the specific heat capacity and magnetic susceptibility as functions of temperatures between 2.15 and 2.45 with L = 40, 60, 80, 100:
+### Plotting for part 4f)
+#### The specific heat capacity and magnetic susceptibility as functions of temperatures between 2.15 and 2.45 with L = 40, 60, 80, 100:
 ```
 python3 plot_part4fg.py
 ```
@@ -90,13 +90,9 @@ python3 plot_part4fg.py
 
 # Compiles the script
 
->> make execute4d_T1_ordered
->> make execute4d_T2_ordered
->> make execute4d_T1_random
->> make execute4d_T2_random	
+>> make part4f
 
-# Produces output files output containing values for observables
-
+# Produces output files containing the mean energy, mean absolute magnetization, mean energy squared and mean magnetization squared after final MCC
 ```
 
 ## Example run 2:
