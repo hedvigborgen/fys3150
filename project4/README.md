@@ -66,7 +66,7 @@ python3 plot_part4c.py
 ```
 
 
-### To make plots of mean energy and magnetization and total number of accepted configurations as function of MCCs, for both random and ordered spin orientation, with T = 1.0 and T = 2.4:
+### To make plots of mean energy, mean magnetization and total number of accepted configurations for both random and ordered spin orientation, with T = 1.0 and T = 2.4:
 ```
 python3 plot_part4d.py
 ```
@@ -98,10 +98,11 @@ python3 plot_part4fg.py
 
 ```
 
-## Example run 2: Plotting the mean energy and magnetization and total number of accepted configurations as function of MCCs, for both random and ordered spin orientation, with T = 1.0 and T = 2.4:
+## Example run 2:
 ```
 >> python3 plot_part4d.py               
 # Compiles and executes the main script producing output files, makes plots
+of mean energy, mean magnetization and total number of accepted configurations
 
 ```
 
