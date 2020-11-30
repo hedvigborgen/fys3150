@@ -87,13 +87,15 @@ python3 plot_part4fg.py
 
 ## Example run 1: 
 ```
->> make compile                         
+>> make compile      
+
 # Compiles the script
 
 >> make execute4d_T1_ordered
 >> make execute4d_T2_ordered
 >> make execute4d_T1_random
->> make execute4d_T2_random		
+>> make execute4d_T2_random	
+
 # Produces output files output containing values for observables
 
 ```
