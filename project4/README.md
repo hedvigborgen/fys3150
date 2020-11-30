@@ -92,7 +92,8 @@ python3 plot_part4fg.py
 
 >> make part4f
 
-# Produces output files containing the mean energy, mean absolute magnetization, mean energy squared and mean magnetization squared after final MCC
+# Produces output files containing the mean energy, mean absolute magnetization, 
+mean energy squared and mean magnetization squared after final MCC
 ```
 
 ## Example run 2:
