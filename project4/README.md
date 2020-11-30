@@ -87,26 +87,21 @@ python3 plot_part4fg.py
 
 ## Example run 1: 
 ```
->> make compile                         # Compiles the script
+>> make compile                         
+# Compiles the script
 
 >> make execute4d_T1_ordered
 >> make execute4d_T2_ordered
 >> make execute4d_T1_random
->> make execute4d_T2_random		# Produces output files output files MCCs, mean energy, squared mean energy, magnetization, squared magnetization and accepted spin configuration for both random and ordered spin orientation with T = 1.0 and T = 2.4, L = 20 and number of MCCs = 100,000.
+>> make execute4d_T2_random		
+# Produces output files output containing values for observables
 
 ```
 
-## Example run 2: Plotting the precession of Mercury's orbit
+## Example run 2: Plotting the mean energy and magnetization and total number of accepted configurations as function of MCCs, for both random and ordered spin orientation, with T = 1.0 and T = 2.4:
 ```
->> python3 plot_precession.py                                           
-
-<< Enter number of time steps: 
-
->> 1000000
-
-<< Enter dt:
-
->> 0.0001				# Compiles and executes the main script producing output files, makes plots
+>> python3 plot_part4d.py               
+# Compiles and executes the main script producing output files, makes plots
 
 ```
 
