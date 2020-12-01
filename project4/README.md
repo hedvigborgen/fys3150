@@ -1,4 +1,4 @@
-# Computational Physics, Project 3
+# Computational Physics, Project 4
 ## Modelling Phase Transitions in Magnetic Systems
 
 Kamilla Ida Julie Sulebakk, Hedvig Borgen Reiersrud and Andrea Jensen Marthinussen
