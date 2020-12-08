@@ -80,7 +80,7 @@ void QuantumDot::MonteCarlo(int whichMethod){
       }
 
       // compute local energy
-      if (cycle > m_equilibrationTime){
+      if ((whichMethod != 0) && (cycle > m_equilibrationTime)){
         deltaEnergy = LocalEnergy(oldPosition, whichMethod, variation);
         // update energies
         energy += deltaEnergy;
