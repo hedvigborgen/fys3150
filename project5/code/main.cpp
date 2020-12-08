@@ -12,7 +12,7 @@ int main(int numArg, char *arguments[]){
   int dimension, numberofParticles, whichMethod;
   long int maxVariations, equilibrationTime, MCCs;
   double charge, step, alpha0, deltaAlpha, omega;
-  string filename;
+  string write;
 
   dimension = 3;
   numberofParticles = 2;
@@ -20,6 +20,7 @@ int main(int numArg, char *arguments[]){
   alpha0 = 0.5;
   deltaAlpha = 0.05;
   omega = 1;
+  write = "at the end";
 
 
 // Read in output file, abort if there are too few command-line arguments
@@ -43,10 +44,10 @@ QuantumDot quantumDot(dimension, numberofParticles, charge, maxVariations,
 quantumDot.Initialize();
 
  // Do the mc sampling
-quantumDot.MonteCarlo(whichMethod);
+quantumDot.MonteCarlo(whichMethod, write);
 
 // Print out results
-quantumDot.WriteToFile();
+quantumDot.WriteToFile(whichMethod);
 
 
 return 0;

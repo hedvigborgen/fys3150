@@ -17,10 +17,10 @@ class QuantumDot{
 public:
   QuantumDot(int, int, double, long int, long int, long int, double, double, double, double);
   void Initialize();
-  void MonteCarlo(int);
+  void MonteCarlo(int, string);
   double WaveFunction(mat, int, int);
   double LocalEnergy(mat, int, int);
-  void WriteToFile();
+  void WriteToFile(int);
 
 private:
   int m_dimension, m_numberofParticles;

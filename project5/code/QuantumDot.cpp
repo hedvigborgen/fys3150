@@ -26,7 +26,7 @@ void QuantumDot::Initialize(){
 
 
 // Monte Carlo sampling with the Metropolis algorithm for first trial function
-void QuantumDot::MonteCarlo(int whichMethod){
+void QuantumDot::MonteCarlo(int whichMethod, string write){
   int cycle, variation, count, i, j;
   double newPsi, oldPsi, deltaEnergy;
   // Setting up the uniform distribution for x \in (0, 1)
@@ -80,7 +80,7 @@ void QuantumDot::MonteCarlo(int whichMethod){
       }
 
       // compute local energy
-      if ((whichMethod != 0) && (cycle > m_equilibrationTime)){
+      if ((write == "at the end") && (cycle > m_equilibrationTime)){
         deltaEnergy = LocalEnergy(oldPosition, whichMethod, variation);
         // update energies
         energy += deltaEnergy;
@@ -88,7 +88,7 @@ void QuantumDot::MonteCarlo(int whichMethod){
       }
 
       // Updating energy and writing to file for each cycle
-      else if (whichMethod == 0){
+      else if (write == "each time"){
         deltaEnergy = LocalEnergy(oldPosition, whichMethod, variation);
         energy += deltaEnergy;
         energySquared += deltaEnergy*deltaEnergy;
@@ -187,10 +187,22 @@ double QuantumDot::LocalEnergy(mat position, int whichMethod, int variation){
   return E;
 }
 
-void QuantumDot::WriteToFile(){
+void QuantumDot::WriteToFile(int whichMethod){
   ofstream ofile;
-  ofile.open("../output/EnergyasFunctionofAlpha.dat");
+  string filename;
+  if (whichMethod == 0){
+    filename = "../output/EnergyasFunctionofAlpha0.dat";
+  }
 
+  else if (whichMethod == 1){
+    filename = "../output/EnergyasFunctionofAlpha1.dat";
+  }
+
+  else if(whichMethod == 2){
+    filename = "../output/EnergyasFunctionofAlpha2.dat";
+  }
+
+  ofile.open(filename);
   // Writing the calculated values to file
 
   ofile << "alpha" << "  "  << "<E>" << "  " << "<E^2>" << endl;

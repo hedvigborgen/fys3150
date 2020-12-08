@@ -7,6 +7,8 @@ plt.style.use('seaborn')
 plt.rc('text', usetex=True)
 plt.rc('text.latex', preamble=r'\usepackage{amsmath}')
 
+colors = ['#8FB46C', '#8BC971', '#86B342', '#6D955C', '#586F4E']
+
 variations = 5
 equilibrationTime = 1000
 MCCs = 100_000
@@ -20,9 +22,8 @@ subprocess.call(['./main.exe', f'{variations}', f'{equilibrationTime}', f'{MCCs}
 
 # Different values of the variational parameter alpha
 alpha = np.linspace(0.80, 1.20, variations)
-colors = ['#BA8BCB', '#FEB144', '#9EE09E', '#1A7DA8', '#FF6663','#FDFD97', '#FEB144', '#FF6663', '#3498DB', '#FF3386']
 
-MCCs_array = np.linspace(1,MCCs,MCCs)
+MCCs_array = np.linspace(1, MCCs, MCCs)
 expEnergy = np.zeros((variations, MCCs))
 expEnergySquared = np.zeros((variations, MCCs))
 
@@ -44,7 +45,7 @@ for i, alpha_ in enumerate(alpha):
 # as function of MCCs for different values of alpha
 fig, ax = plt.subplots()
 for i, alpha_ in enumerate(alpha):
-    ax.plot(MCCs, expEnergy[i], color=colors[i], label=r'$\alpha$ = %.2f' %alpha_)
+    ax.plot(MCCs_array, expEnergy[i], color=colors[i], label=r'$\alpha$ = %.2f' %alpha_)
 ax.set_title('Expectation value of the energy as function of MCCs', fontsize=20)
 ax.set_xlabel(r'$MCCs$', fontsize=15)
 ax.set_ylabel(r'$<E>$ [J]', fontsize=15)
@@ -57,10 +58,9 @@ fig.savefig(f'../plots/energyasfunctionofMCCs.pdf')
 variance = expEnergySquared - expEnergy**2
 fig, ax = plt.subplots()
 for i, alpha_ in enumerate(alpha):
-    ax.plot(MCCs, variance[i], color=colors[i], label=r'$\alpha$ = %.2f' %alpha_)
+    ax.plot(MCCs_array, variance[i], color=colors[i], label=r'$\alpha$ = %.2f' %alpha_)
 ax.set_title('Expectation value of the energy as function of MCCs', fontsize=20)
 ax.set_xlabel(r'$MCCs$', fontsize=15)
 ax.set_ylabel(r'$<E>$ [J]', fontsize=15)
 ax.legend(fontsize=15)
 fig.savefig(f'../plots/energyasfunctionofMCCs.pdf')
-
