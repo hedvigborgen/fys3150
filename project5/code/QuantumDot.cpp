@@ -3,7 +3,7 @@
 // Function to read in data from screen, note call by reference
 QuantumDot::QuantumDot(int dimension, int numberofParticles, double charge,
   long int maxVariations, long int equilibrationTime, long int MCCs,
-  double step, double inverseStepSquared, double alpha0, double deltaAlpha, double omega){
+  double step, double alpha0, double deltaAlpha, double omega){
   m_dimension = dimension;
   m_numberofParticles = numberofParticles;
   m_charge = charge;
@@ -11,7 +11,6 @@ QuantumDot::QuantumDot(int dimension, int numberofParticles, double charge,
   m_equilibrationTime = equilibrationTime;
   m_MCCs  = MCCs;
   m_step = step;
-  m_inverseStepSquared = inverseStepSquared;
   m_alpha = vec(m_maxVariations).fill(0.0);
   m_alpha0 = alpha0;
   m_deltaAlpha = deltaAlpha;
@@ -55,17 +54,17 @@ void QuantumDot::MonteCarlo(int whichMethod){
     for (i = 0; i < m_numberofParticles; i++){
       for (j = 0; j < m_dimension; j++){
         double randomNumber = RandomDoubleGenerator(gen);
-        oldPosition(i,j) = m_step*randomNumber;
+        oldPosition(i,j) = m_step*(randomNumber-0.5);
       }
     }
     oldPsi = WaveFunction(oldPosition, whichMethod, variation);
     // loop over monte carlo cycle
-    for (cycle = 1; cycle <= m_MCCs+m_equilibrationTime; cycle++){
+    for (cycle = 1; cycle <= m_MCCs; cycle++){
       // new position
       for (i = 0; i < m_numberofParticles; i++){
         for (j = 0; j < m_dimension; j++){
           double randomNumber = RandomDoubleGenerator(gen);
-          newPosition(i,j) = oldPosition(i,j) + m_step*randomNumber;
+          newPosition(i,j) = oldPosition(i,j) + m_step*(randomNumber-0.5);
         }
       }
       newPsi = WaveFunction(newPosition, whichMethod, variation);
@@ -79,6 +78,7 @@ void QuantumDot::MonteCarlo(int whichMethod){
         oldPsi = newPsi;
         count += 1;
       }
+
       // compute local energy
       if (cycle > m_equilibrationTime){
         deltaEnergy = LocalEnergy(oldPosition, whichMethod, variation);
@@ -86,17 +86,25 @@ void QuantumDot::MonteCarlo(int whichMethod){
         energy += deltaEnergy;
         energySquared += deltaEnergy*deltaEnergy;
       }
+
+      // Updating energy and writing to file for each cycle
+      else if (whichMethod == 0){
+        deltaEnergy = LocalEnergy(oldPosition, whichMethod, variation);
+        energy += deltaEnergy;
+        energySquared += deltaEnergy*deltaEnergy;
+        WriteToFileTest(cycle, variation, energy/cycle, energySquared/cycle);
+      }
     } // end of loop over MC trials
-    cout << "Variational parameter = " << m_alpha(variation) << ", counted steps = " << count << endl;
+    if (whichMethod == 0){
+      CloseFile();
+    }
+    // cout << "Variational parameter = " << m_alpha(variation) << ", counted steps = " << count << endl;
     // update the energy average and its squared
     m_expEnergy(variation) = energy/m_MCCs;
     m_expEnergySquared(variation) = energySquared/m_MCCs;
 
   } // end of loop over variational steps
 } // end mc_sampling function
-
-
-
 
 
 
@@ -114,7 +122,12 @@ double QuantumDot::WaveFunction(mat position, int whichMethod, int variation){
   }
 
   // Psi_T1
-  if (whichMethod == 1){
+  if (whichMethod == 0){
+    Psi = exp(-m_alpha(variation)*m_omega*singleParticlePosition/2);
+  }
+
+  // Psi_T1
+  else if (whichMethod == 1){
     Psi = exp(-m_alpha(variation)*m_omega*singleParticlePosition/2);
   }
 
@@ -137,40 +150,46 @@ double QuantumDot::WaveFunction(mat position, int whichMethod, int variation){
 
 // Function to calculate the local energy
 double QuantumDot::LocalEnergy(mat position, int whichMethod, int variation){
-  int i, j;
-  double E;
+  int i, j, k;
+  double E, E_L1, dist, distance, singleParticlePosition;
 
-  double singleParticlePosition = 0;
-  for (int i = 0; i < m_numberofParticles; i++){
-    for (int j = 0; j < m_dimension; j++){
+  singleParticlePosition = 0;
+  for (i = 0; i < m_numberofParticles; i++){
+    for (j = 0; j < m_dimension; j++){
       singleParticlePosition += position(i,j)*position(i,j);
     }
   }
-  // E_L1
-  if (whichMethod == 1){
-    E = 0.5*m_omega*m_omega*singleParticlePosition*(1 - m_alpha(variation)*m_alpha(variation)) + 3*m_omega*m_alpha(variation);
+
+  dist = 0;
+  for (k = 0; k < m_numberofParticles; k++){
+    dist += (position(0, k) - position(1, k))*(position(0, k) - position(1, k));
+  }
+  distance = sqrt(dist);
+
+  E_L1 = 0.5*m_omega*m_omega*singleParticlePosition*(1 - m_alpha(variation)*m_alpha(variation)) + 3*m_omega*m_alpha(variation) + 1.0/distance;
+
+
+  // E_L1 without coulomb interaction
+  if (whichMethod == 0){
+    E = E_L1 - 1.0/distance;
+  }
+
+  // E_L1 with coulomb interaction
+  else if (whichMethod == 1){
+    E = E_L1;
   }
 
   // E_L2
   else if (whichMethod == 2){
-
-    double E_L1 = 0.5*m_omega*m_omega*singleParticlePosition*(1 - m_alpha(variation)*m_alpha(variation)) + 3*m_omega*m_alpha(variation);
-
-    double dist = 0;
-    for (int k = 0; k < m_numberofParticles; k++){
-      dist += (position(0, k) - position(1, k))*(position(0, k) - position(1, k));
-    }
-
-    double distance = sqrt(dist);
     double frac = 1.0/(2*(1 + m_beta*distance)*(1 + m_beta*distance));
     E = E_L1 + frac*(m_alpha(variation)*m_omega*distance - frac - 2/distance + 2*m_beta/(1 + m_beta*distance));
   }
   return E;
 }
 
-void QuantumDot::WriteToFile(string filename){
+void QuantumDot::WriteToFile(){
   ofstream ofile;
-  ofile.open(filename);
+  ofile.open("../output/EnergyasFunctionofAlpha.dat");
 
   // Writing the calculated values to file
 
@@ -180,4 +199,28 @@ void QuantumDot::WriteToFile(string filename){
     ofile << m_alpha(i) << " " << m_expEnergy(i) << " " << m_expEnergySquared(i) << endl;
   }
   ofile.close(); // Closing file after use
+}
+
+void QuantumDot::WriteToFileTest(int cycle, int variation, double expEnergy, double expEnergySquared){
+  string alpha, filename;
+  ostringstream streamObj;
+  streamObj << fixed << setprecision(2) << m_alpha(variation);
+  alpha = streamObj.str();
+  filename = "../output/EnergyasFunctionofMCCs_";
+  filename.append(alpha).append(".dat");
+
+  // Writing the calculated values to file
+  if (cycle == 1){
+    m_ofileTest.open(filename);
+    m_ofileTest << "MCC" << "  "  << "<E>" << "  " << "<E^2>" << endl;
+    m_ofileTest << "________________________" << endl;
+  }
+
+
+  m_ofileTest << cycle << " " << expEnergy << " " << expEnergySquared << endl;
+}
+
+
+void QuantumDot::CloseFile(){
+  m_ofileTest.close(); // Closing file after use
 }

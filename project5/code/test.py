@@ -1,16 +1,47 @@
 import numpy as np
 import matplotlib.pyplot as plt
+import subprocess
 
-alpha = np.linspace(0.5, 1.5, 11)
+# For nice plots
+plt.style.use('seaborn')
+plt.rc('text', usetex=True)
+plt.rc('text.latex', preamble=r'\usepackage{amsmath}')
 
+variations = 20
+equilibrationTime = 1000
+MCCs = 100_000
+charge = 1
+whichMethod = 1
+filename = '../output/outputfile.dat'
 
-E = 0.5*(1 - alpha**2) + 3*alpha
-dE = -0.5*2*alpha + 3
+# Compiling and executing the C++ script
+subprocess.call(['c++', '-std=c++11', '-o', 'main.exe', 'QuantumDot.cpp', 'main.cpp', '-larmadillo', '-O3', '-march=native', '-Xpreprocessor', '-fopenmp', '-lomp'])
+subprocess.call(['./main.exe', f'{variations}', f'{equilibrationTime}', f'{MCCs}', f'{charge}', f'{whichMethod}', f'{filename}'])
 
-# for i in range(len(alpha)):
-#     if abs(dE[i] - E[i]) < abs(dE[i-1] - E[i-1]):
-#         if abs(dE[i] - E[i]) < abs(dE[i+1] - E[i+1]):
-plt.plot(alpha, E, label='E')
-plt.plot(alpha, dE, label='dE')
-plt.legend()
-plt.show()
+# Defining function to read data files
+def read_file(filename):
+    infile = open(filename, 'r')
+    lines = infile.readlines()
+
+    alpha = np.zeros(len(lines)-2)
+    expEnergy = np.zeros(len(lines)-2)
+    expEnergySquared = np.zeros(len(lines)-2)
+
+    for i, line in enumerate(lines):
+        if 2 <= i:
+            vals = line.split()
+            alpha[i-2] = float(vals[0])
+            expEnergy[i-2] = float(vals[1])
+            expEnergySquared[i-2] = float(vals[2])
+    infile.close()
+    return alpha, expEnergy, expEnergySquared
+
+alpha, expEnergy, expEnergySquared = read_file(filename)
+# Plotting the
+fig, ax = plt.subplots()
+ax.plot(alpha, expEnergy, color='#B1C084', label='' )
+ax.set_title('Expectation value of the energy', fontsize=20)
+ax.set_xlabel(r'$\alpha$', fontsize=15)
+ax.set_ylabel(r'$E$ [J]', fontsize=15)
+ax.legend(fontsize=15)
+fig.savefig(f'../plots/energyasfunctionofalpha.pdf')
