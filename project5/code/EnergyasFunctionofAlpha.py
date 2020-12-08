@@ -16,7 +16,7 @@ filename = '../output/outputfile.dat'
 
 # Compiling and executing the C++ script
 subprocess.call(['c++', '-std=c++11', '-o', 'main.exe', 'QuantumDot.cpp', 'main.cpp', '-larmadillo', '-O3', '-march=native', '-Xpreprocessor', '-fopenmp', '-lomp'])
-subprocess.call(['./main.exe', f'{variations}', f'{equilibrationTime}', f'{MCCs}', f'{charge}', f'{whichMethod}', f'{filename}'])
+subprocess.call(['./main.exe', f'{variations}', f'{equilibrationTime}', f'{MCCs}', f'{charge}', f'{whichMethod}'])
 
 # Defining function to read data files
 def read_file(filename):
