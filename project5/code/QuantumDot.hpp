@@ -27,7 +27,7 @@ private:
   long int m_maxVariations, m_equilibrationTime, m_MCCs;
   double m_charge, m_step;
   double m_alpha0, m_deltaAlpha, m_beta, m_omega;
-  vec m_expEnergy, m_expEnergySquared, m_alpha;
+  vec m_count, m_expEnergy, m_expEnergySquared, m_alpha;
   ofstream m_ofileTest;
   void WriteToFileTest(int, int, double, double);
   void CloseFile();

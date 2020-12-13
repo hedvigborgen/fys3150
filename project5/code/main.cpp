@@ -17,24 +17,26 @@ int main(int numArg, char *arguments[]){
   dimension = 3;
   numberofParticles = 2;
   step = 1.0;
-  alpha0 = 0.5;
-  deltaAlpha = 0.05;
+  // alpha0 = 0.6;
+  // deltaAlpha = 0.2;
   omega = 1;
-  write = "at the end";
 
 
 // Read in output file, abort if there are too few command-line arguments
-if (numArg != 6){
+if (numArg != 9){
   cout << "Incorrect number of arguments!" << endl; exit(1);
 }
 
 else {
   // Defining input arguments
   maxVariations = atol(arguments[1]);
-  equilibrationTime = atol(arguments[2]);
-  MCCs = atol(arguments[3]);
-  charge = atol(arguments[4]);
-  whichMethod = atoi(arguments[5]);
+  alpha0 = atof(arguments[2]);
+  deltaAlpha = atof(arguments[3]);
+  equilibrationTime = atol(arguments[4]);
+  MCCs = atol(arguments[5]);
+  charge = atol(arguments[6]);
+  whichMethod = atoi(arguments[7]);
+  write = arguments[8];
 }
 
 // Initializing the system, read in data
