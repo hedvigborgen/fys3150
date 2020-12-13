@@ -15,11 +15,10 @@ using namespace arma;
 
 class QuantumDot{
 public:
-  QuantumDot(int, int, double, long int, long int, long int, double, double, double, double);
-  void Initialize();
-  void MonteCarlo(int, string);
-  double WaveFunction(mat, int, int);
-  double LocalEnergy(mat, int, int);
+  QuantumDot(int, int, double, long int, long int, double);
+  void Initialize(string, long int, double, double, double);
+  void MonteCarlo(int, string, long int, double, double, double);
+  void MonteCarlo(int, string, double, double);
   void WriteToFile(int);
 
 private:
@@ -29,6 +28,9 @@ private:
   double m_alpha0, m_deltaAlpha, m_beta, m_omega;
   vec m_count, m_expEnergy, m_expEnergySquared, m_alpha;
   ofstream m_ofileTest;
+  double WaveFunction(mat, int, double);
+  double LocalEnergy(mat, int, double);
+  void WriteToFileNew(double, double, double);
   void WriteToFileTest(int, int, double, double);
   void CloseFile();
 

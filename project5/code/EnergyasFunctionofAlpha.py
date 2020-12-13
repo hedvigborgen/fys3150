@@ -43,16 +43,16 @@ def read_file(filename):
     infile.close()
     return alpha, expEnergy, expEnergySquared, acceptedChanges
 
-alpha0, expEnergy0, expEnergySquared0, acceptedChanges1 = read_file(filenames[0])
-alpha1, expEnergy1, expEnergySquared1, acceptedChanges2 = read_file(filenames[1])
+alpha0, expEnergy0, expEnergySquared0, acceptedChanges0 = read_file(filenames[0])
+alpha1, expEnergy1, expEnergySquared1, acceptedChanges1 = read_file(filenames[1])
 
 # Plotting
 fig, ax = plt.subplots()
-ax.plot(alpha1, expEnergy1, color=colors[1], label='With Coulomb interaction')
 ax.plot(alpha0, expEnergy0, color=colors[0], label='Without Coulomb interaction')
+ax.plot(alpha1, expEnergy1, color=colors[1], label='With Coulomb interaction')
 ax.set_title(r'Expectation value of the energy as function of $\alpha$', fontsize=20)
 ax.set_xlabel(r'$\alpha$', fontsize=15)
-ax.set_ylabel(r'$E$ [J]', fontsize=15)
+ax.set_ylabel(r'$\langle E \rangle$ [J]', fontsize=15)
 ax.legend(fontsize=15)
 fig.savefig(f'../plots/energyasfunctionofalpha.pdf')
 
@@ -61,10 +61,22 @@ fig.savefig(f'../plots/energyasfunctionofalpha.pdf')
 variance0 = expEnergySquared0 - expEnergy0**2
 variance1 = expEnergySquared1 - expEnergy1**2
 fig, ax = plt.subplots()
-ax.plot(alpha0, variance0, color=colors[1], label='With Coulomb interaction')
-ax.plot(alpha1, variance1, color=colors[0], label='Without Coulomb interaction')
+ax.plot(alpha0, variance0, color=colors[0], label='Without Coulomb interaction')
+ax.plot(alpha1, variance1, color=colors[1], label='With Coulomb interaction')
 ax.set_title(r'Variance in energy as function of $\alpha$', fontsize=20)
 ax.set_xlabel(r'$\alpha$', fontsize=15)
 ax.set_ylabel(r'$\sigma$ [J]', fontsize=15)
 ax.legend(fontsize=15)
 fig.savefig(f'../plots/variationasfunctionofalpha.pdf')
+
+
+index0 = np.where(expEnergy0 == min(expEnergy0))[0][0]
+index1 = np.where(expEnergy1 == min(expEnergy1))[0][0]
+
+alpha_0 = alpha0[index0]
+alpha_1 = alpha1[index1]
+
+print(alpha_0, alpha_1)
+#
+# subprocess.call(['./main.exe', f'{variations}', f'{alpha0}', f'{deltaAlpha}', f'{equilibrationTime}', f'{MCCs}', f'{charge}', f'{whichMethod[0]}', write])
+# subprocess.call(['./main.exe', f'{variations}', f'{alpha0}', f'{deltaAlpha}', f'{equilibrationTime}', f'{MCCs}', f'{charge}', f'{whichMethod[1]}', write])
