@@ -17,7 +17,7 @@ MCCs = 1_000_000
 charge = 1
 whichMethod = 0
 write = 'at the end'
-steps = np.linspace(0.1, 3.5, 100)
+steps = np.linspace(0.1, 3.5, 50)
 alpha = np.linspace(0.2, 2.30, 8)
 
 
@@ -62,38 +62,37 @@ for i in range(len(alpha)):
 # intercept8 = np.array([steps[idx[7]], acceptedChanges[7, idx[7]]])
 
 
-colors = ['#BA8BCB', '#FEB144', '#9EE09E', '#FF6663','#F3E448', '#FC89B2', '#8ED3DB', '#1A7DA8']
-
-# Plotting the variation of the energy
-# as function of MCCs for different values of alpha
-fig, ax = plt.subplots()
-for i, alpha_ in enumerate(alpha):
-    ax.plot(steps, acceptedChanges[i], color=colors[i], label=r'$\alpha$ = %.2f' %alpha_)
-ax.plot(steps, np.ones(len(steps))*50, ':', color = '#000000')
-ax.set_title(r'Percentage of accepted changes as function of step length', fontsize=20)
-ax.set_xlabel(r'$\delta$', fontsize=15)
-ax.set_ylabel('Accepted changes', fontsize=15)
-ax.legend(fontsize=15)
-fig.savefig(f'../plots/acceptedChanges.pdf')
+# colors = ['#BA8BCB', '#FEB144', '#9EE09E', '#FF6663','#F3E448', '#FC89B2', '#8ED3DB', '#1A7DA8']
+#
+# # Plotting the variation of the energy
+# # as function of MCCs for different values of alpha
+# fig, ax = plt.subplots()
+# for i, alpha_ in enumerate(alpha):
+#     ax.plot(steps, acceptedChanges[i], color=colors[i], label=r'$\alpha$ = %.2f' %alpha_)
+# ax.plot(steps, np.ones(len(steps))*50, ':', color = '#000000')
+# ax.set_title(r'Percentage of accepted changes as function of step length', fontsize=20)
+# ax.set_xlabel('Accepted changes', fontsize=15)
+# ax.set_ylabel(r'$\delta$', fontsize=15)
+# ax.legend(fontsize=15)
+# fig.savefig(f'../plots/acceptedChanges.pdf')
 
 
 # Finding best step length for
 idealStep = np.zeros(len(alpha))
 for i in range(len(alpha)):
-    idealStep[i] = steps[idx[i]]
+    idealStep[i] = np.log(steps[idx[i]])
 
 slope, intercept, r_value, p_value, std_err = scipy.stats.linregress(alpha, idealStep)
 linearRegression = alpha*slope + intercept
-print('Ideal step length as function of alpha:')
-print('(%.3f alpha) + %.3f' %(slope, intercept))
 
 
 fig, ax = plt.subplots()
-ax.plot(alpha, linearRegression, color = '#BA8BCB', label=r'$\delta =$ %.3f$\alpha$ + %.3f' %(slope, intercept))
+
+ax.plot(alpha, linearRegression, color = '#BA8BCB')
 for i in range(len(idealStep)):
     ax.plot(alpha[i], idealStep[i], 'o', color = '#000000')
-ax.set_title(r'The optimal step length as function of $\alpha$', fontsize=20)
+ax.set_title(r'The optimal step length as function of alpha', fontsize=20)
 ax.set_xlabel(r'$\alpha$', fontsize=15)
-ax.set_ylabel(r'$\delta$', fontsize=15)
+ax.set_ylabel(r'$\ln{\delta}$', fontsize=15)
 ax.legend(fontsize=15)
-fig.savefig(f'../plots/optimalStepLength_{len(steps)}.pdf')
+fig.savefig(f'../plots/optimalStepLength_log.pdf')
