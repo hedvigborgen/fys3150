@@ -85,16 +85,18 @@ for i in range(len(alpha)):
 
 slope, intercept, r_value, p_value, std_err = scipy.stats.linregress(alpha, idealStep)
 linearRegression = alpha*slope + intercept
-print('Ideal step length as function of alpha:')
-print('(%.3f alpha) + %.3f' %(slope, intercept))
 
 
 fig, ax = plt.subplots()
 
+<<<<<<< HEAD
 ax.plot(alpha, linearRegression, color = '#BA8BCB', label=r'$\delta =$ %.3f$\alpha$ + %.3f' %(slope, intercept))
+=======
+ax.plot(alpha, linearRegression, color = '#BA8BCB')
+>>>>>>> 63103c87d82d7beb8e815a585521eb301b49a333
 for i in range(len(idealStep)):
     ax.plot(alpha[i], idealStep[i], 'o', color = '#000000')
-ax.set_title(r'The optimal step length as function of $\alpha$', fontsize=20)
+ax.set_title(r'The optimal step length as function of alpha', fontsize=20)
 ax.set_xlabel(r'$\alpha$', fontsize=15)
 ax.set_ylabel(r'$\ln{\delta}$', fontsize=15)
 ax.legend(fontsize=15)
