@@ -30,7 +30,7 @@ private:
   ofstream m_ofileTest;
   double WaveFunction(mat, int, double);
   double LocalEnergy(mat, int, double);
-  void WriteToFileNew(double, double, double);
+  void WriteToFile(double, double, double, double);
   void WriteToFileTest(int, int, double, double);
   void CloseFile();
 

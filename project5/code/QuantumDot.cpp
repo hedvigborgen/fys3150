@@ -115,8 +115,8 @@ void QuantumDot::MonteCarlo(int whichMethod, string write, long int maxVariation
 
     if (write == "at the end"){
       // update the energy average and its squared
-      m_expEnergy(variation) = energy/m_MCCs;
-      m_expEnergySquared(variation) = energySquared/m_MCCs;
+      m_expEnergy(variation) = energy/(m_MCCs-m_equilibrationTime);
+      m_expEnergySquared(variation) = energySquared/(m_MCCs-m_equilibrationTime);
     }
   } // end of loop over variational steps
 } // end mc_sampling function
@@ -126,7 +126,8 @@ void QuantumDot::MonteCarlo(int whichMethod, string write, long int maxVariation
 // Monte Carlo sampling with the Metropolis algorithm
 void QuantumDot::MonteCarlo(int whichMethod, string write, double alpha, double omega){
   int cycle, i, j;
-  double newPsi, oldPsi, deltaEnergy, energy, energySquared, expEnergy, expEnergySquared;
+  double newPsi, oldPsi, deltaEnergy, energy, energySquared, expEnergy,
+  expEnergySquared, meanDistance;
   // Setting up the uniform distribution for x \in (0, 1)
   random_device rd;
   mt19937_64 gen(rd());
@@ -141,6 +142,7 @@ void QuantumDot::MonteCarlo(int whichMethod, string write, double alpha, double 
   energySquared = 0;
   deltaEnergy = 0;
   m_omega = omega;
+  meanDistance = 0;
 
   // initial trial position, note calling with alpha
   // and in three dimensions
@@ -177,14 +179,18 @@ void QuantumDot::MonteCarlo(int whichMethod, string write, double alpha, double 
       deltaEnergy = LocalEnergy(oldPosition, whichMethod, alpha);
       energy += deltaEnergy;
       energySquared += deltaEnergy*deltaEnergy;
+
+      meanDistance += norm(newPosition(0) - newPosition(1));
+      //cout << meanDistance << endl;
     }
   } // end of loop over MC trials
 
   // update the energy average and its squared
-  expEnergy = energy/m_MCCs;
-  expEnergySquared = energySquared/m_MCCs;
+  meanDistance /= m_MCCs-m_equilibrationTime;
+  expEnergy = energy/(m_MCCs-m_equilibrationTime);
+  expEnergySquared = energySquared/(m_MCCs-m_equilibrationTime);
 
-  WriteToFileNew(alpha, expEnergy, expEnergySquared);
+  WriteToFile(alpha, expEnergy, expEnergySquared, meanDistance);
 } // end mc_sampling function
 
 
@@ -241,6 +247,8 @@ double QuantumDot::LocalEnergy(mat position, int whichMethod, double alpha){
     dist += (position(0, k) - position(1, k))*(position(0, k) - position(1, k));
   }
   distance = sqrt(dist);
+  cout << distance << endl;
+  //distance = norm(position(0) - position(1));
 
   E_L1 = 0.5*m_omega*m_omega*singleParticlePosition*(1 - alpha*alpha) + 3*m_omega*alpha;
 
@@ -300,6 +308,31 @@ void QuantumDot::WriteToFile(int whichMethod){
 
 
 // Writes to file if (...)
+void QuantumDot::WriteToFile(double alpha, double expEnergy, double expEnergySquared, double meanDistance){
+  ofstream ofile;
+  string filename, alpha_, omega_;
+
+  ostringstream streamObj1, streamObj2;
+  streamObj1 << fixed << setprecision(2) << alpha;
+  streamObj2 << fixed << setprecision(2) << m_omega;
+  alpha_ = streamObj1.str();
+  omega_ = streamObj2.str();
+
+  filename = "../output/expectationalEnergy_";
+  filename.append(alpha_).append("_").append(omega_).append(".dat");
+  ofile.open(filename);
+
+  // Writing the calculated values to file
+  ofile << "Alpha" << "  "  << "Omega" << "  " << "<E>" << "  " << "<E^2>" << "  " << "Mean distance" << endl;
+  ofile << "______________________________________________" << endl;
+  ofile << alpha << " " << m_omega << " " << expEnergy << " " << expEnergySquared << " " << meanDistance << endl;
+
+  ofile.close(); // Closing file after use
+}
+
+
+
+// Writes to file if (...)
 void QuantumDot::WriteToFileTest(int cycle, int variation, double expEnergy_, double expEnergySquared_){
   string alpha, filename;
   ostringstream streamObj;
@@ -316,31 +349,6 @@ void QuantumDot::WriteToFileTest(int cycle, int variation, double expEnergy_, do
   }
 
   m_ofileTest << cycle << " " << expEnergy_ << " " << expEnergySquared_ << endl;
-}
-
-
-
-// Writes to file if (...)
-void QuantumDot::WriteToFileNew(double alpha, double expEnergy, double expEnergySquared){
-  ofstream ofile;
-  string filename, alpha_, omega_;
-
-  ostringstream streamObj1, streamObj2;
-  streamObj1 << fixed << setprecision(2) << alpha;
-  streamObj2 << fixed << setprecision(2) << m_omega;
-  alpha_ = streamObj1.str();
-  omega_ = streamObj2.str();
-
-  filename = "../output/expectationalEnergy_";
-  filename.append(alpha_).append("_").append(omega_).append(".dat");
-  ofile.open(filename);
-
-  // Writing the calculated values to file
-  ofile << "Alpha" << "  "  << "Omega" << "  " << "<E>" << "  " << "<E^2>" << endl;
-  ofile << "_____________________________________" << endl;
-  ofile << alpha << " " << m_omega << " " << expEnergy << " " << expEnergySquared << endl;
-
-  ofile.close(); // Closing file after use
 }
 
 
