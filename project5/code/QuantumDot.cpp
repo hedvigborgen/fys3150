@@ -126,7 +126,6 @@ void QuantumDot::MonteCarlo(int whichMethod, string write, long int maxVariation
 // Monte Carlo sampling with the Metropolis algorithm
 void QuantumDot::MonteCarlo(int whichMethod, string write, double alpha, double omega){
   int cycle, i, j;
-  long int count;
   double newPsi, oldPsi, deltaEnergy, energy, energySquared, expEnergy, expEnergySquared;
   // Setting up the uniform distribution for x \in (0, 1)
   random_device rd;
@@ -142,7 +141,6 @@ void QuantumDot::MonteCarlo(int whichMethod, string write, double alpha, double 
   energySquared = 0;
   deltaEnergy = 0;
   m_omega = omega;
-  count = 0;
 
   // initial trial position, note calling with alpha
   // and in three dimensions
@@ -172,7 +170,6 @@ void QuantumDot::MonteCarlo(int whichMethod, string write, double alpha, double 
         }
       }
       oldPsi = newPsi;
-      count += 1;
     }
 
     // computing local energy
@@ -187,7 +184,7 @@ void QuantumDot::MonteCarlo(int whichMethod, string write, double alpha, double 
   expEnergy = energy/m_MCCs;
   expEnergySquared = energySquared/m_MCCs;
 
-  WriteToFileNew(alpha, expEnergy, expEnergySquared, count);
+  WriteToFileNew(alpha, expEnergy, expEnergySquared);
 } // end mc_sampling function
 
 
@@ -271,9 +268,9 @@ double QuantumDot::LocalEnergy(mat position, int whichMethod, double alpha){
 // Writes to file if (...)
 void QuantumDot::WriteToFile(int whichMethod){
   ofstream ofile;
-  string filename;
+  string filename, step;
   if (whichMethod == 0){
-    filename = "../output/EnergyasFunctionofAlpha0.dat";
+    filename = "../output/EnergyasFunctionofAlpha0";
   }
 
   else if (whichMethod == 1){
@@ -284,11 +281,16 @@ void QuantumDot::WriteToFile(int whichMethod){
     filename = "../output/EnergyasFunctionofAlpha2.dat";
   }
 
+  ostringstream streamObj;
+  streamObj << fixed << setprecision(2) << m_step;
+  step = streamObj.str();
+  filename.append(step).append(".dat");
+
   ofile.open(filename);
 
   // Writing the calculated values to file
-  ofile << "alpha" << "  "  << "<E>" << "  " << "<E^2>" << "  " << "Accepted changes" << endl;
-  ofile << "________________________" << endl;
+  ofile << "Alpha" << "  "  << "<E>" << "  " << "<E^2>" << "  " << "Accepted changes" << endl;
+  ofile << "______________________________" << endl;
   for (int i = 0; i < m_maxVariations; i++){
     ofile << m_alpha(i) << " " << m_expEnergy(i) << " " << m_expEnergySquared(i) << " " << m_count(i) << endl;
   }
@@ -319,7 +321,7 @@ void QuantumDot::WriteToFileTest(int cycle, int variation, double expEnergy_, do
 
 
 // Writes to file if (...)
-void QuantumDot::WriteToFileNew(double alpha, double expEnergy, double expEnergySquared, long int count){
+void QuantumDot::WriteToFileNew(double alpha, double expEnergy, double expEnergySquared){
   ofstream ofile;
   string filename, alpha_, omega_;
 
@@ -334,9 +336,9 @@ void QuantumDot::WriteToFileNew(double alpha, double expEnergy, double expEnergy
   ofile.open(filename);
 
   // Writing the calculated values to file
-  ofile << "alpha" << "  "  << "omega" << "  " << "<E>" << "  " << "<E^2>" << "  " << "Stepsize" <<  "  " << "Accepted changes" << endl;
-  ofile << "________________________" << endl;
-  ofile << alpha << " " << m_omega << " " << expEnergy << " " << expEnergySquared << " " << m_step << " " << count << endl;
+  ofile << "Alpha" << "  "  << "Omega" << "  " << "<E>" << "  " << "<E^2>" << endl;
+  ofile << "_____________________________________" << endl;
+  ofile << alpha << " " << m_omega << " " << expEnergy << " " << expEnergySquared << endl;
 
   ofile.close(); // Closing file after use
 }
