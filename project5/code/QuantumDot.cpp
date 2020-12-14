@@ -131,12 +131,16 @@ void QuantumDot::MonteCarlo(int whichMethod, string write, long int maxVariation
       m_expEnergySquared(variation) = energySquared/(m_MCCs-m_equilibrationTime);
     }
   } // end of loop over variational steps
+  if (write == "at the end"){
+    // Writing results to file after all MCCs
+    WriteToFile(whichMethod);
+  }
 } // end mc_sampling function
 
 
 
 // Monte Carlo sampling with the Metropolis algorithm
-void QuantumDot::MonteCarlo(int whichMethod, string write, double alpha, double omega){
+void QuantumDot::MonteCarlo(int whichMethod, double alpha, double omega){
   int cycle, i, j, k;
   double newPsi, oldPsi, deltaEnergy, energy, energySquared, expEnergy,
   expEnergySquared, distance, meanDistance;
@@ -332,7 +336,7 @@ void QuantumDot::WriteToFile(int whichMethod, double alpha, double expEnergy, do
   ofstream ofile;
   string filename, whichMethod_, alpha_, beta_, omega_;
 
-  ostringstream streamObj0, streamObj1, streamObj2;
+  ostringstream streamObj0, streamObj1, streamObj2, streamObj3;
   streamObj0 << fixed << setprecision(0) << whichMethod;
   streamObj1 << fixed << setprecision(2) << alpha;
   streamObj2 << fixed << setprecision(2) << m_beta;

@@ -1,5 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
+import matplotlib as mpl
+from mpl_toolkits.mplot3d import Axes3D
 import subprocess
 
 # For nice plots
@@ -8,60 +10,38 @@ plt.rc('text', usetex=True)
 plt.rc('text.latex', preamble=r'\usepackage{amsmath}')
 colors = ['#BA8BCB', '#FEB144', '#9EE09E', '#1A7DA8', '#FF6663','#FDFD97', '#FEB144', '#FF6663', '#3498DB', '#FF3386']
 
-variations = 50
-equilibrationTime = 100_000
+task = 'Parameters'
 MCCs = 1_000_000
-step = 1.0
-charge = 1
 whichMethod = 2
-filenames = ['../output/EnergyasFunctionofAlpha0_1.00.dat', '../output/EnergyasFunctionofAlpha1_1.00.dat']
-write = 'at the end'
+step = 1.0
 
-
-else if (numArg == 8){
-  maxVariations = atol(arguments[1]);
-  whichMethod = atoi(arguments[2]);
-  equilibrationTime = atol(arguments[3]);
-  MCCs = atol(arguments[4]);
-  charge = atol(arguments[5]);
-  step = atoi(arguments[6]);
-  beta = atof(arguments[7]);
-
+size = 10
+alpha = np.linspace(0.6, 1.6, size)
+beta = np.linspace(0.2, 1.0, size)
+omega = 1.0
 
 # Compiling the C++ script
 subprocess.call(['c++', '-std=c++11', '-o', 'main.exe', 'QuantumDot.cpp', 'main.cpp', '-larmadillo', '-O3', '-march=native', '-Xpreprocessor', '-fopenmp', '-lomp'])
-subprocess.call(['./main.exe', f'{variations}', f'{whichMethod}', f'{equilibrationTime}', f'{MCCs}', f'{charge}', f'{step}', f'{alpha}', f'{beta}'])
 
-# Defining function to read data files
-def read_file(filename):
-    infile = open(filename, 'r')
-    lines = infile.readlines()
+parameters = np.zeros((size, size))
 
-    alpha = np.zeros(len(lines)-2)
-    expEnergy = np.zeros(len(lines)-2)
-    expEnergySquared = np.zeros(len(lines)-2)
-    acceptedChanges = np.zeros(len(lines)-2)
+for i, alpha_ in enumerate(alpha):
+    for j, beta_ in enumerate(beta):
+        subprocess.call(['./main.exe', task, f'{MCCs}', f'{whichMethod}', f'{step}', f'{alpha_}', f'{beta_}', f'{omega}'])
 
-    for i, line in enumerate(lines):
-        if 2 <= i:
-            vals = line.split()
-            alpha[i-2] = float(vals[0])
-            expEnergy[i-2] = float(vals[1])
-            expEnergySquared[i-2] = float(vals[2])
-            acceptedChanges[i-2] = float(vals[3])
-    infile.close()
-    return alpha, expEnergy, expEnergySquared, acceptedChanges
+        infile = open('../output/EnergyasFunctionofParameters_2_%.2f_%.2f_1.00.dat' %(alpha_, beta_))
+        lines = infile.readlines()
+        line = lines[2]
+        vals = line.split()
+        parameters[i, j] = float(vals[3])
+        infile.close()
 
-alpha0, expEnergy0, expEnergySquared0, acceptedChanges0 = read_file(filenames[0])
-alpha1, expEnergy1, expEnergySquared1, acceptedChanges1 = read_file(filenames[1])
-
-index0 = np.where(expEnergy0 == min(expEnergy0))[0][0]
-index1 = np.where(expEnergy1 == min(expEnergy1))[0][0]
-
-alpha_0 = alpha0[index0]
-alpha_1 = alpha1[index1]
-
-
-
-# subprocess.call(['./main.exe', f'{variations}', f'{alpha0}', f'{deltaAlpha}', f'{equilibrationTime}', f'{MCCs}', f'{charge}', f'{whichMethod[0]}', write])
-# subprocess.call(['./main.exe', f'{variations}', f'{alpha0}', f'{deltaAlpha}', f'{equilibrationTime}', f'{MCCs}', f'{charge}', f'{whichMethod[1]}', write])
+X,Y = np.meshgrid(alpha, beta)
+fig = plt.figure()
+ax = fig.gca(projection='3d')
+surf = ax.plot_surface(X, Y, parameters)
+ax.set_title(r'Expectation value for the energy', fontsize=20)
+ax.set_xlabel(r'$\alpha$', fontsize=15)
+ax.set_ylabel(r'$\beta$', fontsize=15)
+fig.colorbar(surf)
+fig.savefig(f'../plots/EnergyMinima.pdf')

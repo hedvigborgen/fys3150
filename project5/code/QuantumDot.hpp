@@ -17,10 +17,8 @@ class QuantumDot{
 public:
   QuantumDot(int, int, double, long int, long int, double, double);
   void Initialize(string, long int, double, double, double);
-  // void Initialize(long int);
   void MonteCarlo(int, string, long int, double, double, double);
-  void MonteCarlo(int, string, double, double);
-  void WriteToFile(int);
+  void MonteCarlo(int, double, double);
 
 private:
   int m_dimension, m_numberofParticles;
@@ -31,6 +29,7 @@ private:
   ofstream m_ofileTest;
   double WaveFunction(mat, int, double);
   double LocalEnergy(mat, int, double);
+  void WriteToFile(int);
   void WriteToFile(int, double, double, double, double);
   void WriteToFileTest(int, int, double, double);
   void CloseFile();

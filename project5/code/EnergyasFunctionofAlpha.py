@@ -8,21 +8,19 @@ plt.rc('text', usetex=True)
 plt.rc('text.latex', preamble=r'\usepackage{amsmath}')
 colors = ['#BA8BCB', '#FEB144', '#9EE09E', '#1A7DA8', '#FF6663','#FDFD97', '#FEB144', '#FF6663', '#3498DB', '#FF3386']
 
+task = 'Alpha'
+MCCs = 1_000_000
+whichMethod = [0, 1]
 variations = 50
 alpha0 = 0.25
 deltaAlpha = 0.05
-equilibrationTime = 100_000
-MCCs = 1_000_000
 step = 1.0
-charge = 1
-whichMethod = [0, 1]
 filenames = ['../output/EnergyasFunctionofAlpha0_1.00.dat', '../output/EnergyasFunctionofAlpha1_1.00.dat']
-write = 'at the end'
 
 # Compiling the C++ script
 subprocess.call(['c++', '-std=c++11', '-o', 'main.exe', 'QuantumDot.cpp', 'main.cpp', '-larmadillo', '-O3', '-march=native', '-Xpreprocessor', '-fopenmp', '-lomp'])
-subprocess.call(['./main.exe', f'{variations}', f'{alpha0}', f'{deltaAlpha}', f'{equilibrationTime}', f'{MCCs}', f'{step}', f'{charge}', f'{whichMethod[0]}', write])
-subprocess.call(['./main.exe', f'{variations}', f'{alpha0}', f'{deltaAlpha}', f'{equilibrationTime}', f'{MCCs}', f'{step}', f'{charge}', f'{whichMethod[1]}', write])
+subprocess.call(['./main.exe', task, f'{MCCs}', f'{whichMethod[0]}', f'{variations}', f'{alpha0}', f'{deltaAlpha}', f'{step}'])
+subprocess.call(['./main.exe', task, f'{MCCs}', f'{whichMethod[1]}', f'{variations}', f'{alpha0}', f'{deltaAlpha}', f'{step}'])
 
 # Defining function to read data files
 def read_file(filename):
