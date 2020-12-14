@@ -2,14 +2,14 @@
 
 // Function to read in data from screen, note call by reference
 QuantumDot::QuantumDot(int dimension, int numberofParticles, double charge,
- long int equilibrationTime, long int MCCs, double step){
+ long int equilibrationTime, long int MCCs, double step, double beta){
   m_dimension = dimension;
   m_numberofParticles = numberofParticles;
   m_charge = charge;
   m_equilibrationTime = equilibrationTime;
   m_MCCs  = MCCs;
   m_step = step;
-  m_beta = 1;
+  m_beta = beta;
 }
 
 
@@ -32,6 +32,17 @@ void QuantumDot::Initialize(string write, long int maxVariations,
     m_count = vec(m_maxVariations).fill(0.0);
   }
 }
+
+// void QuantumDot::Initialize(long int maxVariations){
+//   m_maxVariations = maxVariations;
+//   m_alpha = vec(m_maxVariations).fill(0.0);
+//
+//   m_expEnergy = vec(m_maxVariations).fill(0.0);
+//   m_expEnergySquared = vec(m_maxVariations).fill(0.0);
+//   m_count = vec(m_maxVariations).fill(0.0);
+// }
+
+
 
 
 
@@ -81,6 +92,7 @@ void QuantumDot::MonteCarlo(int whichMethod, string write, long int maxVariation
         }
       }
       newPsi = WaveFunction(newPosition, whichMethod, m_alpha(variation));
+
       // Metropolis test
       if (RandomDoubleGenerator(gen) <= newPsi*newPsi/oldPsi/oldPsi){
         for (i = 0; i < m_numberofParticles; i++){
@@ -125,9 +137,12 @@ void QuantumDot::MonteCarlo(int whichMethod, string write, long int maxVariation
 
 // Monte Carlo sampling with the Metropolis algorithm
 void QuantumDot::MonteCarlo(int whichMethod, string write, double alpha, double omega){
-  int cycle, i, j;
+  int cycle, i, j, k;
   double newPsi, oldPsi, deltaEnergy, energy, energySquared, expEnergy,
-  expEnergySquared, meanDistance;
+  expEnergySquared, distance, meanDistance;
+
+  // void Initialize(long int);
+
   // Setting up the uniform distribution for x \in (0, 1)
   random_device rd;
   mt19937_64 gen(rd());
@@ -136,6 +151,7 @@ void QuantumDot::MonteCarlo(int whichMethod, string write, double alpha, double 
   // allocate matrices which contain the position of the particles
   mat oldPosition = mat(m_numberofParticles, m_dimension).fill(0.0);
   mat newPosition = mat(m_numberofParticles, m_dimension).fill(0.0);
+
 
   // initializations of variational parameters
   energy = 0;
@@ -154,6 +170,7 @@ void QuantumDot::MonteCarlo(int whichMethod, string write, double alpha, double 
   }
 
   oldPsi = WaveFunction(oldPosition, whichMethod, alpha);
+
   // loop over monte carlo cycle
   for (cycle = 1; cycle <= m_MCCs; cycle++){
     // new position
@@ -164,6 +181,8 @@ void QuantumDot::MonteCarlo(int whichMethod, string write, double alpha, double 
       }
     }
     newPsi = WaveFunction(newPosition, whichMethod, alpha);
+
+
     // Metropolis test
     if (RandomDoubleGenerator(gen) <= newPsi*newPsi/oldPsi/oldPsi){
       for (i = 0; i < m_numberofParticles; i++){
@@ -180,8 +199,11 @@ void QuantumDot::MonteCarlo(int whichMethod, string write, double alpha, double 
       energy += deltaEnergy;
       energySquared += deltaEnergy*deltaEnergy;
 
-      meanDistance += norm(newPosition(0) - newPosition(1));
-      //cout << meanDistance << endl;
+      distance = 0;
+      for (k = 0; k < m_dimension; k++){
+        distance += (oldPosition(0, k) - oldPosition(1, k))*(oldPosition(0, k) - oldPosition(1, k));
+      }
+      meanDistance += sqrt(distance);
     }
   } // end of loop over MC trials
 
@@ -190,15 +212,15 @@ void QuantumDot::MonteCarlo(int whichMethod, string write, double alpha, double 
   expEnergy = energy/(m_MCCs-m_equilibrationTime);
   expEnergySquared = energySquared/(m_MCCs-m_equilibrationTime);
 
-  WriteToFile(alpha, expEnergy, expEnergySquared, meanDistance);
+  WriteToFile(whichMethod, alpha, expEnergy, expEnergySquared, meanDistance);
 } // end mc_sampling function
 
 
 
 // Function to compute the squared wave function, simplest form
 double QuantumDot::WaveFunction(mat position, int whichMethod, double alpha){
-  int i, j;
-  double Psi, singleParticlePosition;
+  int i, j, k;
+  double Psi, singleParticlePosition, dist, distance;
 
   singleParticlePosition = Psi = 0;
 
@@ -216,12 +238,12 @@ double QuantumDot::WaveFunction(mat position, int whichMethod, double alpha){
   // Psi_T2
   else if (whichMethod == 2){
 
-    double dist = 0;
-    for (int k = 0; k < m_numberofParticles; k++){
+    dist = 0;
+    for (k = 0; k < m_dimension; k++){
       dist += (position(0, k) - position(1, k))*(position(0, k) - position(1, k));
     }
+    distance = sqrt(dist);
 
-    double distance = sqrt(dist);
     Psi = exp(-alpha*m_omega*singleParticlePosition/2)*exp(distance/(2*(1 + m_beta*distance)));
   }
 
@@ -243,12 +265,10 @@ double QuantumDot::LocalEnergy(mat position, int whichMethod, double alpha){
   }
 
   dist = 0;
-  for (k = 0; k < m_numberofParticles; k++){
+  for (k = 0; k < m_dimension; k++){
     dist += (position(0, k) - position(1, k))*(position(0, k) - position(1, k));
   }
   distance = sqrt(dist);
-  cout << distance << endl;
-  //distance = norm(position(0) - position(1));
 
   E_L1 = 0.5*m_omega*m_omega*singleParticlePosition*(1 - alpha*alpha) + 3*m_omega*alpha;
 
@@ -308,24 +328,28 @@ void QuantumDot::WriteToFile(int whichMethod){
 
 
 // Writes to file if (...)
-void QuantumDot::WriteToFile(double alpha, double expEnergy, double expEnergySquared, double meanDistance){
+void QuantumDot::WriteToFile(int whichMethod, double alpha, double expEnergy, double expEnergySquared, double meanDistance){
   ofstream ofile;
-  string filename, alpha_, omega_;
+  string filename, whichMethod_, alpha_, beta_, omega_;
 
-  ostringstream streamObj1, streamObj2;
+  ostringstream streamObj0, streamObj1, streamObj2;
+  streamObj0 << fixed << setprecision(0) << whichMethod;
   streamObj1 << fixed << setprecision(2) << alpha;
-  streamObj2 << fixed << setprecision(2) << m_omega;
+  streamObj2 << fixed << setprecision(2) << m_beta;
+  streamObj3 << fixed << setprecision(2) << m_omega;
+  whichMethod_ = streamObj0.str();
   alpha_ = streamObj1.str();
-  omega_ = streamObj2.str();
+  beta_ = streamObj2.str();
+  omega_ = streamObj3.str();
 
-  filename = "../output/expectationalEnergy_";
-  filename.append(alpha_).append("_").append(omega_).append(".dat");
+  filename = "../output/energyasFunctionofParameters_";
+  filename.append(whichMethod_).append("_").append(alpha_).append("_").append(beta_).append("_").append(omega_).append(".dat");
   ofile.open(filename);
 
   // Writing the calculated values to file
-  ofile << "Alpha" << "  "  << "Omega" << "  " << "<E>" << "  " << "<E^2>" << "  " << "Mean distance" << endl;
-  ofile << "______________________________________________" << endl;
-  ofile << alpha << " " << m_omega << " " << expEnergy << " " << expEnergySquared << " " << meanDistance << endl;
+  ofile << "Alpha" << " " << "Beta" << " " << "Omega" << "  " << "<E>" << "  " << "<E^2>" << "  " << "Mean distance" << endl;
+  ofile << "________________________________________________________" << endl;
+  ofile << alpha << " " << m_beta << " " << m_omega << " " << expEnergy << " " << expEnergySquared << " " << meanDistance << endl;
 
   ofile.close(); // Closing file after use
 }
