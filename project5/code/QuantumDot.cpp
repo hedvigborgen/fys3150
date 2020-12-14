@@ -270,15 +270,15 @@ void QuantumDot::WriteToFile(int whichMethod){
   ofstream ofile;
   string filename, step;
   if (whichMethod == 0){
-    filename = "../output/EnergyasFunctionofAlpha0";
+    filename = "../output/EnergyasFunctionofAlpha0_";
   }
 
   else if (whichMethod == 1){
-    filename = "../output/EnergyasFunctionofAlpha1.dat";
+    filename = "../output/EnergyasFunctionofAlpha1_";
   }
 
   else if(whichMethod == 2){
-    filename = "../output/EnergyasFunctionofAlpha2.dat";
+    filename = "../output/EnergyasFunctionofAlpha2_";
   }
 
   ostringstream streamObj;

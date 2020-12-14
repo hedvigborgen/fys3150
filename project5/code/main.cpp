@@ -16,11 +16,10 @@ int main(int numArg, char *arguments[]){
 
   dimension = 3;
   numberofParticles = 2;
-  step = 1.0;
 
 
 // Read in output file, abort if there are too few command-line arguments
-if ((numArg != 7) && (numArg != 9)){
+if ((numArg != 7) && (numArg != 10)){
   cout << "Incorrect number of arguments!" << endl; exit(1);
 }
 
@@ -45,16 +44,17 @@ else if (numArg == 7){
   }
 }
 
-else if (numArg == 9){
+else if (numArg == 10){
   // Defining input arguments
   maxVariations = atol(arguments[1]);
   alpha0 = atof(arguments[2]);
   deltaAlpha = atof(arguments[3]);
   equilibrationTime = atol(arguments[4]);
   MCCs = atol(arguments[5]);
-  charge = atol(arguments[6]);
-  whichMethod = atoi(arguments[7]);
-  write = arguments[8];
+  step = atof(arguments[6]);
+  charge = atol(arguments[7]);
+  whichMethod = atoi(arguments[8]);
+  write = arguments[9];
   omega = 1;
 }
 

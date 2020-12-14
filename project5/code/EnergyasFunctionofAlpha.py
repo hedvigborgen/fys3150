@@ -13,15 +13,16 @@ alpha0 = 0.25
 deltaAlpha = 0.05
 equilibrationTime = 100_000
 MCCs = 1_000_000
+step = 1.0
 charge = 1
 whichMethod = [0, 1]
-filenames = ['../output/EnergyasFunctionofAlpha0.dat', '../output/EnergyasFunctionofAlpha1.dat']
+filenames = ['../output/EnergyasFunctionofAlpha0_1.00.dat', '../output/EnergyasFunctionofAlpha1_1.00.dat']
 write = 'at the end'
 
 # Compiling the C++ script
 subprocess.call(['c++', '-std=c++11', '-o', 'main.exe', 'QuantumDot.cpp', 'main.cpp', '-larmadillo', '-O3', '-march=native', '-Xpreprocessor', '-fopenmp', '-lomp'])
-subprocess.call(['./main.exe', f'{variations}', f'{alpha0}', f'{deltaAlpha}', f'{equilibrationTime}', f'{MCCs}', f'{charge}', f'{whichMethod[0]}', write])
-subprocess.call(['./main.exe', f'{variations}', f'{alpha0}', f'{deltaAlpha}', f'{equilibrationTime}', f'{MCCs}', f'{charge}', f'{whichMethod[1]}', write])
+subprocess.call(['./main.exe', f'{variations}', f'{alpha0}', f'{deltaAlpha}', f'{equilibrationTime}', f'{MCCs}', f'{step}', f'{charge}', f'{whichMethod[0]}', write])
+subprocess.call(['./main.exe', f'{variations}', f'{alpha0}', f'{deltaAlpha}', f'{equilibrationTime}', f'{MCCs}', f'{step}', f'{charge}', f'{whichMethod[1]}', write])
 
 # Defining function to read data files
 def read_file(filename):
