@@ -8,7 +8,7 @@ plt.rc('text', usetex=True)
 plt.rc('text.latex', preamble=r'\usepackage{amsmath}')
 colors = ['#BA8BCB', '#FEB144', '#9EE09E', '#1A7DA8', '#FF6663','#FDFD97', '#FEB144', '#FF6663', '#3498DB', '#FF3386']
 
-task = 'Alpha'
+task = 'StepLength'
 MCCs = 1_000_000
 whichMethod = [0, 1]
 variations = 50

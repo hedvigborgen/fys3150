@@ -10,8 +10,7 @@ plt.style.use('seaborn')
 plt.rc('text', usetex=True)
 plt.rc('text.latex', preamble=r'\usepackage{amsmath}')
 
-
-task = 'Alpha'
+task = 'StepLength'
 MCCs = 1_000_000
 whichMethod = 0
 variations = 8
@@ -71,8 +70,8 @@ for i, alpha_ in enumerate(alpha):
     ax.plot(steps, acceptedChanges[i], color=colors[i], label=r'$\alpha$ = %.2f' %alpha_)
 ax.plot(steps, np.ones(len(steps))*50, ':', color = '#000000')
 ax.set_title(r'Percentage of accepted changes as function of step length', fontsize=20)
-ax.set_xlabel('Accepted changes', fontsize=15)
-ax.set_ylabel(r'$\delta$', fontsize=15)
+ax.set_xlabel(r'$\delta$', fontsize=15)
+ax.set_ylabel('Accepted changes', fontsize=15)
 ax.legend(fontsize=15)
 fig.savefig(f'../plots/acceptedChanges.pdf')
 
@@ -87,7 +86,7 @@ linearRegression = alpha*slope + intercept
 
 
 fig, ax = plt.subplots()
-ax.plot(alpha, linearRegression, color = '#BA8BCB', label=r'$\delta =$ %.3f$\alpha$ + %.3f' %(slope, intercept))
+ax.plot(alpha, linearRegression, color = '#BA8BCB', label=r'$\delta = e^{%.3f\alpha + %.3f}$' %(slope, intercept))
 
 for i in range(len(idealStep)):
     ax.plot(alpha[i], idealStep[i], 'o', color = '#000000')
@@ -95,4 +94,4 @@ ax.set_title(r'The optimal step length as function of alpha', fontsize=20)
 ax.set_xlabel(r'$\alpha$', fontsize=15)
 ax.set_ylabel(r'$\ln{\delta}$', fontsize=15)
 ax.legend(fontsize=15)
-fig.savefig(f'../plots/optimalStepLength_log.pdf')
+fig.savefig(f'../plots/optimalStepLength.pdf')

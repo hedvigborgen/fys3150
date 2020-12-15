@@ -2,24 +2,23 @@
 
 // Function to read in data from screen, note call by reference
 QuantumDot::QuantumDot(int dimension, int numberofParticles, double charge,
- long int equilibrationTime, long int MCCs, double step, double beta){
+ long int equilibrationTime, long int MCCs){
   m_dimension = dimension;
   m_numberofParticles = numberofParticles;
   m_charge = charge;
   m_equilibrationTime = equilibrationTime;
   m_MCCs  = MCCs;
-  m_step = step;
-  m_beta = beta;
 }
 
 
 
 void QuantumDot::Initialize(string write, long int maxVariations,
-  double alpha0, double deltaAlpha, double omega){
+  double alpha0, double deltaAlpha, double beta, double omega){
   m_maxVariations = maxVariations;
   m_alpha = vec(m_maxVariations).fill(0.0);
   m_alpha0 = alpha0;
   m_deltaAlpha = deltaAlpha;
+  m_beta = beta;
   m_omega = omega;
 
   if (write == "at the end"){
@@ -33,26 +32,16 @@ void QuantumDot::Initialize(string write, long int maxVariations,
   }
 }
 
-// void QuantumDot::Initialize(long int maxVariations){
-//   m_maxVariations = maxVariations;
-//   m_alpha = vec(m_maxVariations).fill(0.0);
-//
-//   m_expEnergy = vec(m_maxVariations).fill(0.0);
-//   m_expEnergySquared = vec(m_maxVariations).fill(0.0);
-//   m_count = vec(m_maxVariations).fill(0.0);
-// }
-
-
-
 
 
 // Monte Carlo sampling with the Metropolis algorithm
 void QuantumDot::MonteCarlo(int whichMethod, string write, long int maxVariations,
-  double alpha0, double deltaAlpha, double omega){
+  double alpha0, double deltaAlpha, double beta, double omega, double step){
   int cycle, variation, i, j;
   double oldPsi, newPsi, energy, energySquared, deltaEnergy;
 
-  Initialize(write, maxVariations, alpha0, deltaAlpha, omega);
+  Initialize(write, maxVariations, alpha0, deltaAlpha, beta, omega);
+  m_step = step; // Deciding the step length
 
   // Setting up the uniform distribution for x \in (0, 1)
   random_device rd;
@@ -122,7 +111,7 @@ void QuantumDot::MonteCarlo(int whichMethod, string write, long int maxVariation
 
     } // end of loop over MC trials
     if (write == "each time"){
-      CloseFile();
+      CloseFile(m_ofileTest);
     }
 
     if (write == "at the end"){
@@ -140,12 +129,9 @@ void QuantumDot::MonteCarlo(int whichMethod, string write, long int maxVariation
 
 
 // Monte Carlo sampling with the Metropolis algorithm
-void QuantumDot::MonteCarlo(int whichMethod, double alpha, double omega){
+void QuantumDot::MonteCarlo(string task, int whichMethod, double alpha, double beta, double omega){
   int cycle, i, j, k;
-  double newPsi, oldPsi, deltaEnergy, energy, energySquared, expEnergy,
-  expEnergySquared, distance, meanDistance;
-
-  // void Initialize(long int);
+  double newPsi, oldPsi, deltaEnergy, energy, energySquared, meanDistance, distance, step;
 
   // Setting up the uniform distribution for x \in (0, 1)
   random_device rd;
@@ -156,11 +142,12 @@ void QuantumDot::MonteCarlo(int whichMethod, double alpha, double omega){
   mat oldPosition = mat(m_numberofParticles, m_dimension).fill(0.0);
   mat newPosition = mat(m_numberofParticles, m_dimension).fill(0.0);
 
-
   // initializations of variational parameters
   energy = 0;
   energySquared = 0;
   deltaEnergy = 0;
+  step = exp(-0.518*alpha + 0.982);
+  m_beta = beta;
   m_omega = omega;
   meanDistance = 0;
 
@@ -169,7 +156,7 @@ void QuantumDot::MonteCarlo(int whichMethod, double alpha, double omega){
   for (i = 0; i < m_numberofParticles; i++){
     for (j = 0; j < m_dimension; j++){
       double randomNumber = RandomDoubleGenerator(gen);
-      oldPosition(i,j) = m_step*(randomNumber-0.5);
+      oldPosition(i,j) = step*(randomNumber-0.5);
     }
   }
 
@@ -181,7 +168,7 @@ void QuantumDot::MonteCarlo(int whichMethod, double alpha, double omega){
     for (i = 0; i < m_numberofParticles; i++){
       for (j = 0; j < m_dimension; j++){
         double randomNumber = RandomDoubleGenerator(gen);
-        newPosition(i,j) = oldPosition(i,j) + m_step*(randomNumber-0.5);
+        newPosition(i,j) = oldPosition(i,j) + step*(randomNumber-0.5);
       }
     }
     newPsi = WaveFunction(newPosition, whichMethod, alpha);
@@ -212,11 +199,13 @@ void QuantumDot::MonteCarlo(int whichMethod, double alpha, double omega){
   } // end of loop over MC trials
 
   // update the energy average and its squared
-  meanDistance /= m_MCCs-m_equilibrationTime;
-  expEnergy = energy/(m_MCCs-m_equilibrationTime);
-  expEnergySquared = energySquared/(m_MCCs-m_equilibrationTime);
+  m_meanDistance = meanDistance/(m_MCCs-m_equilibrationTime);
+  m_expectationalEnergy = energy/(m_MCCs-m_equilibrationTime);
+  m_expectationalEnergySquared = energySquared/(m_MCCs-m_equilibrationTime);
 
-  WriteToFile(whichMethod, alpha, expEnergy, expEnergySquared, meanDistance);
+  if (task == "Parameters"){
+    WriteToFile(whichMethod, alpha);
+  }
 } // end mc_sampling function
 
 
@@ -332,7 +321,7 @@ void QuantumDot::WriteToFile(int whichMethod){
 
 
 // Writes to file if (...)
-void QuantumDot::WriteToFile(int whichMethod, double alpha, double expEnergy, double expEnergySquared, double meanDistance){
+void QuantumDot::WriteToFile(int whichMethod, double alpha){
   ofstream ofile;
   string filename, whichMethod_, alpha_, beta_, omega_;
 
@@ -346,16 +335,23 @@ void QuantumDot::WriteToFile(int whichMethod, double alpha, double expEnergy, do
   beta_ = streamObj2.str();
   omega_ = streamObj3.str();
 
-  filename = "../output/energyasFunctionofParameters_";
+  filename = "../output/EnergyasFunctionofParameters_";
   filename.append(whichMethod_).append("_").append(alpha_).append("_").append(beta_).append("_").append(omega_).append(".dat");
   ofile.open(filename);
 
   // Writing the calculated values to file
   ofile << "Alpha" << " " << "Beta" << " " << "Omega" << "  " << "<E>" << "  " << "<E^2>" << "  " << "Mean distance" << endl;
   ofile << "________________________________________________________" << endl;
-  ofile << alpha << " " << m_beta << " " << m_omega << " " << expEnergy << " " << expEnergySquared << " " << meanDistance << endl;
+  ofile << alpha << " " << m_beta << " " << m_omega << " " << m_expectationalEnergy << " " << m_expectationalEnergySquared << " " << m_meanDistance << endl;
 
   ofile.close(); // Closing file after use
+}
+
+
+
+// Writes to file if (...)
+void QuantumDot::WriteToFileParallel(ofstream &ofile, string filename, double alpha){
+  ofile << m_beta << " " << m_expectationalEnergy << " " << m_expectationalEnergySquared << " " << m_meanDistance << endl;
 }
 
 
@@ -382,6 +378,6 @@ void QuantumDot::WriteToFileTest(int cycle, int variation, double expEnergy_, do
 
 
 // Closes file after use
-void QuantumDot::CloseFile(){
-  m_ofileTest.close();
+void QuantumDot::CloseFile(ofstream &file){
+  file.close();
 }
