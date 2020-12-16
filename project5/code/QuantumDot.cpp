@@ -131,7 +131,8 @@ void QuantumDot::MonteCarlo(int whichMethod, string write, long int maxVariation
 // Monte Carlo sampling with the Metropolis algorithm
 void QuantumDot::MonteCarlo(string task, int whichMethod, double alpha, double beta, double omega){
   int cycle, i, j, k;
-  double newPsi, oldPsi, deltaEnergy, energy, energySquared, meanDistance, distance, step;
+  double newPsi, oldPsi, deltaEnergy, energy, energySquared, meanDistance, distance,
+  step, deltaKinetic, deltaPotential, kineticEnergy, potentialEnergy;
 
   // Setting up the uniform distribution for x \in (0, 1)
   random_device rd;
@@ -150,6 +151,15 @@ void QuantumDot::MonteCarlo(string task, int whichMethod, double alpha, double b
   m_beta = beta;
   m_omega = omega;
   meanDistance = 0;
+
+  if ((task == "VirialwithoutInteraction")|| (task == "VirialwithInteraction")){
+    deltaKinetic = 0;
+    deltaPotential = 0;
+    kineticEnergy = 0;
+    potentialEnergy = 0;
+    m_kineticEnergy = 0;
+    m_potentialEnergy = 0;
+  }
 
   // initial trial position, note calling with alpha
   // and in three dimensions
@@ -195,6 +205,13 @@ void QuantumDot::MonteCarlo(string task, int whichMethod, double alpha, double b
         distance += (oldPosition(0, k) - oldPosition(1, k))*(oldPosition(0, k) - oldPosition(1, k));
       }
       meanDistance += sqrt(distance);
+
+      if ((task == "VirialwithoutInteraction")|| (task == "VirialwithInteraction")){
+        deltaKinetic = KineticandPotentialEnergy(task, oldPosition, whichMethod, alpha, step, oldPsi)(0);
+        deltaPotential = KineticandPotentialEnergy(task, oldPosition, whichMethod, alpha, step, oldPsi)(1);
+        kineticEnergy += deltaKinetic;
+        potentialEnergy += deltaPotential;
+      }
     }
   } // end of loop over MC trials
 
@@ -205,6 +222,11 @@ void QuantumDot::MonteCarlo(string task, int whichMethod, double alpha, double b
 
   if (task == "Parameters"){
     WriteToFile(whichMethod, alpha);
+  }
+
+  else if ((task == "VirialwithoutInteraction")|| (task == "VirialwithInteraction")){
+    m_kineticEnergy += kineticEnergy/(m_MCCs-m_equilibrationTime);
+    m_potentialEnergy += potentialEnergy/(m_MCCs-m_equilibrationTime);
   }
 } // end mc_sampling function
 
@@ -286,6 +308,65 @@ double QuantumDot::LocalEnergy(mat position, int whichMethod, double alpha){
 
 
 
+vec QuantumDot::KineticandPotentialEnergy(string task, mat position, int whichMethod, double alpha, double step, double oldPsi){
+  int i, j, k;
+  double kineticEnergy, potentialEnergy, dist, distance, singleParticlePosition,
+  psiPlus, psiMinus;
+
+  // allocate matrices which contain the position of the particles
+  // the function matrix is defined in the progam library
+  mat positionPlus = mat(m_numberofParticles, m_dimension).fill(0.0);
+  mat positionMinus = mat(m_numberofParticles, m_dimension).fill(0.0);
+  for (i = 0; i < m_numberofParticles; i++){
+    for (j = 0; j < m_dimension; j++){
+      positionPlus(i, j) = positionMinus(i, j) = position(i, j);
+    }
+  }
+  // compute the kinetic energy
+  kineticEnergy = 0;
+  for (i = 0; i < m_numberofParticles; i++){
+    for (j = 0; j < m_dimension; j++){
+      positionPlus(i, j) = position(i, j)+step;
+      positionMinus(i, j) = position(i, j)-step;
+      psiMinus = WaveFunction(positionMinus, whichMethod, alpha);
+      psiPlus = WaveFunction(positionPlus, whichMethod, alpha);
+      kineticEnergy -= (psiMinus+psiPlus-2*oldPsi);
+      positionPlus(i, j) = position(i, j);
+      positionMinus(i, j) = position(i, j);
+    }
+  }
+
+  // include electron mass and hbar squared and divide by wave function
+ kineticEnergy = 0.5*kineticEnergy/(oldPsi*step*step);
+
+ // compute the potential energy
+ potentialEnergy = 0;
+ singleParticlePosition = 0;
+ for (i = 0; i < m_numberofParticles; i++){
+   for (j = 0; j < m_dimension; j++){
+     singleParticlePosition += position(i,j)*position(i,j);
+   }
+  potentialEnergy += 0.5*m_omega*m_omega*singleParticlePosition;
+ }
+  if (task == "VirialwithInteraction"){
+    dist = 0;
+    for (k = 0; k < m_dimension; k++){
+      dist += (position(0, k) - position(1, k))*(position(0, k) - position(1, k));
+    }
+    distance = sqrt(dist);
+    potentialEnergy += 1./distance;
+  }
+  vec energy(2);
+  energy(0) = kineticEnergy;
+  energy(1) = potentialEnergy;
+
+ return energy;
+}
+
+
+
+
+
 // Writes to file if (...)
 void QuantumDot::WriteToFile(int whichMethod){
   ofstream ofile;
@@ -350,10 +431,13 @@ void QuantumDot::WriteToFile(int whichMethod, double alpha){
 
 
 // Writes to file if (...)
-void QuantumDot::WriteToFileParallel(ofstream &ofile, string filename, double alpha){
+void QuantumDot::WriteToFileParallel(ofstream &ofile){
   ofile << m_beta << " " << m_expectationalEnergy << " " << m_expectationalEnergySquared << " " << m_meanDistance << endl;
 }
 
+void QuantumDot::WriteToFileVirial(ofstream &ofile){
+  ofile << m_omega << " " << m_kineticEnergy << " " << m_potentialEnergy << endl;
+}
 
 
 // Writes to file if (...)

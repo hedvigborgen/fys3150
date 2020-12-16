@@ -13,4 +13,7 @@ execute3:
 	./main.exe Parameters 1000000 1 0.85 0.5 1.0
 
 execute4:
-	./main.exe Loop 100000000 1.0
+	./main.exe Loop 1000000 1.0
+
+execute5:
+	./main.exe VirialwithInteraction 1000000 0.01 0.01
