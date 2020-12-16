@@ -16,7 +16,6 @@ using namespace arma;
 class QuantumDot{
 public:
   QuantumDot(int, int, double, long int, long int);
-  void Initialize(string, long int, double, double, double, double);
   void MonteCarlo(int, string, long int, double, double, double, double, double);
   void MonteCarlo(string, int, double, double, double);
   void WriteToFileParallel(ofstream &);
@@ -32,6 +31,7 @@ private:
   m_kineticEnergy, m_potentialEnergy;
   vec m_count, m_expEnergy, m_expEnergySquared, m_alpha;
   ofstream m_ofileTest;
+  void Initialize(string, long int, double, double, double, double);
   double WaveFunction(mat, int, double);
   double LocalEnergy(mat, int, double);
   vec KineticandPotentialEnergy(string, mat, int, double, double, double);

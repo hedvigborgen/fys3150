@@ -1,6 +1,6 @@
 #include "QuantumDot.hpp"
 
-// Function to read in data from screen, note call by reference
+// Constructor: Initializes the quantum system
 QuantumDot::QuantumDot(int dimension, int numberofParticles, double charge,
  long int equilibrationTime, long int MCCs){
   m_dimension = dimension;
@@ -12,21 +12,24 @@ QuantumDot::QuantumDot(int dimension, int numberofParticles, double charge,
 
 
 
+// Initializes important parameters
 void QuantumDot::Initialize(string write, long int maxVariations,
   double alpha0, double deltaAlpha, double beta, double omega){
-  m_maxVariations = maxVariations;
+  m_maxVariations = maxVariations; // Number of variations of parameter alpha
   m_alpha = vec(m_maxVariations).fill(0.0);
   m_alpha0 = alpha0;
   m_deltaAlpha = deltaAlpha;
   m_beta = beta;
   m_omega = omega;
 
+  // If writing to file after all Monte Carlo cycles
   if (write == "at the end"){
     m_expEnergy = vec(m_maxVariations).fill(0.0);
     m_expEnergySquared = vec(m_maxVariations).fill(0.0);
     m_count = vec(m_maxVariations).fill(0.0);
   }
 
+  // If writing to file for each Monte Carlo cycle
   else if (write == "each time"){
     m_count = vec(m_maxVariations).fill(0.0);
   }
@@ -34,35 +37,36 @@ void QuantumDot::Initialize(string write, long int maxVariations,
 
 
 
-// Monte Carlo sampling with the Metropolis algorithm
+// Monte Carlo sampling with the Metropolis algorithm,
+// varying the parameter alpha
 void QuantumDot::MonteCarlo(int whichMethod, string write, long int maxVariations,
   double alpha0, double deltaAlpha, double beta, double omega, double step){
   int cycle, variation, i, j;
   double oldPsi, newPsi, energy, energySquared, deltaEnergy;
 
   Initialize(write, maxVariations, alpha0, deltaAlpha, beta, omega);
-  m_step = step; // Deciding the step length
+  m_step = step; // Step length
 
   // Setting up the uniform distribution for x \in (0, 1)
   random_device rd;
   mt19937_64 gen(rd());
   uniform_real_distribution<double> RandomDoubleGenerator(0.0, 1.0);
 
-  // allocate matrices which contain the position of the particles
+  // Initializing matrices containing the position of the particles
   mat oldPosition = mat(m_numberofParticles, m_dimension).fill(0.0);
   mat newPosition = mat(m_numberofParticles, m_dimension).fill(0.0);
 
-  // loop over variational parameters
+  // Looping over the variational parameter alpha
   for (variation = 0; variation < m_maxVariations; variation++){
 
-    m_alpha(variation) = m_alpha0 + variation*m_deltaAlpha; // Update alpha
+    m_alpha(variation) = m_alpha0 + variation*m_deltaAlpha; // Updating alpha
 
-    // initializations of variational parameters
+    // Initialization of the energy
     energy = 0;
     energySquared = 0;
     deltaEnergy = 0;
-    // initial trial position, note calling with alpha
-    // and in three dimensions
+
+    // Initializing the position of the particles
     for (i = 0; i < m_numberofParticles; i++){
       for (j = 0; j < m_dimension; j++){
         double randomNumber = RandomDoubleGenerator(gen);
@@ -70,19 +74,24 @@ void QuantumDot::MonteCarlo(int whichMethod, string write, long int maxVariation
       }
     }
 
+    // Initializing the wave function of the system
     oldPsi = WaveFunction(oldPosition, whichMethod, m_alpha(variation));
-    // loop over monte carlo cycle
+
+    // Looping over Monte Carlo cycles
     for (cycle = 1; cycle <= m_MCCs; cycle++){
-      // new position
+
+      // Creating the trial position of the particles
       for (i = 0; i < m_numberofParticles; i++){
         for (j = 0; j < m_dimension; j++){
           double randomNumber = RandomDoubleGenerator(gen);
           newPosition(i,j) = oldPosition(i,j) + m_step*(randomNumber-0.5);
         }
       }
+
+      // Creating the wave function for the system with the trial position
       newPsi = WaveFunction(newPosition, whichMethod, m_alpha(variation));
 
-      // Metropolis test
+      // Performing the Metropolis test
       if (RandomDoubleGenerator(gen) <= newPsi*newPsi/oldPsi/oldPsi){
         for (i = 0; i < m_numberofParticles; i++){
           for (j = 0; j < m_dimension; j++){
@@ -93,42 +102,47 @@ void QuantumDot::MonteCarlo(int whichMethod, string write, long int maxVariation
         m_count(variation) += 1;
       }
 
-      // compute local energy
+      // Computing the local energy after the system has reached equilibrium
+      // if writing to file after all MCCs
       if ((write == "at the end") && (cycle > m_equilibrationTime)){
         deltaEnergy = LocalEnergy(oldPosition, whichMethod, m_alpha(variation));
-        // update energies
+        // Updating energies
         energy += deltaEnergy;
         energySquared += deltaEnergy*deltaEnergy;
       }
 
       // Updating energy and writing to file for each cycle
+      // if writing to file each cycle
       else if (write == "each time"){
         deltaEnergy = LocalEnergy(oldPosition, whichMethod, m_alpha(variation));
         energy += deltaEnergy;
         energySquared += deltaEnergy*deltaEnergy;
         WriteToFileTest(cycle, variation, energy/cycle, energySquared/cycle);
       }
+    } // End of MC loop
 
-    } // end of loop over MC trials
     if (write == "each time"){
-      CloseFile(m_ofileTest);
+      CloseFile(m_ofileTest); // Closing file after use
     }
 
+    // Updating the mean energy and its squared
+    // and writing to file
     if (write == "at the end"){
-      // update the energy average and its squared
       m_expEnergy(variation) = energy/(m_MCCs-m_equilibrationTime);
       m_expEnergySquared(variation) = energySquared/(m_MCCs-m_equilibrationTime);
     }
-  } // end of loop over variational steps
+  } // End of loop over variational steps
+
+  // Writing results to file after all MCCs
   if (write == "at the end"){
-    // Writing results to file after all MCCs
     WriteToFile(whichMethod);
   }
-} // end mc_sampling function
+}
 
 
 
-// Monte Carlo sampling with the Metropolis algorithm
+// Monte Carlo sampling with the Metropolis algorithm,
+// for certain set parameters alpha, beta and omega
 void QuantumDot::MonteCarlo(string task, int whichMethod, double alpha, double beta, double omega){
   int cycle, i, j, k;
   double newPsi, oldPsi, deltaEnergy, energy, energySquared, meanDistance, distance,
@@ -139,19 +153,21 @@ void QuantumDot::MonteCarlo(string task, int whichMethod, double alpha, double b
   mt19937_64 gen(rd());
   uniform_real_distribution<double> RandomDoubleGenerator(0.0, 1.0);
 
-  // allocate matrices which contain the position of the particles
+  // Initializing matrices containing the position of the particles
   mat oldPosition = mat(m_numberofParticles, m_dimension).fill(0.0);
   mat newPosition = mat(m_numberofParticles, m_dimension).fill(0.0);
 
-  // initializations of variational parameters
+  // Initialization of parameters
   energy = 0;
   energySquared = 0;
   deltaEnergy = 0;
+  meanDistance = 0;
   step = exp(-0.518*alpha + 0.982);
   m_beta = beta;
   m_omega = omega;
-  meanDistance = 0;
 
+  // Initialization of the kinetic and potential energy
+  // for comparison with the Virial theorem
   if ((task == "VirialwithoutInteraction")|| (task == "VirialwithInteraction")){
     deltaKinetic = 0;
     deltaPotential = 0;
@@ -161,8 +177,7 @@ void QuantumDot::MonteCarlo(string task, int whichMethod, double alpha, double b
     m_potentialEnergy = 0;
   }
 
-  // initial trial position, note calling with alpha
-  // and in three dimensions
+  // Initializing the position of the particles
   for (i = 0; i < m_numberofParticles; i++){
     for (j = 0; j < m_dimension; j++){
       double randomNumber = RandomDoubleGenerator(gen);
@@ -170,21 +185,25 @@ void QuantumDot::MonteCarlo(string task, int whichMethod, double alpha, double b
     }
   }
 
+  // Initializing the wave function of the system
   oldPsi = WaveFunction(oldPosition, whichMethod, alpha);
 
-  // loop over monte carlo cycle
+  // Looping over Monte Carlo cycles
   for (cycle = 1; cycle <= m_MCCs; cycle++){
-    // new position
+
+    // Creating the trial position of the particles
     for (i = 0; i < m_numberofParticles; i++){
       for (j = 0; j < m_dimension; j++){
         double randomNumber = RandomDoubleGenerator(gen);
         newPosition(i,j) = oldPosition(i,j) + step*(randomNumber-0.5);
       }
     }
+
+    // Creating the wave function for the system with the trial position
     newPsi = WaveFunction(newPosition, whichMethod, alpha);
 
 
-    // Metropolis test
+    // Performing the Metropolis test
     if (RandomDoubleGenerator(gen) <= newPsi*newPsi/oldPsi/oldPsi){
       for (i = 0; i < m_numberofParticles; i++){
         for (j = 0; j < m_dimension; j++){
@@ -194,18 +213,23 @@ void QuantumDot::MonteCarlo(string task, int whichMethod, double alpha, double b
       oldPsi = newPsi;
     }
 
-    // computing local energy
+    //  After the system has reached equilibrium
     if (cycle > m_equilibrationTime){
+
+      // Computing the local energy
       deltaEnergy = LocalEnergy(oldPosition, whichMethod, alpha);
       energy += deltaEnergy;
       energySquared += deltaEnergy*deltaEnergy;
 
+      // Computing the distance between the particles
+      // and updating the mean distance
       distance = 0;
       for (k = 0; k < m_dimension; k++){
         distance += (oldPosition(0, k) - oldPosition(1, k))*(oldPosition(0, k) - oldPosition(1, k));
       }
       meanDistance += sqrt(distance);
 
+      // Computing the kinetic and potential energy of the system
       if ((task == "VirialwithoutInteraction")|| (task == "VirialwithInteraction")){
         deltaKinetic = KineticandPotentialEnergy(task, oldPosition, whichMethod, alpha, step, oldPsi)(0);
         deltaPotential = KineticandPotentialEnergy(task, oldPosition, whichMethod, alpha, step, oldPsi)(1);
@@ -213,52 +237,59 @@ void QuantumDot::MonteCarlo(string task, int whichMethod, double alpha, double b
         potentialEnergy += deltaPotential;
       }
     }
-  } // end of loop over MC trials
+  } // End of MC loop
 
-  // update the energy average and its squared
+  // Updating the mean distance, the mean energy and its squared
   m_meanDistance = meanDistance/(m_MCCs-m_equilibrationTime);
   m_expectationalEnergy = energy/(m_MCCs-m_equilibrationTime);
   m_expectationalEnergySquared = energySquared/(m_MCCs-m_equilibrationTime);
 
+
   if (task == "Parameters"){
-    WriteToFile(whichMethod, alpha);
+    WriteToFile(whichMethod, alpha); // Writing results to file
   }
 
+  // Writing computed kinetic and potential energies to file
+  // for comparison with the Virial theorem
   else if ((task == "VirialwithoutInteraction")|| (task == "VirialwithInteraction")){
     m_kineticEnergy += kineticEnergy/(m_MCCs-m_equilibrationTime);
     m_potentialEnergy += potentialEnergy/(m_MCCs-m_equilibrationTime);
   }
-} // end mc_sampling function
+}
 
 
 
-// Function to compute the squared wave function, simplest form
+// Computes and returns the wave function for the particle system
 double QuantumDot::WaveFunction(mat position, int whichMethod, double alpha){
   int i, j, k;
   double Psi, singleParticlePosition, dist, distance;
 
-  singleParticlePosition = Psi = 0;
+  // Initialization of the particle position and the wave function
+  singleParticlePosition = 0;
+  Psi = 0;
 
+  // Computing the sum of the squared position coordinates for the particles
   for (i = 0; i < m_numberofParticles; i++){
     for (j = 0; j < m_dimension; j++){
       singleParticlePosition += position(i,j)*position(i,j);
     }
   }
 
-  // Psi_T1
+  // Computing the wave function Psi_T1
   if (whichMethod == 0 || whichMethod == 1){
     Psi = exp(-alpha*m_omega*singleParticlePosition/2);
   }
 
-  // Psi_T2
+  // Computing the wave function Psi_T2
   else if (whichMethod == 2){
 
+    // Computing the distance between the particles
     dist = 0;
     for (k = 0; k < m_dimension; k++){
       dist += (position(0, k) - position(1, k))*(position(0, k) - position(1, k));
     }
-    distance = sqrt(dist);
 
+    distance = sqrt(dist);
     Psi = exp(-alpha*m_omega*singleParticlePosition/2)*exp(distance/(2*(1 + m_beta*distance)));
   }
 
@@ -267,11 +298,12 @@ double QuantumDot::WaveFunction(mat position, int whichMethod, double alpha){
 
 
 
-// Function to calculate the local energy
+// Calculates the local energy of the system
 double QuantumDot::LocalEnergy(mat position, int whichMethod, double alpha){
   int i, j, k;
   double E, E_L1, dist, distance, singleParticlePosition;
 
+  // Computing the sum over the squared position coordinates of the particles
   singleParticlePosition = 0;
   for (i = 0; i < m_numberofParticles; i++){
     for (j = 0; j < m_dimension; j++){
@@ -279,26 +311,28 @@ double QuantumDot::LocalEnergy(mat position, int whichMethod, double alpha){
     }
   }
 
+  // Computing the distance between the particles
   dist = 0;
   for (k = 0; k < m_dimension; k++){
     dist += (position(0, k) - position(1, k))*(position(0, k) - position(1, k));
   }
   distance = sqrt(dist);
 
+  // The local energy E_L1, without Coulomb interaction
   E_L1 = 0.5*m_omega*m_omega*singleParticlePosition*(1 - alpha*alpha) + 3*m_omega*alpha;
 
 
-  // E_L1 without coulomb interaction
+  // Setting the energy equal to E_L1 without Coulomb interaction
   if (whichMethod == 0){
     E = E_L1;
   }
 
-  // E_L1 with coulomb interaction
+  // Setting the energy equal to E_L1 plus the Coulomb interaction term
   else if (whichMethod == 1){
     E = E_L1 + 1.0/distance;
   }
 
-  // E_L2
+  // Setting the energy equal to E_L2, with Coulomb interaction
   else if (whichMethod == 2){
     double frac = 1.0/(2*(1 + m_beta*distance)*(1 + m_beta*distance));
     E = E_L1 + frac*(alpha*m_omega*distance - frac - 2/distance + 2*m_beta/(1 + m_beta*distance));
@@ -308,13 +342,13 @@ double QuantumDot::LocalEnergy(mat position, int whichMethod, double alpha){
 
 
 
+// Calculates the kinetic and potential energy of the system
 vec QuantumDot::KineticandPotentialEnergy(string task, mat position, int whichMethod, double alpha, double step, double oldPsi){
   int i, j, k;
   double kineticEnergy, potentialEnergy, dist, distance, singleParticlePosition,
   psiPlus, psiMinus;
 
-  // allocate matrices which contain the position of the particles
-  // the function matrix is defined in the progam library
+  // Initializing matrices containing the varying positions of the particles
   mat positionPlus = mat(m_numberofParticles, m_dimension).fill(0.0);
   mat positionMinus = mat(m_numberofParticles, m_dimension).fill(0.0);
   for (i = 0; i < m_numberofParticles; i++){
@@ -322,7 +356,8 @@ vec QuantumDot::KineticandPotentialEnergy(string task, mat position, int whichMe
       positionPlus(i, j) = positionMinus(i, j) = position(i, j);
     }
   }
-  // compute the kinetic energy
+
+  // Computing the kinetic energy of the system
   kineticEnergy = 0;
   for (i = 0; i < m_numberofParticles; i++){
     for (j = 0; j < m_dimension; j++){
@@ -335,19 +370,20 @@ vec QuantumDot::KineticandPotentialEnergy(string task, mat position, int whichMe
       positionMinus(i, j) = position(i, j);
     }
   }
+  kineticEnergy = 0.5*kineticEnergy/(oldPsi*step*step);
 
-  // include electron mass and hbar squared and divide by wave function
- kineticEnergy = 0.5*kineticEnergy/(oldPsi*step*step);
-
- // compute the potential energy
- potentialEnergy = 0;
- singleParticlePosition = 0;
- for (i = 0; i < m_numberofParticles; i++){
-   for (j = 0; j < m_dimension; j++){
-     singleParticlePosition += position(i,j)*position(i,j);
-   }
+  // Computing the potential energy of the system, without the Coulomb interaction term
+  potentialEnergy = 0;
+  singleParticlePosition = 0;
+  for (i = 0; i < m_numberofParticles; i++){
+    for (j = 0; j < m_dimension; j++){
+      singleParticlePosition += position(i,j)*position(i,j);
+    }
   potentialEnergy += 0.5*m_omega*m_omega*singleParticlePosition;
- }
+  }
+
+  // If Coulomb interaction should be included;
+  // adding the interaction term to the potential energy
   if (task == "VirialwithInteraction"){
     dist = 0;
     for (k = 0; k < m_dimension; k++){
@@ -356,6 +392,8 @@ vec QuantumDot::KineticandPotentialEnergy(string task, mat position, int whichMe
     distance = sqrt(dist);
     potentialEnergy += 1./distance;
   }
+
+  // Returning the kinetic and potential energy in a vector
   vec energy(2);
   energy(0) = kineticEnergy;
   energy(1) = potentialEnergy;
@@ -365,20 +403,19 @@ vec QuantumDot::KineticandPotentialEnergy(string task, mat position, int whichMe
 
 
 
-
-
-// Writes to file if (...)
+// Writes expectation values and number of accepted changes to the
+// particle positions to file, for varying alpha
 void QuantumDot::WriteToFile(int whichMethod){
   ofstream ofile;
   string filename, step;
+
+  // Defining the filename
   if (whichMethod == 0){
     filename = "../output/EnergyasFunctionofAlpha0_";
   }
-
   else if (whichMethod == 1){
     filename = "../output/EnergyasFunctionofAlpha1_";
   }
-
   else if(whichMethod == 2){
     filename = "../output/EnergyasFunctionofAlpha2_";
   }
@@ -388,6 +425,7 @@ void QuantumDot::WriteToFile(int whichMethod){
   step = streamObj.str();
   filename.append(step).append(".dat");
 
+  // Opening file to write
   ofile.open(filename);
 
   // Writing the calculated values to file
@@ -401,7 +439,8 @@ void QuantumDot::WriteToFile(int whichMethod){
 
 
 
-// Writes to file if (...)
+// Writes expectation values and mean distance between the particles to file,
+// for certain set parameters alpha, beta and omega
 void QuantumDot::WriteToFile(int whichMethod, double alpha){
   ofstream ofile;
   string filename, whichMethod_, alpha_, beta_, omega_;
@@ -416,6 +455,7 @@ void QuantumDot::WriteToFile(int whichMethod, double alpha){
   beta_ = streamObj2.str();
   omega_ = streamObj3.str();
 
+  // Defining the filename
   filename = "../output/EnergyasFunctionofParameters_";
   filename.append(whichMethod_).append("_").append(alpha_).append("_").append(beta_).append("_").append(omega_).append(".dat");
   ofile.open(filename);
@@ -430,20 +470,28 @@ void QuantumDot::WriteToFile(int whichMethod, double alpha){
 
 
 
-// Writes to file if (...)
+// Writes expectation values and mean distance between the particles to file,
+// for set values of alpha beta and omega
 void QuantumDot::WriteToFileParallel(ofstream &ofile){
   ofile << m_beta << " " << m_expectationalEnergy << " " << m_expectationalEnergySquared << " " << m_meanDistance << endl;
 }
 
+
+
+// Writes values of the kinetic and potential energy to file,
+// for varying omegas and set values of alpha and beta
 void QuantumDot::WriteToFileVirial(ofstream &ofile){
   ofile << m_omega << " " << m_kineticEnergy << " " << m_potentialEnergy << endl;
 }
 
 
-// Writes to file if (...)
+
+// Writes expectation values to file for each Monte Carlo cycle
 void QuantumDot::WriteToFileTest(int cycle, int variation, double expEnergy_, double expEnergySquared_){
   string alpha, filename;
   ostringstream streamObj;
+
+  // Defining the filename
   streamObj << fixed << setprecision(2) << m_alpha(variation);
   alpha = streamObj.str();
   filename = "../output/EnergyasFunctionofMCCs_";
@@ -455,7 +503,6 @@ void QuantumDot::WriteToFileTest(int cycle, int variation, double expEnergy_, do
     m_ofileTest << "MCC" << "  "  << "<E>" << "  " << "<E^2>" << endl;
     m_ofileTest << "________________________" << endl;
   }
-
   m_ofileTest << cycle << " " << expEnergy_ << " " << expEnergySquared_ << endl;
 }
 

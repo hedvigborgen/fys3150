@@ -8,10 +8,10 @@ plt.rc('text', usetex=True)
 plt.rc('text.latex', preamble=r'\usepackage{amsmath}')
 colors = ['#BA8BCB', '#FEB144', '#9EE09E', '#1A7DA8', '#FF6663','#FDFD97', '#FEB144', '#FF6663', '#3498DB', '#FF3386']
 
-
 # Compiling the C++ script
 subprocess.call(['c++', '-std=c++11', '-o', 'main.exe', 'QuantumDot.cpp', 'main.cpp', '-larmadillo', '-O3', '-march=native', '-Xpreprocessor', '-fopenmp', '-lomp'])
 
+# Function returning the mean distance between the electrons
 def meanDistance(whichMethod, step, alpha, beta, omega):
     task = 'Parameters'
     MCCs = 1_000_000
@@ -30,7 +30,8 @@ def meanDistance(whichMethod, step, alpha, beta, omega):
         infile.close()
     return expEnergy, expEnergySquared, meanDistance
 
-# c)
+# Finding the mean distance between the electrons at the energy minima with
+# the optimal value of alpha, for the different values of the parameter omega
 whichMethod = [0, 1]
 alpha = np.array([1.0, 0.85])
 step = np.exp(-0.518*alpha + 0.982)
@@ -51,11 +52,15 @@ print('For omega = 0.5, <r> = %.2f.' %meanDistance1[1])
 print('For omega = 1.0, <r> = %.2f.' %meanDistance1[2])
 
 
-# d)
+# Finding the mean distance between the electrons at the energy minima with the
+# optimal values of alpha and beta, for the different values of omega
+
+# Also finding the expectation value of the energy and variance with the
+# optimal values of alpha and beta, for the different values of omega
 whichMethod = 2
-alpha = 0.995
+alpha = 0.995 # Found optimal value of alpha
 step = np.exp(-0.518*alpha + 0.982)
-beta = 0.280
+beta = 0.280 # Found optimal value of beta
 omega = [0.01, 0.5, 1.0]
 
 expEnergy, expEnergySquared, meanDistance2 = meanDistance(whichMethod, step, alpha, beta, omega)
