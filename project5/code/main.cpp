@@ -17,7 +17,7 @@ using namespace arma;
 int main(int numArg, char *arguments[]){
   int dimension, numberofParticles, whichMethod;
   long int MCCs, equilibrationTime, maxVariations;
-  double step, charge, alpha, alpha0, deltaAlpha, beta, omega;
+  double step, charge, alpha, alpha0, deltaAlpha, beta, omega, omega0, deltaOmega;
   string task, write;
 
   dimension = 3;
@@ -85,10 +85,40 @@ int main(int numArg, char *arguments[]){
     alpha0 = 0.60;
     deltaAlpha = 0.01;
     charge = 1.0;
-
   }
 
-  else if ((task != "MCCs") && (task != "StepLength") && (task != "Parameters") && (task != "Loop")){
+  else if (task == "VirialwithoutInteraction"){
+    // Defining input arguments
+    MCCs = atol(arguments[2]);
+    omega0 = atof(arguments[3]);
+    deltaOmega = atof(arguments[4]);
+
+    maxVariations = 1;
+    equilibrationTime = 100000;
+    whichMethod = 0;
+    alpha = 0.995;
+    beta = 0.280;
+    charge = 1.0;
+  }
+
+  else if (task == "VirialwithInteraction"){
+    // Defining input arguments
+    MCCs = atol(arguments[2]);
+    omega0 = atof(arguments[3]);
+    deltaOmega = atof(arguments[4]);
+
+    maxVariations = 1;
+    equilibrationTime = 100000;
+    whichMethod = 2;
+    alpha = 0.995;
+    beta = 0.280;
+    charge = 1.0;
+  }
+
+
+
+  else if ((task != "MCCs") && (task != "StepLength") && (task != "Parameters")
+  && (task != "Loop") && (task != "VirialwithoutInteraction") && (task != "VirialwithInteraction")){
     cout << "Unacceptable choice of task!" << endl; exit(1);
   }
 
@@ -96,15 +126,18 @@ int main(int numArg, char *arguments[]){
   // Initializing the system with input arguments
   QuantumDot quantumDot(dimension, numberofParticles, charge, equilibrationTime, MCCs);
 
+
   if (maxVariations != 1){
     // Performing the MC sampling
     quantumDot.MonteCarlo(whichMethod, write, maxVariations, alpha0, deltaAlpha, beta, omega, step);
   }
 
+
   else if (task == "Parameters"){
     // Performing the MC sampling
     quantumDot.MonteCarlo(task, whichMethod, alpha, beta, omega);
   }
+
 
   else if (task == "Loop"){
     string filename;
@@ -126,15 +159,16 @@ int main(int numArg, char *arguments[]){
       alpha_ = streamObj1.str();
       omega_ = streamObj2.str();
 
-      filename = "../output/energyParallellized_";
+      filename = "../output/EnergyParallellized_";
       filename.append(alpha_).append("_").append(omega_).append(".dat");
       ofstream ofile;
       ofile.open(filename);
 
       for (int j = 0; j < 100; j++){
         double loopBeta = beta0 + j*deltaBeta;
+
         quantumDot.MonteCarlo(task, whichMethod, loopAlpha, loopBeta, omega);
-        quantumDot.WriteToFileParallel(ofile, filename, loopAlpha);
+        quantumDot.WriteToFileParallel(ofile);
       }
       quantumDot.CloseFile(ofile);
     }
@@ -144,5 +178,27 @@ int main(int numArg, char *arguments[]){
     double timeused = end-start;
     cout << "Parallelized code took " << timeused << " seconds to execute with number of MCCs = " << MCCs << "." << endl;
   }
+
+
+  else if ((task == "VirialwithoutInteraction") || (task == "VirialwithInteraction")){
+    string filename;
+    double omega;
+
+    filename = "../output/Energy_";
+    filename.append(task).append(".dat");
+
+    ofstream ofile;
+    ofile.open(filename);
+
+    // Performing the MC sampling
+    for (int i = 0; i < 100; i++){
+      omega = omega0 + i*deltaOmega;
+
+      quantumDot.MonteCarlo(task, whichMethod, alpha, beta, omega);
+      quantumDot.WriteToFileVirial(ofile);
+    }
+    quantumDot.CloseFile(ofile);
+  }
+
   return 0;
 }
