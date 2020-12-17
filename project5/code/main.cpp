@@ -114,8 +114,8 @@ int main(int numArg, char *arguments[]){
     maxVariations = 1;
     equilibrationTime = 100000;
     whichMethod = 0;
-    alpha = 0.995;
-    beta = 0.280;
+    alpha = 0.995; // Found to be the optimal value of alpha in previous tasks
+    beta = 0.280; // Found to be the optimal value of beta in previous tasks
     charge = 1.0;
   }
 

@@ -58,7 +58,6 @@ void QuantumDot::MonteCarlo(int whichMethod, string write, long int maxVariation
 
   // Looping over the variational parameter alpha
   for (variation = 0; variation < m_maxVariations; variation++){
-
     m_alpha(variation) = m_alpha0 + variation*m_deltaAlpha; // Updating alpha
 
     // Initialization of the energy
@@ -162,7 +161,7 @@ void QuantumDot::MonteCarlo(string task, int whichMethod, double alpha, double b
   energySquared = 0;
   deltaEnergy = 0;
   meanDistance = 0;
-  step = exp(-0.518*alpha + 0.982);
+  m_step = exp(-0.518*alpha + 0.982);
   m_beta = beta;
   m_omega = omega;
 
@@ -181,7 +180,7 @@ void QuantumDot::MonteCarlo(string task, int whichMethod, double alpha, double b
   for (i = 0; i < m_numberofParticles; i++){
     for (j = 0; j < m_dimension; j++){
       double randomNumber = RandomDoubleGenerator(gen);
-      oldPosition(i,j) = step*(randomNumber-0.5);
+      oldPosition(i,j) = m_step*(randomNumber-0.5);
     }
   }
 
@@ -195,7 +194,7 @@ void QuantumDot::MonteCarlo(string task, int whichMethod, double alpha, double b
     for (i = 0; i < m_numberofParticles; i++){
       for (j = 0; j < m_dimension; j++){
         double randomNumber = RandomDoubleGenerator(gen);
-        newPosition(i,j) = oldPosition(i,j) + step*(randomNumber-0.5);
+        newPosition(i,j) = oldPosition(i,j) + m_step*(randomNumber-0.5);
       }
     }
 
@@ -230,9 +229,9 @@ void QuantumDot::MonteCarlo(string task, int whichMethod, double alpha, double b
       meanDistance += sqrt(distance);
 
       // Computing the kinetic and potential energy of the system
-      if ((task == "VirialwithoutInteraction")|| (task == "VirialwithInteraction")){
-        deltaKinetic = KineticandPotentialEnergy(task, oldPosition, whichMethod, alpha, step, oldPsi)(0);
-        deltaPotential = KineticandPotentialEnergy(task, oldPosition, whichMethod, alpha, step, oldPsi)(1);
+      if (((task == "VirialwithoutInteraction") && (cycle > m_equilibrationTime)) || ((task == "VirialwithInteraction") && (cycle > m_equilibrationTime))){
+        deltaKinetic = KineticandPotentialEnergy(task, oldPosition, whichMethod, alpha, oldPsi)(0);
+        deltaPotential = KineticandPotentialEnergy(task, oldPosition, whichMethod, alpha, oldPsi)(1);
         kineticEnergy += deltaKinetic;
         potentialEnergy += deltaPotential;
       }
@@ -243,7 +242,6 @@ void QuantumDot::MonteCarlo(string task, int whichMethod, double alpha, double b
   m_meanDistance = meanDistance/(m_MCCs-m_equilibrationTime);
   m_expectationalEnergy = energy/(m_MCCs-m_equilibrationTime);
   m_expectationalEnergySquared = energySquared/(m_MCCs-m_equilibrationTime);
-
 
   if (task == "Parameters"){
     WriteToFile(whichMethod, alpha); // Writing results to file
@@ -343,10 +341,10 @@ double QuantumDot::LocalEnergy(mat position, int whichMethod, double alpha){
 
 
 // Calculates the kinetic and potential energy of the system
-vec QuantumDot::KineticandPotentialEnergy(string task, mat position, int whichMethod, double alpha, double step, double oldPsi){
+vec QuantumDot::KineticandPotentialEnergy(string task, mat position, int whichMethod, double alpha, double oldPsi){
   int i, j, k;
   double kineticEnergy, potentialEnergy, dist, distance, singleParticlePosition,
-  psiPlus, psiMinus;
+  psiPlus, psiMinus, totalPosition;
 
   // Initializing matrices containing the varying positions of the particles
   mat positionPlus = mat(m_numberofParticles, m_dimension).fill(0.0);
@@ -358,29 +356,36 @@ vec QuantumDot::KineticandPotentialEnergy(string task, mat position, int whichMe
   }
 
   // Computing the kinetic energy of the system
-  kineticEnergy = 0;
-  for (i = 0; i < m_numberofParticles; i++){
-    for (j = 0; j < m_dimension; j++){
-      positionPlus(i, j) = position(i, j)+step;
-      positionMinus(i, j) = position(i, j)-step;
-      psiMinus = WaveFunction(positionMinus, whichMethod, alpha);
-      psiPlus = WaveFunction(positionPlus, whichMethod, alpha);
-      kineticEnergy -= (psiMinus+psiPlus-2*oldPsi);
-      positionPlus(i, j) = position(i, j);
-      positionMinus(i, j) = position(i, j);
-    }
-  }
-  kineticEnergy = 0.5*kineticEnergy/(oldPsi*step*step);
+  // kineticEnergy = 0;
+  // for (i = 0; i < m_numberofParticles; i++){
+  //   for (j = 0; j < m_dimension; j++){
+  //     positionPlus(i, j) = position(i, j)+m_step;
+  //     positionMinus(i, j) = position(i, j)-m_step;
+  //     psiMinus = WaveFunction(positionMinus, whichMethod, alpha);
+  //     psiPlus = WaveFunction(positionPlus, whichMethod, alpha);
+  //     kineticEnergy -= (psiMinus+psiPlus-2*oldPsi);
+  //     positionPlus(i, j) = position(i, j);
+  //     positionMinus(i, j) = position(i, j);
+  //   }
+  // }
+  // kineticEnergy = 0.5*kineticEnergy/(oldPsi*m_step*m_step);
+
+
+
+
 
   // Computing the potential energy of the system, without the Coulomb interaction term
   potentialEnergy = 0;
-  singleParticlePosition = 0;
+  totalPosition = 0;
   for (i = 0; i < m_numberofParticles; i++){
+    singleParticlePosition = 0;
     for (j = 0; j < m_dimension; j++){
       singleParticlePosition += position(i,j)*position(i,j);
     }
-  potentialEnergy += 0.5*m_omega*m_omega*singleParticlePosition;
+    potentialEnergy += 0.5*m_omega*m_omega*singleParticlePosition;
+    totalPosition += singleParticlePosition;
   }
+  kineticEnergy = -0.5*m_omega*m_omega*totalPosition*alpha*alpha + 3*m_omega*alpha;
 
   // If Coulomb interaction should be included;
   // adding the interaction term to the potential energy
@@ -389,8 +394,12 @@ vec QuantumDot::KineticandPotentialEnergy(string task, mat position, int whichMe
     for (k = 0; k < m_dimension; k++){
       dist += (position(0, k) - position(1, k))*(position(0, k) - position(1, k));
     }
+
     distance = sqrt(dist);
     potentialEnergy += 1./distance;
+
+    double frac = 1.0/(2*(1 + m_beta*distance)*(1 + m_beta*distance));
+    kineticEnergy += frac*(alpha*m_omega*distance - frac - 2/distance + 2*m_beta/(1 + m_beta*distance));
   }
 
   // Returning the kinetic and potential energy in a vector

@@ -34,7 +34,7 @@ private:
   void Initialize(string, long int, double, double, double, double);
   double WaveFunction(mat, int, double);
   double LocalEnergy(mat, int, double);
-  vec KineticandPotentialEnergy(string, mat, int, double, double, double);
+  vec KineticandPotentialEnergy(string, mat, int, double, double);
   void WriteToFile(int);
   void WriteToFile(int, double);
   void WriteToFileTest(int, int, double, double);
