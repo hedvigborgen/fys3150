@@ -167,7 +167,7 @@ void QuantumDot::MonteCarlo(string task, int whichMethod, double alpha, double b
 
   // Initialization of the kinetic and potential energy
   // for comparison with the Virial theorem
-  if ((task == "VirialwithoutInteraction")|| (task == "VirialwithInteraction")){
+  if ((task == "Virial0") || (task == "Virial1") || (task == "Virial2")){
     deltaKinetic = 0;
     deltaPotential = 0;
     kineticEnergy = 0;
@@ -229,7 +229,8 @@ void QuantumDot::MonteCarlo(string task, int whichMethod, double alpha, double b
       meanDistance += sqrt(distance);
 
       // Computing the kinetic and potential energy of the system
-      if (((task == "VirialwithoutInteraction") && (cycle > m_equilibrationTime)) || ((task == "VirialwithInteraction") && (cycle > m_equilibrationTime))){
+      if (((task == "Virial0") && (cycle > m_equilibrationTime)) || ((task == "Virial0") && (cycle > m_equilibrationTime))
+    || ((task == "Virial2") && (cycle > m_equilibrationTime))){
         deltaKinetic = KineticandPotentialEnergy(task, oldPosition, whichMethod, alpha, oldPsi)(0);
         deltaPotential = KineticandPotentialEnergy(task, oldPosition, whichMethod, alpha, oldPsi)(1);
         kineticEnergy += deltaKinetic;
@@ -249,7 +250,7 @@ void QuantumDot::MonteCarlo(string task, int whichMethod, double alpha, double b
 
   // Writing computed kinetic and potential energies to file
   // for comparison with the Virial theorem
-  else if ((task == "VirialwithoutInteraction")|| (task == "VirialwithInteraction")){
+  else if ((task == "Virial0") || (task == "Virial1") || (task == "Virial2")){
     m_kineticEnergy += kineticEnergy/(m_MCCs-m_equilibrationTime);
     m_potentialEnergy += potentialEnergy/(m_MCCs-m_equilibrationTime);
   }
@@ -333,7 +334,7 @@ double QuantumDot::LocalEnergy(mat position, int whichMethod, double alpha){
   // Setting the energy equal to E_L2, with Coulomb interaction
   else if (whichMethod == 2){
     double frac = 1.0/(2*(1 + m_beta*distance)*(1 + m_beta*distance));
-    E = E_L1 + frac*(alpha*m_omega*distance - frac - 2/distance + 2*m_beta/(1 + m_beta*distance));
+    E = E_L1 + 1.0/distance + frac*(alpha*m_omega*distance - frac - 2/distance + 2*m_beta/(1 + m_beta*distance));
   }
   return E;
 }
@@ -355,25 +356,6 @@ vec QuantumDot::KineticandPotentialEnergy(string task, mat position, int whichMe
     }
   }
 
-  // Computing the kinetic energy of the system
-  // kineticEnergy = 0;
-  // for (i = 0; i < m_numberofParticles; i++){
-  //   for (j = 0; j < m_dimension; j++){
-  //     positionPlus(i, j) = position(i, j)+m_step;
-  //     positionMinus(i, j) = position(i, j)-m_step;
-  //     psiMinus = WaveFunction(positionMinus, whichMethod, alpha);
-  //     psiPlus = WaveFunction(positionPlus, whichMethod, alpha);
-  //     kineticEnergy -= (psiMinus+psiPlus-2*oldPsi);
-  //     positionPlus(i, j) = position(i, j);
-  //     positionMinus(i, j) = position(i, j);
-  //   }
-  // }
-  // kineticEnergy = 0.5*kineticEnergy/(oldPsi*m_step*m_step);
-
-
-
-
-
   // Computing the potential energy of the system, without the Coulomb interaction term
   potentialEnergy = 0;
   totalPosition = 0;
@@ -389,7 +371,7 @@ vec QuantumDot::KineticandPotentialEnergy(string task, mat position, int whichMe
 
   // If Coulomb interaction should be included;
   // adding the interaction term to the potential energy
-  if (task == "VirialwithInteraction"){
+  if ((task == "Virial1") || (task == "Virial2")){
     dist = 0;
     for (k = 0; k < m_dimension; k++){
       dist += (position(0, k) - position(1, k))*(position(0, k) - position(1, k));

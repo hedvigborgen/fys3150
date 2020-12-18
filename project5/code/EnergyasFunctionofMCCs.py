@@ -62,6 +62,6 @@ for method in whichMethod:
         ax.plot(cycles, variance[i], color=colors[i], label=r'$\alpha$ = %.2f' %alpha_)
     ax.set_title('Variance in energy as function of MCCs', fontsize=20)
     ax.set_xlabel(r'$MCCs$', fontsize=15)
-    ax.set_ylabel(r'$\sigma$', fontsize=15)
+    ax.set_ylabel(r'$\sigma^2$', fontsize=15)
     ax.legend(fontsize=15)
     fig.savefig(f'../plots/variationasfunctionofMCCs{method}.pdf')

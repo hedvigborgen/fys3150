@@ -60,7 +60,7 @@ print('For omega = 1.0, <r> = %.2f.' %meanDistance1[2])
 whichMethod = 2
 alpha = 0.995 # Found to be the optimal value of alpha
 step = np.exp(-0.518*alpha + 0.982)
-beta = 0.280 # Found to be the optimal value of beta
+beta = 0.290 # Found to be the optimal value of beta
 omega = [0.01, 0.5, 1.0]
 
 expEnergy, expEnergySquared, meanDistance2 = meanDistance(whichMethod, step, alpha, beta, omega)

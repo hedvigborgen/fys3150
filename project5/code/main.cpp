@@ -97,13 +97,13 @@ int main(int numArg, char *arguments[]){
     equilibrationTime = 100000;
     whichMethod = 2;
     alpha0 = 0.60;
-    deltaAlpha = 0.01;
+    deltaAlpha = 0.005;
     charge = 1.0;
   }
 
   // For testing the compliance of the energies calculated without Coulomb interaction
-  // with the Virial theorem
-  else if (task == "VirialwithoutInteraction"){
+  // with the Virial theorem for Psi_T1
+  else if (task == "Virial0"){
 
     // Defining input arguments
     MCCs = atol(arguments[2]);
@@ -114,14 +114,32 @@ int main(int numArg, char *arguments[]){
     maxVariations = 1;
     equilibrationTime = 100000;
     whichMethod = 0;
-    alpha = 0.995; // Found to be the optimal value of alpha in previous tasks
-    beta = 0.280; // Found to be the optimal value of beta in previous tasks
+    alpha = 0.995; // Found to be the optimal value of alpha in previous task
+    beta = 0.290; // Found to be the optimal value of beta in previous task
     charge = 1.0;
   }
 
   // For testing the compliance of the energies calculated with Coulomb interaction
-  // with the Virial theorem
-  else if (task == "VirialwithInteraction"){
+  // with the Virial theorem for Psi_T1
+  else if (task == "Virial1"){
+
+    // Defining input arguments
+    MCCs = atol(arguments[2]);
+    omega0 = atof(arguments[3]);
+    deltaOmega = atof(arguments[4]);
+
+    // Predecided input arguments
+    maxVariations = 1;
+    equilibrationTime = 100000;
+    whichMethod = 1;
+    alpha = 0.995;
+    beta = 0.290;
+    charge = 1.0;
+  }
+
+  // For testing the compliance of the energies calculated with Coulomb interaction
+  // with the Virial theorem for Psi_T2
+  else if (task == "Virial2"){
 
     // Defining input arguments
     MCCs = atol(arguments[2]);
@@ -133,14 +151,14 @@ int main(int numArg, char *arguments[]){
     equilibrationTime = 100000;
     whichMethod = 2;
     alpha = 0.995;
-    beta = 0.280;
+    beta = 0.290;
     charge = 1.0;
   }
 
 
   // Quitting the program if unvalid entries for "task" is provided
   else if ((task != "MCCs") && (task != "StepLength") && (task != "Parameters")
-  && (task != "Loop") && (task != "VirialwithoutInteraction") && (task != "VirialwithInteraction")){
+  && (task != "Loop") && (task != "Virial0") && (task != "Virial1") && (task != "Virial2")){
     cout << "Unacceptable choice of task!" << endl; exit(1);
   }
 
@@ -169,12 +187,12 @@ int main(int numArg, char *arguments[]){
   else if (task == "Loop"){
     string filename;
     double beta0 = 0.20;
-    double deltaBeta = 0.01;
+    double deltaBeta = 0.005;
 
     // Timing the parallelized code
     double start = omp_get_wtime();
 
-    int n = 100;
+    int n = 200;
     // Looping over the different values of alpha
     #pragma omp parallel for shared(n) private(filename)
     for (int i = 0; i < n; i++){
@@ -182,19 +200,19 @@ int main(int numArg, char *arguments[]){
       string alpha_, omega_;
 
       ostringstream streamObj1, streamObj2;
-      streamObj1 << fixed << setprecision(2) << loopAlpha;
+      streamObj1 << fixed << setprecision(3) << loopAlpha;
       streamObj2 << fixed << setprecision(2) << omega;
       alpha_ = streamObj1.str();
       omega_ = streamObj2.str();
 
       // Defining the filename
-      filename = "../output/EnergyParallellized_";
+      filename = "../output/MCCs_10_000_000/EnergyParallellized_";
       filename.append(alpha_).append("_").append(omega_).append(".dat");
       ofstream ofile;
       ofile.open(filename);
 
       // Looping over the different values of beta
-      for (int j = 0; j < 100; j++){
+      for (int j = 0; j < n; j++){
         double loopBeta = beta0 + j*deltaBeta; // Updating beta
 
         quantumDot.MonteCarlo(task, whichMethod, loopAlpha, loopBeta, omega); // MC sampling
@@ -211,7 +229,7 @@ int main(int numArg, char *arguments[]){
 
 
   // Performing the MC sampling for hundred different values of the parameter omega
-  else if ((task == "VirialwithoutInteraction") || (task == "VirialwithInteraction")){
+  else if ((task == "Virial0") || (task == "Virial1") || (task == "Virial2")){
     string filename;
     double omega;
 

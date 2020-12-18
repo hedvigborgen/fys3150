@@ -9,7 +9,7 @@ plt.rc('text.latex', preamble=r'\usepackage{amsmath}')
 
 
 # Defining input arguments
-tasks = ['VirialwithoutInteraction', 'VirialwithInteraction']
+tasks = ['Virial0', 'Virial1', 'Virial2']
 MCCs = 1_000_000
 omega0 = 0.01
 deltaOmega = 0.01
@@ -42,13 +42,15 @@ for i, task in enumerate(tasks):
 
 # Calculating the energy ratios with and without Coulomb interaction
 noninteractingViral = kineticEnergy[0]/potentialEnergy[0]
-interactingViral = kineticEnergy[1]/potentialEnergy[1]
+#interactingViral1 = kineticEnergy[1]/potentialEnergy[1]
+interactingViral2 = kineticEnergy[2]/potentialEnergy[2]
 
 
 # Plotting the energy ratios as function of the varying parameter omega
 fig, ax = plt.subplots()
-ax.plot(omega, noninteractingViral, color = '#BA8BCB', label='Non interacting')
-ax.plot(omega, interactingViral, color = '#FEB144', label='Interacting')
+ax.plot(omega, noninteractingViral, color = '#BA8BCB', label=r'Non interacting, $\psi_{T1}$')
+#ax.plot(omega, interactingViral1, color = '#9EE09E', label=r'Interacting, $\psi_{T1}$')
+ax.plot(omega, interactingViral2, color = '#FEB144', label=r'Interacting, $\psi_{T2}$')
 ax.set_title(r'Energy ratio as function of $\omega$', fontsize=20)
 ax.set_xlabel(r'$\omega$', fontsize=15)
 ax.set_ylabel(r'$\frac{\langle T \rangle}{\langle V \rangle}$', fontsize=15)

@@ -18,14 +18,14 @@ def FindingOptimalParameters(task, MCCS, size, omega):
     subprocess.call(['c++', '-std=c++11', '-o', 'main.exe', 'QuantumDot.cpp', 'main.cpp', '-larmadillo', '-O3', '-march=native', '-Xpreprocessor', '-fopenmp', '-lomp'])
     subprocess.call(['./main.exe', task, f'{MCCs}', f'{omega}'])
 
-    alpha = np.linspace(0.60, 1.59, size)
+    alpha = np.linspace(0.60, 1.595, size)
     dictionary = {}
 
     # Reading the data file
     for i, alpha_ in enumerate(alpha):
         dictionary[alpha_] = {}
 
-        infile = open(f'../output/energyParallellized_%.2f_%.2f.dat' %(alpha_, omega))
+        infile = open(f'../output/MCCs_10_000_000/EnergyParallellized_%.3f_%.2f.dat' %(alpha_, omega))
         lines = infile.readlines()
         for j, line in enumerate(lines):
             vals = line.split()
@@ -36,28 +36,30 @@ def FindingOptimalParameters(task, MCCS, size, omega):
 
 # Defining input arguments
 task = 'Loop'
-MCCs = 1_000_000
-size = 100
+MCCs = 10_000_000
+size = 200
 omega = 1.00
 
 
 # Calling function to find expectation values of the energy
 # for different parameters alpha and beta
 alpha, dictionary = FindingOptimalParameters(task, MCCs, size, omega)
-beta = np.linspace(0.20, 1.19, size)
+beta = np.linspace(0.20, 1.19, size) #int(size/2)
 expEnergy = np.zeros((size, size)) # Array for storing the sorted expectation values
 
 
 # Filling in the expectation values of the energy in a sorted manner
 for i, alpha_ in enumerate(alpha):
     for j, beta_ in enumerate(beta):
-        if round(beta_, 2) in dictionary[alpha_]:
-            expEnergy[i, j] = dictionary[alpha_][round(beta_, 2)]
+        if round(beta_, 3) in dictionary[alpha_]:
+            expEnergy[i, j] = dictionary[alpha_][round(beta_, 3)]
         else:
-            if j == 0:
-                expEnergy[i, j] = expEnergy[i-1, j]
-            else:
+            if j > 0:
                 expEnergy[i, j] = expEnergy[i, j-1]
+            elif i > 0 and j == 0:
+                expEnergy[i, j] = expEnergy[i-1, j]
+            elif i == 0 and j == 0:
+                expEnergy[i,j] == dictionary[alpha_][round(beta[j+1], 3)]
 
 
 # Plotting the expectation values of the energy as function of the parameters
@@ -72,16 +74,25 @@ ax.set_ylabel(r'$\beta$', fontsize=15)
 ax.set_zlabel(r'$\langle E \rangle$', fontsize=15)
 ax.view_init(30, 170)
 fig.colorbar(surf)
-plt.show()
-#fig.savefig(f'../plots/EnergyMinimum.pdf')
+fig.savefig(f'../plots/EnergyMinimum{MCCs}.pdf')
 
 
 # Finding the optimal parameters alpha and beta
 # for minimizing the expectational value of the energy
-index_alpha = np.where(expEnergy == min(expEnergy))[0][0]
-index_beta = np.where(expEnergy == min(expEnergy))[0][1]
+minimumValue = expEnergy.min()
 
-alpha_ = alpha[index_alpha]
-beta_ = beta[index_beta]
+indexAlpha = 0
+indexBeta = 0
+alphaMin = 0
+betaMin = 0
 
-print('Ground state energy minimum = %.2f for alpha = %.2f and beta = %.2f' %(expEnergy[index_alpha, index_beta], alpha_, beta_))
+for i in range(size):
+    for j in range(size):
+        if expEnergy[i,j] == minimumValue:
+            indexAlpha = i
+            indexBeta = j
+            alphaMin = alpha[i]
+            betaMin = beta[j]
+
+
+print('Ground state energy minimum = %.3f for alpha = %.3f and beta = %.3f' %(expEnergy[indexAlpha, indexBeta], alphaMin, betaMin))
