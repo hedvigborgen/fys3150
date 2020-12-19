@@ -45,25 +45,25 @@ make execute7
 ```
 Here; 
 * make execute1 produces output files containing the number of MCC with corresponding mean energy and mean energy squared for the first trial function whitout Coulomb interaction for 8 different values of alpha;
-  * with step = 1.0, beta = 1.0, omega = 1, charge = 1, alpha0 = 0.2, deltaAlpha = 0.1, MCCs = 1,000,000. 
+  * with step = 1.0, beta = 1.0, omega = 1, charge = 1, alpha0 = 0.2, deltaAlpha = 0.1, MCCs = 1,000,000
   * to study the stability of the algorithm as function of MCC. 
   
 * make execute2 produces output files containing values for alpha, mean energy, mean energy squared and accepted changes sampled after burn in period for the first trial function whitout Coulomb interaction;
   * for 8 values of alpha
-  * with step = 0.5, beta = 1.0, omega = 1, charge = 1, alpha0 = 0.2, deltaAlpha = 0.1, equlibriumTime = 100,000, MCCs = 1,000,000. 
-  * to decide the optimal value of the step lenght as function of alpha
+  * with step = 0.5, beta = 1.0, omega = 1, charge = 1, alpha0 = 0.2, deltaAlpha = 0.1, equlibriumTime = 100,000, MCCs = 1,000,000
+  * to decide the optimal value of the step lenght as function of alpha.
 
 * make execute3 produces output files containing values for alpha, beta, omega, mean energy, mean enegy squared and mean distance for the first trial function with Coulomb interaction; 
-  * alpha = 0.85, beta = 0.5, omega = 1, charge = 1, equlibriumTime = 100,000, MCCs = 1,000,000. 
-  * to find the expectation value of the energy and the variance for certain set values of the parameters alpha, beta and omega
+  * alpha = 0.85, beta = 0.5, omega = 1, charge = 1, equlibriumTime = 100,000, MCCs = 1,000,000
+  * to find the expectation value of the energy and the variance for certain set values of the parameters alpha, beta and omega.
   
 * make execute 4 produces output files containing values for beta, mean energy, mean energy squared and mean distance;
   * omega = 1.0, MCCs = 1,000,000
-  * for finding the expectation value of the energy and the variance as function of the parameters alpha and beta with one certain value of omega 
+  * for finding the expectation value of the energy and the variance as function of the parameters alpha and beta with one certain value of omega.
   
 * make execute 5 produces output files containg values for omega, kinetic energy and potential energy
   * with omega0 = 0.01, deltaOmega = 0.01, equlibriumTime = , alpha = 0.995, beta = 0.290, charge = 1.0
-  * for testing the compliance of the energies calculated without Coulomb interaction with the Virial theorem for the first trial function
+  * for testing the compliance of the energies calculated without Coulomb interaction with the Virial theorem for the first trial function.
 
 * make execute 6 and 7 run the same simulation as execute 4, for the first trial function with Coulomb interaction and the second trial function, repectively. 
 
@@ -82,7 +82,7 @@ python3 EnergyasFuntionofAlpha.py
 ```
 
 ### Plotting accepted Monte Carlo moves as function of step length & plotting the optimal step lenght as function of alpha)
-#### For the first trial function without Coulomb interaction, MCCs = 1,000,000, 8 values of alpha
+#### For the first trial function without Coulomb interaction, MCCs = 1,000,000, 8 values of alpha:
 ```
 python3 optimalStepLength.py
 ```
@@ -100,7 +100,7 @@ python3 VirialTheorem.py
 ```
 
 ### Calculating mean distance at the energy minimum between the two electrons for the optimal set of variational parameters)
-#### For the both trial functions (with and without Coulomb and electron-electron interaction
+#### For the both trial functions (with and without Coulomb and electron-electron interaction:
 ```
 python3 calculateMeanDistance.py
 ```
@@ -116,7 +116,7 @@ python3 calculateMeanDistance.py
 
 >> make execute 5
 
-# Produces output files containing alpha, beta, omega, mean energy, mean energy squared and mean distance after final MCC
+# Produces output files containing alpha, beta, omega, mean energy, mean energy squared and mean distance after final MCC.
 ```
 
 ## Example run 2:
