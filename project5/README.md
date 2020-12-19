@@ -61,7 +61,7 @@ Here;
   * omega = 1.0, MCCs = 1,000,000
   * for finding the expectation value of the energy and the variance as function of the parameters alpha and beta with one certain value of omega.
   
-* make execute 5 produces output files containg values for omega, kinetic energy and potential energy
+* make execute 5 produces output files containg values for omega, kinetic energy and potential energy;
   * with omega0 = 0.01, deltaOmega = 0.01, equlibriumTime = , alpha = 0.995, beta = 0.290, charge = 1.0
   * for testing the compliance of the energies calculated without Coulomb interaction with the Virial theorem for the first trial function.
 
