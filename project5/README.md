@@ -65,33 +65,46 @@ Here;
   * with omega0 = 0.01, deltaOmega = 0.01, equlibriumTime = , alpha = 0.995, beta = 0.290, charge = 1.0
   * for testing the compliance of the energies calculated without Coulomb interaction with the Virial theorem for the first trial function
 
-* make execute 5 and 6 run the same simulation as execute 4, for the first trial function with Coulomb interaction and the second trial function, repectively. 
+* make execute 6 and 7 run the same simulation as execute 4, for the first trial function with Coulomb interaction and the second trial function, repectively. 
 
 
 
-### Plotting for part 4c)
-#### Analytical and numerical mean energy, mean absolute magnetization, specific heat capacity and magnetic susceptibility for T = 1.0 with L = 2:
+### Plotting expectation value and variance of the energy as function of MCCs)
+#### For the first trial function with and without Coulomb interaction, MCCs = 1,000,000, 5 values of alpha:
 ```
-python3 plot_part4c.py
-```
-
-### Plotting for part 4d)
-#### Mean energy, mean absolute magnetization and total number of accepted configurations as functions of MCCs for both randomly oriented and ordered spins, with T = 1.0 and T = 2.4 with L = 20:
-```
-python3 plot_part4d.py
+python3 EnergyasFunctionofMCCs.py
 ```
 
-### Plotting for part 4e)
-#### The probability of each energy state and print variance and standard deviation in energy for T = 1.0 and T = 2.4 with L = 20:
+### Plotting expectation value and variance as function of alpha and print the minimum mean value of the energy and energy squared with corresponding alpha)
+#### For the first trial function with and without Coulomb interaction, MCCs = 1,000,000, 50 values of alpha:
 ```
-python3 plot_part4e.py
+python3 EnergyasFuntionofAlpha.py
 ```
 
-### Plotting for part 4f)
-#### The specific heat capacity and magnetic susceptibility as functions of temperatures between 2.15 and 2.45 with L = 40, 60, 80, 100:
+### Plotting accepted Monte Carlo moves as function of step length & plotting the optimal step lenght as function of alpha)
+#### For the first trial function without Coulomb interaction, MCCs = 1,000,000, 8 values of alpha
 ```
-python3 plot_part4fg.py
+python3 optimalStepLength.py
 ```
+
+### Plotting the expectation value of the energy and print the ground state energy minimum)
+#### For the second trial function, MCCs = 10,000,000, omega = 1.0, 200 values of alpha and beta:
+```
+python3 optimalParameters.py
+```
+
+### Plotting the energy ratio as function of omega)
+#### For the first trial function without Coulomb interaction and the second trial function, MCCs = 1,000,000, 100 values of omega:
+```
+python3 VirialTheorem.py
+```
+
+### Calculating mean distance at the energy minimum between the two electrons for the optimal set of variational parameters)
+#### For the both trial functions (with and without Coulomb and electron-electron interaction
+```
+python3 calculateMeanDistance.py
+```
+
 
 
 
@@ -101,17 +114,15 @@ python3 plot_part4fg.py
 
 # Compiles the script
 
->> make part4f
+>> make execute 5
 
-# Produces output files containing the mean energy, mean absolute magnetization, 
-mean energy squared and mean magnetization squared after final MCC
+# Produces output files containing alpha, beta, omega, mean energy, mean energy squared and mean distance after final MCC
 ```
 
 ## Example run 2:
 ```
->> python3 plot_part4d.py   
+>> python3 optimalStepLength.py   
 
-# Compiles and executes the main script producing output files, makes plots
-of mean energy, mean absolute magnetization and total number of accepted configurations
+# Compiles and executes the main script producing output files, makes plots of accepted Monte Calro moves as function of step lengt in percent, as well as optimal step lenght as function of alpha produced using linear regression. 
 
 ```
