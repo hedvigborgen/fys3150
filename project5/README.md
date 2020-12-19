@@ -100,7 +100,7 @@ python3 VirialTheorem.py
 ```
 
 ### Calculating mean distance at the energy minimum between the two electrons for the optimal set of variational parameters)
-#### For the both trial functions (with and without Coulomb and electron-electron interaction:
+#### For the both trial functions (with and without Coulomb and electron-electron interaction):
 ```
 python3 calculateMeanDistance.py
 ```
