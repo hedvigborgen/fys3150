@@ -3,7 +3,7 @@
 
 Kamilla Ida Julie Sulebakk, Hedvig Borgen Reiersrud and Andrea Jensen Marthinussen
 
-In this project we have utilized Variational Monte Carlo method in order to evaluate the ground state energy, the relative diatance between two electrons and expectation values of the kinetic energies of a quantum dots with two electrons in three dimensions. 
+In this project we have utilized the Variational Monte Carlo method in order to evaluate the ground state energy, the relative diatance between two electrons and expectation values of the kinetic energies of a quantum dots with two electrons in three dimensions. 
 
 ## The project is created with:
 * C++
