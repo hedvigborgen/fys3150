@@ -44,7 +44,7 @@ make execute7
 
 ```
 Here; 
-* make execute1 produces output files containing the number of MCC with corresponding mean energy and mean energy squared for the first trial function whitout Coulomb interaction with 8 different values of alpha;
+* make execute1 produces output files containing the number of MCC with corresponding mean energy and mean energy squared for the first trial function whitout Coulomb interaction for 8 different values of alpha;
   * with step = 1.0, beta = 1.0, omega = 1, charge = 1, alpha0 = 0.2, deltaAlpha = 0.1, MCCs = 1,000,000. 
   * to study the stability of the algorithm as function of MCC. 
   
