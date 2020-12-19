@@ -75,19 +75,19 @@ Here;
 python3 EnergyasFunctionofMCCs.py
 ```
 
-### Plotting expectation value and variance as function of alpha and print the minimum mean value of the energy and energy squared with corresponding alpha)
+### Plotting expectation value and variance as function of alpha and printing the minimum mean value of the energy and energy squared with corresponding alpha)
 #### For the first trial function with and without Coulomb interaction, MCCs = 1,000,000, 50 values of alpha:
 ```
 python3 EnergyasFuntionofAlpha.py
 ```
 
-### Plotting accepted Monte Carlo moves as function of step length & plotting the optimal step lenght as function of alpha)
+### Plotting accepted Monte Carlo moves as function of step length and plotting the optimal step lenght as function of alpha)
 #### For the first trial function without Coulomb interaction, MCCs = 1,000,000, 8 values of alpha:
 ```
 python3 optimalStepLength.py
 ```
 
-### Plotting the expectation value of the energy and print the ground state energy minimum)
+### Plotting the expectation value of the energy and printing the ground state energy minimum)
 #### For the second trial function, MCCs = 10,000,000, omega = 1.0, 200 values of alpha and beta:
 ```
 python3 optimalParameters.py
